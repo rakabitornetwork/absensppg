@@ -74,24 +74,24 @@ export default function Dashboard({ stats, recentScans, settings }) {
                     </div>
                     <div className="grid grid-cols-3 gap-1">
                         <div className="flex flex-col justify-end">
-                            <span className="text-[8px] font-bold text-indigo-200/95 uppercase tracking-wide">Tepat Waktu</span>
+                            <span className="text-[8px] font-bold text-emerald-300 uppercase tracking-wide">Tepat Waktu</span>
                             <div className="flex items-baseline gap-0.5 mt-0.5">
                                 <span className="text-base font-black text-white leading-none">{stats.present - stats.late}</span>
-                                <span className="text-[8px] text-indigo-100/80 font-semibold">staf</span>
+                                <span className="text-[8px] text-emerald-100/80 font-semibold">staf</span>
                             </div>
                         </div>
                         <div className="flex flex-col justify-end border-l border-white/10 pl-2.5">
-                            <span className="text-[8px] font-bold text-indigo-200/95 uppercase tracking-wide">Terlambat</span>
+                            <span className="text-[8px] font-bold text-amber-300 uppercase tracking-wide">Terlambat</span>
                             <div className="flex items-baseline gap-0.5 mt-0.5">
-                                <span className="text-base font-black text-amber-300 leading-none">{stats.late}</span>
-                                <span className="text-[8px] text-indigo-100/80 font-semibold">staf</span>
+                                <span className="text-base font-black text-white leading-none">{stats.late}</span>
+                                <span className="text-[8px] text-amber-100/80 font-semibold">staf</span>
                             </div>
                         </div>
                         <div className="flex flex-col justify-end border-l border-white/10 pl-2.5">
-                            <span className="text-[8px] font-bold text-indigo-200/95 uppercase tracking-wide">Mangkir</span>
+                            <span className="text-[8px] font-bold text-rose-300 uppercase tracking-wide">Mangkir</span>
                             <div className="flex items-baseline gap-0.5 mt-0.5">
-                                <span className="text-base font-black text-rose-300 leading-none">{stats.absent}</span>
-                                <span className="text-[8px] text-indigo-100/80 font-semibold">staf</span>
+                                <span className="text-base font-black text-white leading-none">{stats.absent}</span>
+                                <span className="text-[8px] text-rose-100/80 font-semibold">staf</span>
                             </div>
                         </div>
                     </div>
