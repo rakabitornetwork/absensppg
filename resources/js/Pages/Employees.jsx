@@ -1,0 +1,455 @@
+import React, { useState } from 'react';
+import { Head, useForm, Link } from '@inertiajs/react';
+import MainLayout from '../Layout/MainLayout';
+import { QRCodeSVG } from 'qrcode.react';
+import { 
+    Plus, 
+    Search, 
+    Edit2, 
+    Trash2, 
+    Printer, 
+    QrCode, 
+    X, 
+    Eye, 
+    HelpCircle,
+    UserCircle2
+} from 'lucide-react';
+
+export default function Employees({ employees = [] }) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedRole, setSelectedRole] = useState('All');
+    const [showForm, setShowForm] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+    const [cardPreview, setCardPreview] = useState(null);
+
+    const rolesList = [
+        'Kepala Satuan',
+        'Tenaga Gizi',
+        'Juru Masak',
+        'Asisten Masak',
+        'Pengantar/Kurir',
+        'Administrasi'
+    ];
+
+    const { data, setData, post, reset, errors } = useForm({
+        nip: '',
+        name: '',
+        role: 'Juru Masak',
+        email: '',
+        phone: '',
+        base_salary: 0,
+        daily_allowance: 0,
+        status: 'Active',
+    });
+
+    const formatRupiah = (value) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    };
+
+    const handleAddClick = () => {
+        reset();
+        setEditMode(false);
+        setShowForm(true);
+    };
+
+    const handleEditClick = (emp) => {
+        setData({
+            nip: emp.nip,
+            name: emp.name,
+            role: emp.role,
+            email: emp.email || '',
+            phone: emp.phone || '',
+            base_salary: emp.base_salary,
+            daily_allowance: emp.daily_allowance,
+            status: emp.status,
+        });
+        setEditingId(emp.id);
+        setEditMode(true);
+        setShowForm(true);
+    };
+
+    const handleDelete = (id) => {
+        if (confirm('Apakah Anda yakin ingin menghapus data karyawan ini?')) {
+            post(`/employees/${id}/delete`);
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (editMode) {
+            post(`/employees/${editingId}/update`, {
+                onSuccess: () => {
+                    setShowForm(false);
+                    reset();
+                }
+            });
+        } else {
+            post('/employees', {
+                onSuccess: () => {
+                    setShowForm(false);
+                    reset();
+                }
+            });
+        }
+    };
+
+    const filteredEmployees = employees.filter(emp => {
+        const matchesSearch = 
+            emp.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            emp.nip.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRole = selectedRole === 'All' || emp.role === selectedRole;
+        return matchesSearch && matchesRole;
+    });
+
+    return (
+        <MainLayout title="Data Karyawan">
+            <Head title="Kelola Karyawan" />
+
+            {/* Title / Action bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Daftar Karyawan SPPG</h2>
+                    <p className="text-[10px] text-slate-500 font-medium">Manajemen staff operasional pemenuhan gizi MBG</p>
+                </div>
+                <div className="flex gap-2">
+                    <Link
+                        href="/employees/print-cards"
+                        className="bg-white border border-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-1.5 active:translate-y-[1px]"
+                    >
+                        <Printer className="w-3.5 h-3.5 text-slate-500" />
+                        Cetak Kartu Karyawan
+                    </Link>
+                    <button
+                        onClick={handleAddClick}
+                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow shadow-teal-500/10 hover:shadow-teal-500/20 transition-all flex items-center gap-1 active:translate-y-[1px]"
+                    >
+                        <Plus className="w-3.5 h-3.5" />
+                        Tambah Karyawan
+                    </button>
+                </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="bg-white border border-slate-100 rounded-xl p-3 shadow-sm mb-4 flex flex-col md:flex-row gap-3">
+                <div className="flex-1 relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                        <Search className="w-4 h-4" />
+                    </span>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-slate-50/50"
+                        placeholder="Cari berdasarkan nama atau NIP..."
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase shrink-0">Filter Posisi:</span>
+                    <select
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                        className="text-xs border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
+                    >
+                        <option value="All">Semua Posisi</option>
+                        {rolesList.map(role => (
+                            <option key={role} value={role}>{role}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* Main Area (Table + Optional Form Side-by-Side) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                
+                {/* Table (Takes 8 cols if form is open, 12 if closed) */}
+                <div className={`bg-white border border-slate-100 rounded-xl p-4 shadow-sm ${showForm ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                            <thead>
+                                <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
+                                    <th className="py-2.5">Karyawan (NIP)</th>
+                                    <th className="py-2.5">Posisi / Kontak</th>
+                                    <th className="py-2.5 text-right">Gaji Pokok</th>
+                                    <th className="py-2.5 text-right">Uang Harian</th>
+                                    <th className="py-2.5 text-center">Status</th>
+                                    <th className="py-2.5 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                                {filteredEmployees.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-8 text-slate-400 font-semibold">
+                                            Karyawan tidak ditemukan.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredEmployees.map((emp) => (
+                                        <tr key={emp.id} className="hover:bg-slate-50/30 transition-colors">
+                                            <td className="py-3 font-bold text-slate-900">
+                                                {emp.name}
+                                                <span className="block text-[10px] text-slate-400 font-medium tabular-nums">{emp.nip}</span>
+                                            </td>
+                                            <td className="py-3">
+                                                <span className="font-bold text-slate-700">{emp.role}</span>
+                                                <span className="block text-[10px] text-slate-400 truncate max-w-[160px] font-medium">{emp.phone || '-'}</span>
+                                            </td>
+                                            <td className="py-3 text-right font-extrabold text-slate-800 tabular-nums">
+                                                {formatRupiah(emp.base_salary)}
+                                            </td>
+                                            <td className="py-3 text-right font-extrabold text-slate-800 tabular-nums">
+                                                {formatRupiah(emp.daily_allowance)}
+                                            </td>
+                                            <td className="py-3 text-center">
+                                                <span className={`inline-block w-2 h-2 rounded-full ${emp.status === 'Active' ? 'bg-teal-500' : 'bg-slate-300'}`} title={emp.status} />
+                                            </td>
+                                            <td className="py-3 text-right">
+                                                <div className="flex justify-end gap-1.5">
+                                                    <button
+                                                        onClick={() => setCardPreview(emp)}
+                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-teal-600 hover:bg-teal-50 border border-slate-100 transition-colors"
+                                                        title="Lihat ID Card"
+                                                    >
+                                                        <QrCode className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleEditClick(emp)}
+                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(emp.id)}
+                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                        title="Hapus"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Form Drawer (Takes 4 cols if open) */}
+                {showForm && (
+                    <div className="lg:col-span-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm space-y-4 animate-in slide-in-from-right-4 duration-200">
+                        <div className="flex items-center justify-between border-b border-slate-50 pb-2">
+                            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                                {editMode ? 'Edit Karyawan' : 'Tambah Karyawan'}
+                            </h3>
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-50"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-3">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">NIP (Nomor Induk Pegawai)</label>
+                                <input
+                                    type="text"
+                                    value={data.nip}
+                                    onChange={(e) => setData('nip', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    placeholder="SPPG-MBG-XXX"
+                                    required
+                                />
+                                {errors.nip && <p className="text-[10px] text-rose-600 mt-0.5">{errors.nip}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Nama Lengkap</label>
+                                <input
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    placeholder="Contoh: Budi Santoso"
+                                    required
+                                />
+                                {errors.name && <p className="text-[10px] text-rose-600 mt-0.5">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Posisi / Jabatan</label>
+                                <select
+                                    value={data.role}
+                                    onChange={(e) => setData('role', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                >
+                                    {rolesList.map(r => (
+                                        <option key={r} value={r}>{r}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Email (Opsional)</label>
+                                <input
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    placeholder="alamat@sppg.com"
+                                />
+                                {errors.email && <p className="text-[10px] text-rose-600 mt-0.5">{errors.email}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Nomor Telepon</label>
+                                <input
+                                    type="text"
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    placeholder="08xxxxxxxxxx"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Gaji Pokok (Bulan)</label>
+                                    <input
+                                        type="number"
+                                        value={data.base_salary}
+                                        onChange={(e) => setData('base_salary', parseInt(e.target.value) || 0)}
+                                        className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums"
+                                        min="0"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Uang Harian (Transport/Makan)</label>
+                                    <input
+                                        type="number"
+                                        value={data.daily_allowance}
+                                        onChange={(e) => setData('daily_allowance', parseInt(e.target.value) || 0)}
+                                        className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums"
+                                        min="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Status Keaktifan</label>
+                                <div className="flex gap-4 mt-1 text-xs font-semibold">
+                                    <label className="flex items-center gap-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            checked={data.status === 'Active'}
+                                            onChange={() => setData('status', 'Active')}
+                                            className="text-teal-600 focus:ring-teal-500/20"
+                                        />
+                                        Aktif
+                                    </label>
+                                    <label className="flex items-center gap-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            checked={data.status === 'Inactive'}
+                                            onChange={() => setData('status', 'Inactive')}
+                                            className="text-slate-600 focus:ring-slate-500/20"
+                                        />
+                                        Nonaktif
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow shadow-teal-500/10 hover:shadow-teal-500/20 transition-all flex items-center justify-center gap-1 mt-3"
+                            >
+                                Simpan Perubahan
+                            </button>
+                        </form>
+                    </div>
+                )}
+            </div>
+
+            {/* ID Card Single Preview Modal */}
+            {cardPreview && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
+                            <span className="text-xs font-extrabold text-slate-900 uppercase">Preview Kartu Karyawan</span>
+                            <button
+                                onClick={() => setCardPreview(null)}
+                                className="text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-50"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* ID Badge Body (Designed like a premium badge) */}
+                        <div className="p-6 bg-slate-50 flex flex-col items-center">
+                            
+                            {/* Card Frame (High Density Premium Light) */}
+                            <div className="w-[240px] bg-white border border-slate-200 rounded-xl p-4 shadow-lg flex flex-col items-center justify-between relative overflow-hidden">
+                                
+                                {/* Top Banner Design */}
+                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600" />
+                                
+                                {/* SPPG Title */}
+                                <div className="text-center mt-2 mb-4">
+                                    <h4 className="text-[10px] font-extrabold text-slate-900 leading-none">SPPG SUKAJADI MANDIRI</h4>
+                                    <p className="text-[7px] text-teal-700 font-bold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
+                                </div>
+
+                                {/* Employee Avatar Placeholder */}
+                                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 mb-2 relative">
+                                    <UserCircle2 className="w-12 h-12 text-slate-300" />
+                                </div>
+
+                                {/* Details */}
+                                <div className="text-center mb-3">
+                                    <h5 className="text-xs font-extrabold text-slate-950 leading-tight">{cardPreview.name}</h5>
+                                    <span className="inline-block text-[8px] font-extrabold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md mt-1 border border-teal-100 uppercase tracking-wide">
+                                        {cardPreview.role}
+                                    </span>
+                                    <span className="block text-[8px] font-bold text-slate-400 mt-1 tabular-nums">NIP: {cardPreview.nip}</span>
+                                </div>
+
+                                {/* QR Code SVG */}
+                                <div className="bg-white border border-slate-100 p-2 rounded-lg shadow-sm">
+                                    <QRCodeSVG 
+                                        value={cardPreview.qr_token} 
+                                        size={90} 
+                                        level="H" // High error correction
+                                    />
+                                </div>
+
+                                {/* Footer info */}
+                                <span className="text-[6px] text-slate-400 font-medium tracking-wide mt-4 uppercase">BERLAKU SELAMA KEGIATAN SPPG 2026</span>
+                            </div>
+                        </div>
+
+                        {/* Print Button inside Modal */}
+                        <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+                            <button
+                                onClick={() => {
+                                    setCardPreview(null);
+                                    window.print();
+                                }}
+                                className="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                            >
+                                <Printer className="w-3.5 h-3.5" />
+                                Cetak Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </MainLayout>
+    );
+}
