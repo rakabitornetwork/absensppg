@@ -17,6 +17,7 @@ export default function Scanner({ settings }) {
     const [manualToken, setManualToken] = useState('');
     const [scanMode, setScanMode] = useState('in'); // 'in' or 'out'
     const qrScannerRef = useRef(null);
+    const lastScanRef = useRef({ token: null, time: 0 });
 
     // Audio chime generator using Web Audio API
     const playChime = (type) => {
@@ -177,6 +178,14 @@ export default function Scanner({ settings }) {
     const handleScan = (token) => {
         // Prevent double trigger during execution
         if (processing) return;
+
+        const now = Date.now();
+        if (lastScanRef.current.token === token && (now - lastScanRef.current.time) < 5000) {
+            console.log("Ignoring duplicate scan of token:", token);
+            return;
+        }
+
+        lastScanRef.current = { token, time: now };
         setProcessing(true);
         setErrorMsg('');
 
