@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm, Link, usePage } from '@inertiajs/react';
+import { Head, useForm, Link, usePage, router } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { 
@@ -24,6 +24,7 @@ export default function Employees({ employees = [] }) {
     const [editMode, setEditMode] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [cardPreview, setCardPreview] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const rolesList = [
         'Kepala Satuan',
@@ -77,7 +78,44 @@ export default function Employees({ employees = [] }) {
 
     const handleDelete = (id) => {
         if (confirm('Apakah Anda yakin ingin menghapus data karyawan ini?')) {
-            post(`/employees/${id}/delete`);
+            post(`/employees/${id}/delete`, {
+                onSuccess: () => {
+                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                }
+            });
+        }
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const newIds = [...selectedIds];
+            filteredEmployees.forEach(emp => {
+                if (!newIds.includes(emp.id)) {
+                    newIds.push(emp.id);
+                }
+            });
+            setSelectedIds(newIds);
+        } else {
+            const filteredIds = filteredEmployees.map(emp => emp.id);
+            setSelectedIds(selectedIds.filter(id => !filteredIds.includes(id)));
+        }
+    };
+
+    const handleSelectOne = (id) => {
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter(item => item !== id));
+        } else {
+            setSelectedIds([...selectedIds, id]);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (confirm(`Apakah Anda yakin ingin menghapus secara massal ${selectedIds.length} karyawan terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
+            router.post('/employees/bulk-delete', { ids: selectedIds }, {
+                onSuccess: () => {
+                    setSelectedIds([]);
+                }
+            });
         }
     };
 
@@ -174,6 +212,14 @@ export default function Employees({ employees = [] }) {
                         <table className="w-full text-left text-xs">
                             <thead>
                                 <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
+                                    <th className="py-2.5 pl-3 w-8">
+                                        <input
+                                            type="checkbox"
+                                            checked={filteredEmployees.length > 0 && filteredEmployees.every(emp => selectedIds.includes(emp.id))}
+                                            onChange={handleSelectAll}
+                                            className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
+                                        />
+                                    </th>
                                     <th className="py-2.5">Karyawan (NIP)</th>
                                     <th className="py-2.5">Posisi / Kontak</th>
                                     <th className="py-2.5 text-right">Gaji Pokok</th>
@@ -185,13 +231,21 @@ export default function Employees({ employees = [] }) {
                             <tbody className="divide-y divide-slate-50">
                                 {filteredEmployees.length === 0 ? (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-8 text-slate-400 font-semibold">
+                                        <td colSpan="7" className="text-center py-8 text-slate-400 font-semibold">
                                             Karyawan tidak ditemukan.
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredEmployees.map((emp) => (
-                                        <tr key={emp.id} className="hover:bg-slate-50/30 transition-colors">
+                                        <tr key={emp.id} className={`hover:bg-slate-50/30 transition-colors ${selectedIds.includes(emp.id) ? 'bg-teal-50/20' : ''}`}>
+                                            <td className="py-3 pl-3">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(emp.id)}
+                                                    onChange={() => handleSelectOne(emp.id)}
+                                                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="py-3 font-bold text-slate-900">
                                                 {emp.name}
                                                 <span className="block text-[10px] text-slate-400 font-medium tabular-nums">{emp.nip}</span>
@@ -449,6 +503,36 @@ export default function Employees({ employees = [] }) {
                                 Cetak Sekarang
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Action Bar */}
+            {selectedIds.length > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border border-teal-200/60 px-4 py-3 rounded-xl shadow-xl flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="flex items-center gap-2">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold border border-teal-100">
+                            {selectedIds.length}
+                        </span>
+                        <span className="text-[11px] text-slate-600 font-bold">
+                            Karyawan terpilih
+                        </span>
+                    </div>
+                    <div className="h-4 w-px bg-slate-200" />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setSelectedIds([])}
+                            className="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            onClick={handleBulkDelete}
+                            className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Hapus Massal
+                        </button>
                     </div>
                 </div>
             )}

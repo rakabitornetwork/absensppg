@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/employees', [EmployeeController::class, 'store']);
     Route::post('/employees/{employee}/update', [EmployeeController::class, 'update']);
     Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
+    Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
     Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 
     // Absensi

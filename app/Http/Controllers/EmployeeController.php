@@ -65,6 +65,18 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Karyawan berhasil dihapus.');
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['required', 'exists:employees,id'],
+        ]);
+
+        $count = Employee::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->back()->with('success', "{$count} karyawan berhasil dihapus secara massal.");
+    }
+
     public function printCards(): Response
     {
         $employees = Employee::where('status', 'Active')->orderBy('nip', 'asc')->get();
