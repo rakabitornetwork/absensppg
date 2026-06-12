@@ -1,8 +1,10 @@
 import React from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, usePage } from '@inertiajs/react';
 import { Lock, Mail, Loader2, ShieldCheck } from 'lucide-react';
 
 export default function Login() {
+    const { props } = usePage();
+    const { appLogo } = props;
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -25,9 +27,13 @@ export default function Login() {
             <div className="w-full max-w-[380px] bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-100/50 p-6 z-10">
                 {/* Brand Logo */}
                 <div className="flex flex-col items-center text-center mb-6">
-                    <div className="w-11 h-11 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-lg shadow-teal-600/20 mb-3 animate-pulse">
-                        <ShieldCheck className="w-6 h-6" />
-                    </div>
+                    {appLogo ? (
+                        <img src={appLogo} className="w-12 h-12 rounded-2xl object-cover shadow-md border border-slate-100 mb-3" alt="Logo" />
+                    ) : (
+                        <div className="w-11 h-11 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-lg shadow-teal-600/20 mb-3 animate-pulse">
+                            <ShieldCheck className="w-6 h-6" />
+                        </div>
+                    )}
                     <h1 className="text-base font-bold text-slate-900 leading-tight">SPPG Absensi & Payroll</h1>
                     <p className="text-[11px] text-slate-500 font-medium mt-1">
                         Program Makan Bergizi Gratis (MBG) Indonesia

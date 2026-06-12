@@ -1,9 +1,12 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ArrowLeft, Printer, UserCircle2 } from 'lucide-react';
 
 export default function PrintCards({ employees = [] }) {
+    const { props } = usePage();
+    const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
+    
     const handlePrint = () => {
         window.print();
     };
@@ -50,7 +53,7 @@ export default function PrintCards({ employees = [] }) {
                             
                             {/* Card Brand Header */}
                             <div className="text-center mt-2.5 mb-3">
-                                <h2 className="text-[9px] font-extrabold text-slate-950 tracking-wide uppercase leading-tight">SPPG SUKAJADI MANDIRI</h2>
+                                <h2 className="text-[9px] font-extrabold text-slate-950 tracking-wide uppercase leading-tight">{officeName}</h2>
                                 <p className="text-[6.5px] text-teal-700 font-extrabold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
                             </div>
 

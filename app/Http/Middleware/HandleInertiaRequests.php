@@ -58,6 +58,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'appVersion' => '1.2',
             'appCommitHash' => $commitHash,
+            'appLogo' => \App\Models\SppgSetting::getValue('app_logo'),
+            'officeName' => \App\Models\SppgSetting::getValue('office_name', 'SPPG Sukajadi Mandiri'),
         ];
     }
 }

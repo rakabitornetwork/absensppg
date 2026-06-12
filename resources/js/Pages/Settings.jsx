@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
-import { Save, HelpCircle, Building, Clock, DollarSign, CookingPot } from 'lucide-react';
+import { Save, HelpCircle, Building, Clock, DollarSign, CookingPot, Upload } from 'lucide-react';
 
 export default function Settings({ settings = {} }) {
     
@@ -11,6 +11,7 @@ export default function Settings({ settings = {} }) {
         late_grace_time: settings.late_grace_time || '06:30',
         late_penalty_per_minute: settings.late_penalty_per_minute || 1000,
         meal_target: settings.meal_target || 250,
+        app_logo: null,
     });
 
     const handleSubmit = (e) => {
@@ -45,6 +46,26 @@ export default function Settings({ settings = {} }) {
                             required
                         />
                         {errors.office_name && <p className="text-[10px] text-rose-600 mt-1">{errors.office_name}</p>}
+                    </div>
+
+                    {/* Logo Upload */}
+                    <div>
+                        <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                            <Upload className="w-3.5 h-3.5 text-slate-400" />
+                            Logo Aplikasi (PNG/JPG, maks 2MB)
+                        </label>
+                        <div className="flex items-center gap-3">
+                            {settings.app_logo && (
+                                <img src={settings.app_logo} className="w-10 h-10 rounded-lg object-cover border border-slate-100 shadow-xs" alt="Logo" />
+                            )}
+                            <input
+                                type="file"
+                                onChange={(e) => setData('app_logo', e.target.files[0])}
+                                className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 file:cursor-pointer"
+                                accept="image/*"
+                            />
+                        </div>
+                        {errors.app_logo && <p className="text-[10px] text-rose-600 mt-1">{errors.app_logo}</p>}
                     </div>
 
                     {/* Shifts grid */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { 
@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 
 export default function Employees({ employees = [] }) {
+    const { props } = usePage();
+    const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRole, setSelectedRole] = useState('All');
     const [showForm, setShowForm] = useState(false);
@@ -402,7 +404,7 @@ export default function Employees({ employees = [] }) {
                                 
                                 {/* SPPG Title */}
                                 <div className="text-center mt-2 mb-4">
-                                    <h4 className="text-[10px] font-extrabold text-slate-900 leading-none">SPPG SUKAJADI MANDIRI</h4>
+                                    <h4 className="text-[10px] font-extrabold text-slate-900 leading-none uppercase">{officeName}</h4>
                                     <p className="text-[7px] text-teal-700 font-bold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
                                 </div>
 

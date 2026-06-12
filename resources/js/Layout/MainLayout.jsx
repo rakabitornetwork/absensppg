@@ -94,9 +94,13 @@ export default function MainLayout({ children, title }) {
                     {/* Brand/Header */}
                     <div className="h-14 border-b border-slate-100 flex items-center px-4 justify-between">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
-                                <span className="font-bold text-sm tracking-wider">GZ</span>
-                            </div>
+                            {props.appLogo ? (
+                                <img src={props.appLogo} className="w-8 h-8 rounded-lg object-cover shadow-sm border border-slate-100" alt="Logo" />
+                            ) : (
+                                <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+                                    <span className="font-bold text-sm tracking-wider">GZ</span>
+                                </div>
+                            )}
                             <div>
                                 <h1 className="font-bold text-xs leading-tight text-slate-900">SPPG MBG</h1>
                                 <p className="text-[10px] text-slate-400 font-medium tracking-wide">Nutrition Portal</p>
@@ -172,7 +176,7 @@ export default function MainLayout({ children, title }) {
                         {/* Page Title & Breadcrumb */}
                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-950">
                             <Building className="w-3.5 h-3.5 text-slate-400" />
-                            <span className="hidden sm:inline">SPPG Sukajadi Mandiri</span>
+                            <span className="hidden sm:inline">{props.officeName}</span>
                             <span className="hidden sm:inline text-slate-300">/</span>
                             <span className="text-teal-700 font-semibold">{title}</span>
                         </div>
