@@ -70,6 +70,10 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
         }
     };
 
+    useEffect(() => {
+        checkForUpdates();
+    }, []);
+
     const triggerUpdate = async () => {
         if (!confirm('Apakah Anda yakin ingin memperbarui aplikasi sekarang? Ini akan menarik perubahan kode terbaru dari GitHub dan mereset cache server.')) {
             return;
