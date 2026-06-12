@@ -29,13 +29,17 @@ class SettingController extends Controller
             'app_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
             'app_title' => ['required', 'string', 'max:50'],
             'app_subtitle' => ['required', 'string', 'max:50'],
+            'office_address' => ['nullable', 'string', 'max:500'],
+            'office_whatsapp' => ['nullable', 'string', 'max:50'],
+            'office_email' => ['nullable', 'email', 'max:150'],
+            'office_notes' => ['nullable', 'string', 'max:500'],
         ]);
 
         foreach ($validated as $key => $value) {
             if ($key === 'app_logo') {
                 continue;
             }
-            SppgSetting::setValue($key, (string) $value);
+            SppgSetting::setValue($key, $value !== null ? (string) $value : null);
         }
 
         if ($request->hasFile('app_logo')) {

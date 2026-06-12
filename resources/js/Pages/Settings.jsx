@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
-import { Save, HelpCircle, Building, Clock, DollarSign, CookingPot, Upload } from 'lucide-react';
+import { Save, HelpCircle, Building, Clock, DollarSign, CookingPot, Upload, MapPin, Phone, Mail, Info } from 'lucide-react';
 
 export default function Settings({ settings = {} }) {
     
@@ -14,6 +14,10 @@ export default function Settings({ settings = {} }) {
         app_logo: null,
         app_title: settings.app_title || 'SPPG MBG',
         app_subtitle: settings.app_subtitle || 'Nutrition Portal',
+        office_address: settings.office_address || '',
+        office_whatsapp: settings.office_whatsapp || '',
+        office_email: settings.office_email || '',
+        office_notes: settings.office_notes || '',
     });
 
     const handleSubmit = (e) => {
@@ -172,6 +176,72 @@ export default function Settings({ settings = {} }) {
                                 required
                             />
                             {errors.meal_target && <p className="text-[10px] text-rose-600 mt-1">{errors.meal_target}</p>}
+                        </div>
+                    </div>
+
+                    {/* Contact Info Section */}
+                    <div className="border-t border-slate-100 pt-4 space-y-4">
+                        <h4 className="text-[10px] font-extrabold text-teal-700 uppercase tracking-wider">Kontak & Alamat SPPG</h4>
+                        
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                Alamat Operasional SPPG
+                            </label>
+                            <textarea
+                                value={data.office_address}
+                                onChange={(e) => setData('office_address', e.target.value)}
+                                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                                placeholder="Contoh: Jl. Sukajadi No. 123, Bandung"
+                                rows="2"
+                            />
+                            {errors.office_address && <p className="text-[10px] text-rose-600 mt-1">{errors.office_address}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                    Nomor WhatsApp (SPPG)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.office_whatsapp}
+                                    onChange={(e) => setData('office_whatsapp', e.target.value)}
+                                    className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                                    placeholder="Contoh: 081234567890"
+                                />
+                                {errors.office_whatsapp && <p className="text-[10px] text-rose-600 mt-1">{errors.office_whatsapp}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                                    Email SPPG
+                                </label>
+                                <input
+                                    type="email"
+                                    value={data.office_email}
+                                    onChange={(e) => setData('office_email', e.target.value)}
+                                    className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                                    placeholder="Contoh: sppg@sppg.com"
+                                />
+                                {errors.office_email && <p className="text-[10px] text-rose-600 mt-1">{errors.office_email}</p>}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <Info className="w-3.5 h-3.5 text-slate-400" />
+                                Catatan / Info Penting Lainnya (Tampil di ID Card)
+                            </label>
+                            <input
+                                type="text"
+                                value={data.office_notes}
+                                onChange={(e) => setData('office_notes', e.target.value)}
+                                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-medium"
+                                placeholder="Contoh: Beroperasi Sen-Jum 05:00 - 16:00 WIB"
+                            />
+                            {errors.office_notes && <p className="text-[10px] text-rose-600 mt-1">{errors.office_notes}</p>}
                         </div>
                     </div>
 

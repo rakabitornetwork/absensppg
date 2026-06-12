@@ -20,6 +20,7 @@ class Employee extends Model
         'daily_allowance',
         'status',
         'qr_token',
+        'photo_path',
     ];
 
     public function attendances(): HasMany

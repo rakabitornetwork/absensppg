@@ -18,6 +18,10 @@ import {
 export default function Employees({ employees = [] }) {
     const { props } = usePage();
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
+    const officeAddress = props.officeAddress || '';
+    const officeWhatsapp = props.officeWhatsapp || '';
+    const officeEmail = props.officeEmail || '';
+    const officeNotes = props.officeNotes || 'BERLAKU SELAMA KEGIATAN SPPG 2026';
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRole, setSelectedRole] = useState('All');
     const [showForm, setShowForm] = useState(false);
@@ -91,6 +95,9 @@ export default function Employees({ employees = [] }) {
         base_salary: 0,
         daily_allowance: 0,
         status: 'Active',
+        photo: null,
+        photo_path: '',
+        photo_preview: null,
     });
 
     const formatRupiah = (value) => {
@@ -115,6 +122,9 @@ export default function Employees({ employees = [] }) {
             base_salary: 0,
             daily_allowance: 0,
             status: 'Active',
+            photo: null,
+            photo_path: '',
+            photo_preview: null,
         });
     };
 
@@ -131,6 +141,9 @@ export default function Employees({ employees = [] }) {
             base_salary: emp.base_salary,
             daily_allowance: emp.daily_allowance,
             status: emp.status,
+            photo: null,
+            photo_path: emp.photo_path || '',
+            photo_preview: null,
         });
         setEditingId(emp.id);
         setEditMode(true);
@@ -400,6 +413,36 @@ export default function Employees({ employees = [] }) {
                             </div>
 
                             <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Foto Karyawan (Opsional)</label>
+                                <div className="flex items-center gap-2">
+                                    {data.photo_preview || data.photo_path ? (
+                                        <img
+                                            src={data.photo_preview || data.photo_path}
+                                            className="w-10 h-10 rounded-lg object-cover border border-slate-200"
+                                            alt="Preview"
+                                        />
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                                            <UserCircle2 className="w-8 h-8 text-slate-300" />
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            setData('photo', file);
+                                            if (file) {
+                                                setData('photo_preview', URL.createObjectURL(file));
+                                            }
+                                        }}
+                                        className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 file:cursor-pointer"
+                                        accept="image/*"
+                                    />
+                                </div>
+                                {errors.photo && <p className="text-[10px] text-rose-600 mt-0.5">{errors.photo}</p>}
+                            </div>
+
+                            <div>
                                 <label className="block text-[10px] font-bold text-slate-600 mb-1">Posisi / Jabatan</label>
                                 <select
                                     value={isCustomRole ? 'custom' : data.role}
@@ -568,14 +611,18 @@ export default function Employees({ employees = [] }) {
                                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600" />
                                 
                                 {/* SPPG Title */}
-                                <div className="text-center mt-2 mb-4">
+                                <div className="text-center mt-2 mb-3">
                                     <h4 className="text-[10px] font-extrabold text-slate-900 leading-none uppercase">{officeName}</h4>
                                     <p className="text-[7px] text-teal-700 font-bold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
                                 </div>
 
-                                {/* Employee Avatar Placeholder */}
-                                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 mb-2 relative">
-                                    <UserCircle2 className="w-12 h-12 text-slate-300" />
+                                {/* Employee Photo or Avatar Placeholder */}
+                                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 mb-2 relative overflow-hidden shrink-0">
+                                    {cardPreview.photo_path ? (
+                                        <img src={cardPreview.photo_path} className="w-full h-full object-cover" alt={cardPreview.name} />
+                                    ) : (
+                                        <UserCircle2 className="w-12 h-12 text-slate-300" />
+                                    )}
                                 </div>
 
                                 {/* Details */}
@@ -596,8 +643,19 @@ export default function Employees({ employees = [] }) {
                                     />
                                 </div>
 
+                                {/* Office Info */}
+                                {(officeAddress || officeWhatsapp || officeEmail) && (
+                                    <div className="text-[6px] text-slate-400 font-semibold text-center mt-2 max-w-[200px] leading-tight space-y-0.5 border-t border-slate-100 pt-1.5 w-full">
+                                        {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
+                                        <div className="flex justify-center gap-1.5 flex-wrap">
+                                            {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
+                                            {officeEmail && <span className="truncate max-w-[100px]">Email: {officeEmail}</span>}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Footer info */}
-                                <span className="text-[6px] text-slate-400 font-medium tracking-wide mt-4 uppercase">BERLAKU SELAMA KEGIATAN SPPG 2026</span>
+                                <span className="text-[5px] text-slate-400 font-extrabold tracking-wide mt-3 uppercase text-center w-full">{officeNotes}</span>
                             </div>
                         </div>
 

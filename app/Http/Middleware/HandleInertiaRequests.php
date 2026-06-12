@@ -62,6 +62,10 @@ class HandleInertiaRequests extends Middleware
             'officeName' => \App\Models\SppgSetting::getValue('office_name', 'SPPG Sukajadi Mandiri'),
             'appTitle' => \App\Models\SppgSetting::getValue('app_title', 'SPPG MBG'),
             'appSubtitle' => \App\Models\SppgSetting::getValue('app_subtitle', 'Nutrition Portal'),
+            'officeAddress' => \App\Models\SppgSetting::getValue('office_address', ''),
+            'officeWhatsapp' => \App\Models\SppgSetting::getValue('office_whatsapp', ''),
+            'officeEmail' => \App\Models\SppgSetting::getValue('office_email', ''),
+            'officeNotes' => \App\Models\SppgSetting::getValue('office_notes', ''),
         ];
     }
 }

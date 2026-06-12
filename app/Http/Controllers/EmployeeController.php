@@ -30,7 +30,18 @@ class EmployeeController extends Controller
             'base_salary' => ['required', 'numeric', 'min:0'],
             'daily_allowance' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:Active,Inactive'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = 'emp_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
+            if (!file_exists(public_path('images/employees'))) {
+                mkdir(public_path('images/employees'), 0755, true);
+            }
+            $file->move(public_path('images/employees'), $fileName);
+            $validated['photo_path'] = '/images/employees/' . $fileName;
+        }
 
         // Auto-generate QR code token
         $validated['qr_token'] = 'SPPG-TOKEN-' . Str::upper(Str::random(10));
@@ -51,7 +62,26 @@ class EmployeeController extends Controller
             'base_salary' => ['required', 'numeric', 'min:0'],
             'daily_allowance' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:Active,Inactive'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($employee->photo_path) {
+                $oldPath = public_path(ltrim($employee->photo_path, '/'));
+                if (file_exists($oldPath) && is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            $file = $request->file('photo');
+            $fileName = 'emp_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
+            if (!file_exists(public_path('images/employees'))) {
+                mkdir(public_path('images/employees'), 0755, true);
+            }
+            $file->move(public_path('images/employees'), $fileName);
+            $validated['photo_path'] = '/images/employees/' . $fileName;
+        }
 
         $employee->update($validated);
 
@@ -60,6 +90,13 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee)
     {
+        if ($employee->photo_path) {
+            $oldPath = public_path(ltrim($employee->photo_path, '/'));
+            if (file_exists($oldPath) && is_file($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
         $employee->delete();
 
         return redirect()->back()->with('success', 'Karyawan berhasil dihapus.');
@@ -72,9 +109,18 @@ class EmployeeController extends Controller
             'ids.*' => ['required', 'exists:employees,id'],
         ]);
 
-        $count = Employee::whereIn('id', $validated['ids'])->delete();
+        $employees = Employee::whereIn('id', $validated['ids'])->get();
+        foreach ($employees as $employee) {
+            if ($employee->photo_path) {
+                $oldPath = public_path(ltrim($employee->photo_path, '/'));
+                if (file_exists($oldPath) && is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+            $employee->delete();
+        }
 
-        return redirect()->back()->with('success', "{$count} karyawan berhasil dihapus secara massal.");
+        return redirect()->back()->with('success', count($employees) . " karyawan berhasil dihapus secara massal.");
     }
 
     public function printCards(): Response

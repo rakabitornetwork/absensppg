@@ -74,4 +74,41 @@ class EmployeeTest extends TestCase
         $this->assertDatabaseMissing('employees', ['id' => $employee2->id]);
         $this->assertDatabaseHas('employees', ['id' => $employee3->id]);
     }
+
+    public function test_admin_can_upload_employee_photo(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $file = \Illuminate\Http\UploadedFile::fake()->image('avatar.png');
+
+        $response = $this->actingAs($admin)
+            ->post('/employees', [
+                'nip' => 'SPPG-MBG-104',
+                'name' => 'Karyawan D',
+                'role' => 'Juru Masak',
+                'email' => 'karyawan.d@sppg.com',
+                'phone' => '081234567893',
+                'base_salary' => 4000000,
+                'daily_allowance' => 25000,
+                'status' => 'Active',
+                'photo' => $file,
+            ]);
+
+        $response->assertRedirect();
+        
+        $employee = Employee::where('nip', 'SPPG-MBG-104')->first();
+        $this->assertNotNull($employee);
+        $this->assertNotNull($employee->photo_path);
+        
+        // Clean up uploaded file in local filesystem since we are testing in local environment
+        $localPath = public_path(ltrim($employee->photo_path, '/'));
+        if (file_exists($localPath)) {
+            @unlink($localPath);
+        }
+    }
 }

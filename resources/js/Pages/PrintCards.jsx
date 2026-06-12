@@ -6,6 +6,10 @@ import { ArrowLeft, Printer, UserCircle2 } from 'lucide-react';
 export default function PrintCards({ employees = [] }) {
     const { props } = usePage();
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
+    const officeAddress = props.officeAddress || '';
+    const officeWhatsapp = props.officeWhatsapp || '';
+    const officeEmail = props.officeEmail || '';
+    const officeNotes = props.officeNotes || 'BERLAKU TAHUN ANGGARAN 2026';
     
     const handlePrint = () => {
         window.print();
@@ -57,9 +61,13 @@ export default function PrintCards({ employees = [] }) {
                                 <p className="text-[6.5px] text-teal-700 font-extrabold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
                             </div>
 
-                            {/* Avatar placeholder */}
-                            <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200 mb-2">
-                                <UserCircle2 className="w-10 h-10 text-slate-300" />
+                            {/* Avatar placeholder / Photo */}
+                            <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200 mb-2 overflow-hidden shrink-0">
+                                {emp.photo_path ? (
+                                    <img src={emp.photo_path} className="w-full h-full object-cover" alt={emp.name} />
+                                ) : (
+                                    <UserCircle2 className="w-10 h-10 text-slate-300" />
+                                )}
                             </div>
 
                             {/* Info */}
@@ -80,9 +88,20 @@ export default function PrintCards({ employees = [] }) {
                                 />
                             </div>
 
+                            {/* Office Info */}
+                            {(officeAddress || officeWhatsapp || officeEmail) && (
+                                <div className="text-[5.5px] text-slate-400 font-semibold text-center mt-1.5 max-w-[200px] leading-tight space-y-0.5 border-t border-slate-100 pt-1 w-full">
+                                    {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
+                                    <div className="flex justify-center gap-1.5 flex-wrap">
+                                        {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
+                                        {officeEmail && <span className="truncate max-w-[80px]">Email: {officeEmail}</span>}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Footer Tag */}
-                            <div className="mt-3 text-center border-t border-slate-100 w-full pt-1.5">
-                                <span className="text-[6px] text-slate-400 font-bold tracking-widest uppercase">BERLAKU TAHUN ANGGARAN 2026</span>
+                            <div className="mt-2 text-center border-t border-slate-100 w-full pt-1.5">
+                                <span className="text-[5px] text-slate-400 font-extrabold tracking-widest uppercase">{officeNotes}</span>
                             </div>
                         </div>
                     ))}
