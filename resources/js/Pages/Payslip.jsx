@@ -160,7 +160,7 @@ export default function Payslip({ payroll, settings, kepalaSatuan }) {
                     <div className="flex flex-col justify-between h-20">
                         <span>Kepala Satuan Pelayanan,</span>
                         <span className="underline uppercase">
-                            {kepalaSatuan ? kepalaSatuan.name : (settings.office_leader || 'BUDI SANTOSO, S.Sos')}
+                            {kepalaSatuan ? kepalaSatuan.name : 'BUDI SANTOSO, S.Sos'}
                         </span>
                     </div>
                 </div>

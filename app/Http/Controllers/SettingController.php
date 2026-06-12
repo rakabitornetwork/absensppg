@@ -37,7 +37,6 @@ class SettingController extends Controller
             'office_whatsapp' => ['nullable', 'string', 'max:50'],
             'office_email' => ['nullable', 'email', 'max:150'],
             'office_notes' => ['nullable', 'string', 'max:500'],
-            'office_leader' => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach ($validated as $key => $value) {
