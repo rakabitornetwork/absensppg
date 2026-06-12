@@ -109,15 +109,61 @@ class UpdateController extends Controller
             ], 403);
         }
 
-        // Run Git Pull
-        $outputLogs[] = "Executing: git pull origin main";
-        $gitPull = shell_exec("git pull origin main 2>&1");
-        $outputLogs[] = $gitPull ?: "No output from git pull";
+        // Check if git is initialized
+        $isGitRepo = false;
+        if (function_exists('exec')) {
+            exec('git rev-parse --is-inside-work-tree 2>/dev/null', $output2, $returnVar2);
+            $isGitRepo = ($returnVar2 === 0);
+        }
 
-        if (strpos($gitPull, 'error:') !== false || strpos($gitPull, 'fatal:') !== false) {
-            $success = false;
-            $outputLogs[] = "Git pull failed. Aborting update processes.";
+        if (!$isGitRepo) {
+            $outputLogs[] = "Notice: Directory is not a Git repository. Initializing Git connection...";
+            
+            // 1. Git Init
+            $outputLogs[] = "Executing: git init";
+            $gitInit = shell_exec("git init 2>&1");
+            $outputLogs[] = $gitInit ?: "Git initialized.";
+
+            // 2. Git Remote Add
+            $remoteUrl = "https://github.com/{$this->repo}.git";
+            $outputLogs[] = "Executing: git remote add origin {$remoteUrl}";
+            $gitRemote = shell_exec("git remote add origin {$remoteUrl} 2>&1");
+            $outputLogs[] = $gitRemote ?: "Remote origin added.";
+
+            // 3. Git Fetch
+            $outputLogs[] = "Executing: git fetch origin";
+            $gitFetch = shell_exec("git fetch origin 2>&1");
+            $outputLogs[] = $gitFetch ?: "Fetched from origin.";
+
+            // 4. Rename current branch to main
+            shell_exec("git branch -m main 2>&1");
+
+            // 5. Git Reset Hard
+            $outputLogs[] = "Executing: git reset --hard origin/main";
+            $gitReset = shell_exec("git reset --hard origin/main 2>&1");
+            $outputLogs[] = $gitReset ?: "Reset completed.";
+
+            // Check again if it became a Git repo
+            exec('git rev-parse --is-inside-work-tree 2>/dev/null', $output3, $returnVar3);
+            $isGitRepo = ($returnVar3 === 0);
+
+            if (!$isGitRepo) {
+                $success = false;
+                $outputLogs[] = "Error: Failed to initialize Git repository connection automatically.";
+            }
         } else {
+            // Run standard git pull if already initialized
+            $outputLogs[] = "Executing: git pull origin main";
+            $gitPull = shell_exec("git pull origin main 2>&1");
+            $outputLogs[] = $gitPull ?: "No output from git pull";
+
+            if (strpos($gitPull, 'error:') !== false || strpos($gitPull, 'fatal:') !== false) {
+                $success = false;
+                $outputLogs[] = "Git pull failed. Aborting update processes.";
+            }
+        }
+
+        if ($success) {
             // Run Migrations
             $outputLogs[] = "Executing: php artisan migrate --force";
             try {
