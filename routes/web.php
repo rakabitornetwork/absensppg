@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -40,4 +41,9 @@ Route::middleware(['auth'])->group(function () {
     // Pengaturan
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'update']);
+
+    // Update Aplikasi
+    Route::get('/update', [UpdateController::class, 'index']);
+    Route::post('/update/check', [UpdateController::class, 'checkForUpdates']);
+    Route::post('/update/run', [UpdateController::class, 'runUpdate']);
 });

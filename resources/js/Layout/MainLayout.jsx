@@ -13,7 +13,9 @@ import {
     CheckCircle, 
     AlertCircle,
     X,
-    Menu
+    Menu,
+    Tag,
+    RefreshCw
 } from 'lucide-react';
 
 export default function MainLayout({ children, title }) {
@@ -68,6 +70,7 @@ export default function MainLayout({ children, title }) {
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
+        { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
     ];
 
     const isActive = (href) => {
@@ -177,6 +180,18 @@ export default function MainLayout({ children, title }) {
 
                     {/* Clock & Info Widget */}
                     <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Version Tag Badge (similar to screenshot) */}
+                        <Link 
+                            href="/update"
+                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:py-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 rounded-md text-[10px] sm:text-[11px] font-semibold shadow-sm shadow-slate-950/10 transition-colors"
+                        >
+                            <Tag className="w-3 h-3 text-slate-400 shrink-0" />
+                            <span>Tag: <span className="text-white font-bold">{props.appVersion}-{props.appCommitHash}</span></span>
+                            <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M7 10l5 5 5-5H7z" />
+                            </svg>
+                        </Link>
+
                         <div className="bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-slate-600">
                             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-600 animate-pulse" />
                             <span className="text-slate-800 tabular-nums">{formatTime(time)}</span>

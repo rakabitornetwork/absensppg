@@ -35,9 +35,29 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $commitHash = 'f8d42c7';
+        if (function_exists('shell_exec')) {
+            $hash = trim(@shell_exec('git log -1 --format="%h" 2>/dev/null'));
+            if (!empty($hash)) {
+                $commitHash = $hash;
+            }
+        }
+
         return [
             ...parent::share($request),
-            //
+            'auth' => [
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                ] : null,
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
+            'appVersion' => '1.2',
+            'appCommitHash' => $commitHash,
         ];
     }
 }
