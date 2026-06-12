@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
             'late_penalty_per_minute' => '1000',
             'office_name' => 'SPPG Sukajadi Mandiri',
             'meal_target' => '250', // Target porsi makan gratis harian
+            'office_leader' => 'Budi Santoso',
         ];
 
         foreach ($settings as $key => $val) {

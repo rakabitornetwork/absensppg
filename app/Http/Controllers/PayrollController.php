@@ -137,9 +137,14 @@ class PayrollController extends Controller
         $payroll->load('employee');
         $settings = SppgSetting::pluck('value', 'key')->toArray();
 
+        $kepalaSatuan = Employee::where('role', 'Kepala Satuan')
+            ->where('status', 'Active')
+            ->first();
+
         return Inertia::render('Payslip', [
             'payroll' => $payroll,
             'settings' => $settings,
+            'kepalaSatuan' => $kepalaSatuan,
         ]);
     }
 }

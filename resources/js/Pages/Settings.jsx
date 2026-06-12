@@ -39,6 +39,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
         office_whatsapp: settings.office_whatsapp || '',
         office_email: settings.office_email || '',
         office_notes: settings.office_notes || '',
+        office_leader: settings.office_leader || '',
     });
 
     // Shift Form
@@ -156,6 +157,22 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 required
                             />
                             {errors.office_name && <p className="text-[10px] text-rose-600 mt-1">{errors.office_name}</p>}
+                        </div>
+
+                        {/* Office Leader */}
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <Building className="w-3.5 h-3.5 text-slate-400" />
+                                Kepala Satuan Pelayanan (Tanda Tangan Slip Gaji)
+                            </label>
+                            <input
+                                type="text"
+                                value={data.office_leader}
+                                onChange={(e) => setData('office_leader', e.target.value)}
+                                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-bold"
+                                placeholder="Contoh: Budi Santoso, S.Sos"
+                            />
+                            {errors.office_leader && <p className="text-[10px] text-rose-600 mt-1">{errors.office_leader}</p>}
                         </div>
 
                         {/* Logo Upload */}
