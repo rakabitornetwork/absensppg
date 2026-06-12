@@ -18,6 +18,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
     const [year, setYear] = useState(selectedYear);
     const [showCorrectionForm, setShowCorrectionForm] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
+    const [selectedAttendanceId, setSelectedAttendanceId] = useState(null);
 
     const { data, setData, post, reset, errors } = useForm({
         employee_id: '',
@@ -73,6 +74,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
             nip: empRecord.nip,
             day: dayNum
         });
+        setSelectedAttendanceId(dayRecord?.id || null);
         setShowCorrectionForm(true);
     };
 
@@ -88,6 +90,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
             notes: '',
         });
         setSelectedRecord(null);
+        setSelectedAttendanceId(null);
         setShowCorrectionForm(true);
     };
 
@@ -96,9 +99,22 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
         post('/attendances/manual', {
             onSuccess: () => {
                 setShowCorrectionForm(false);
+                setSelectedAttendanceId(null);
                 reset();
             }
         });
+    };
+
+    const handleDeleteAttendance = () => {
+        if (confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
+            router.post(`/attendances/${selectedAttendanceId}/delete`, {}, {
+                onSuccess: () => {
+                    setShowCorrectionForm(false);
+                    setSelectedAttendanceId(null);
+                    reset();
+                }
+            });
+        }
     };
 
     return (
@@ -362,12 +378,23 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                                 />
                             </div>
 
-                            <button
-                                type="submit"
-                                className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow transition-all flex items-center justify-center gap-1 active:translate-y-[1px]"
-                            >
-                                Simpan Rekor
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    type="submit"
+                                    className="flex-grow bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow transition-all flex items-center justify-center gap-1 active:translate-y-[1px]"
+                                >
+                                    Simpan Rekor
+                                </button>
+                                {selectedAttendanceId && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteAttendance}
+                                        className="bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold py-2 px-3 rounded-lg border border-rose-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                                    >
+                                        Hapus
+                                    </button>
+                                )}
+                            </div>
                         </form>
                     </div>
                 )}

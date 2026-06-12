@@ -75,7 +75,10 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'qr_token' => ['required', 'string'],
+            'mode' => ['nullable', 'string', 'in:in,out'],
         ]);
+
+        $mode = $validated['mode'] ?? null;
 
         $employee = Employee::with('shift')
             ->where('qr_token', $validated['qr_token'])
@@ -99,7 +102,29 @@ class AttendanceController extends Controller
             ->where('date', Carbon::parse($todayStr))
             ->first();
 
-        if (!$attendance) {
+        // Determine action based on mode
+        if ($mode === 'in') {
+            if ($attendance) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => "Karyawan {$employee->name} sudah melakukan scan masuk hari ini.",
+                ], 400);
+            }
+            $action = 'in';
+        } elseif ($mode === 'out') {
+            if (!$attendance) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => "Karyawan {$employee->name} belum melakukan scan masuk hari ini. Silakan scan masuk terlebih dahulu.",
+                ], 400);
+            }
+            $action = 'out';
+        } else {
+            // Auto-detect fallback (API compatibility / tests)
+            $action = !$attendance ? 'in' : 'out';
+        }
+
+        if ($action === 'in') {
             // CLOCK IN FLOW
             $shift = $employee->shift;
             $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
@@ -208,5 +233,12 @@ class AttendanceController extends Controller
         );
 
         return redirect()->back()->with('success', 'Presensi berhasil diperbarui.');
+    }
+
+    public function destroy(Attendance $attendance)
+    {
+        $attendance->delete();
+
+        return redirect()->back()->with('success', 'Rekor presensi berhasil dihapus.');
     }
 }

@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
     Route::get('/attendances', [AttendanceController::class, 'index']);
     Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
+    Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
 
     // Payroll
     Route::get('/payrolls', [PayrollController::class, 'index']);

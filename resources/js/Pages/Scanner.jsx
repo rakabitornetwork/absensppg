@@ -15,6 +15,7 @@ export default function Scanner({ settings }) {
     const [errorMsg, setErrorMsg] = useState('');
     const [processing, setProcessing] = useState(false);
     const [manualToken, setManualToken] = useState('');
+    const [scanMode, setScanMode] = useState('in'); // 'in' or 'out'
     const qrScannerRef = useRef(null);
 
     // Audio chime generator using Web Audio API
@@ -192,7 +193,7 @@ export default function Scanner({ settings }) {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ qr_token: token })
+            body: JSON.stringify({ qr_token: token, mode: scanMode })
         })
         .then(async (res) => {
             const data = await res.json();
@@ -249,6 +250,24 @@ export default function Scanner({ settings }) {
                         <div className="w-full flex items-center gap-2 border-b border-slate-50 pb-2 mb-3">
                             <Camera className="w-4.5 h-4.5 text-teal-600" />
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Kamera Scanner</h3>
+                        </div>
+
+                        {/* Scan Mode Tab Selector */}
+                        <div className="w-full flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 mb-3.5">
+                            <button
+                                type="button"
+                                onClick={() => setScanMode('in')}
+                                className={`flex-1 py-1.5 text-[10px] font-extrabold rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${scanMode === 'in' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-850'}`}
+                            >
+                                SCAN MASUK
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setScanMode('out')}
+                                className={`flex-1 py-1.5 text-[10px] font-extrabold rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${scanMode === 'out' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-850'}`}
+                            >
+                                SCAN PULANG
+                            </button>
                         </div>
 
                         {/* Camera Select Dropdown */}

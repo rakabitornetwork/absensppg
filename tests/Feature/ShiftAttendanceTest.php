@@ -134,4 +134,94 @@ class ShiftAttendanceTest extends TestCase
         // Reset clock
         Carbon::setTestNow();
     }
+
+    public function test_admin_can_delete_attendance_record(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-888',
+            'name' => 'Karyawan Hapus',
+            'role' => 'Juru Masak',
+            'email' => 'hapus@sppg.com',
+            'phone' => '081234567896',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-HAPUS',
+        ]);
+
+        $attendance = Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-06-13',
+            'clock_in' => '08:00:00',
+            'status' => 'Present',
+            'late_minutes' => 0,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post("/attendances/{$attendance->id}/delete");
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('attendances', ['id' => $attendance->id]);
+    }
+
+    public function test_employee_scan_mode_prevents_double_scan(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-777',
+            'name' => 'Karyawan Mode',
+            'role' => 'Juru Masak',
+            'email' => 'mode@sppg.com',
+            'phone' => '081234567897',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-MODE',
+        ]);
+
+        // 1. Scan masuk pertama kali (mode: 'in') -> Berhasil
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MODE',
+            'mode' => 'in',
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('status', 'success');
+        $response->assertJsonPath('type', 'in');
+
+        // 2. Scan masuk kedua kali (mode: 'in') -> Gagal / Warning (Mencegah double scan masuk)
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MODE',
+            'mode' => 'in',
+        ]);
+        $response->assertStatus(400);
+        $response->assertJsonPath('status', 'warning');
+
+        // 3. Scan pulang pertama kali (mode: 'out') -> Berhasil
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MODE',
+            'mode' => 'out',
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('status', 'success');
+        $response->assertJsonPath('type', 'out');
+
+        // 4. Scan pulang kedua kali (mode: 'out') -> Gagal / Warning (Mencegah double scan pulang)
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MODE',
+            'mode' => 'out',
+        ]);
+        $response->assertStatus(400);
+        $response->assertJsonPath('status', 'warning');
+    }
 }
