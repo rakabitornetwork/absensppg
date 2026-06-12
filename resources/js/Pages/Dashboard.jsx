@@ -65,26 +65,33 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 </div>
 
                 {/* Today's Staff Breakdown */}
-                <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-xl p-3.5 shadow-md shadow-indigo-500/10 hover:shadow-lg hover:shadow-indigo-500/20 transition-all flex flex-col justify-between min-h-[105px]">
+                <div className="bg-white border border-slate-100 rounded-xl p-3.5 shadow-md shadow-slate-100/50 hover:shadow-lg hover:border-slate-200 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-indigo-100/90 uppercase tracking-wider">Status Kehadiran Hari Ini</span>
-                        <div className="p-1 rounded-lg bg-white/20 text-white">
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Kehadiran Hari Ini</span>
+                        <div className="p-1 rounded-lg bg-indigo-50 text-indigo-600 shrink-0">
                             <Users className="w-3.5 h-3.5" />
                         </div>
                     </div>
-                    <div>
-                        <div className="grid grid-cols-3 gap-1.5 text-center">
-                            <div className="bg-teal-600/50 border border-teal-400/30 rounded p-1 hover:bg-teal-600/60 transition-colors">
-                                <span className="block text-xs font-extrabold text-white leading-none">{stats.present - stats.late}</span>
-                                <span className="text-[8px] text-teal-50 font-bold">Tepat Waktu</span>
+                    <div className="grid grid-cols-3 gap-1">
+                        <div className="flex flex-col justify-end">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Tepat Waktu</span>
+                            <div className="flex items-baseline gap-0.5 mt-0.5">
+                                <span className="text-base font-black text-teal-600 leading-none">{stats.present - stats.late}</span>
+                                <span className="text-[8px] text-slate-400 font-semibold">staf</span>
                             </div>
-                            <div className="bg-amber-500/40 border border-amber-400/30 rounded p-1 hover:bg-amber-500/50 transition-colors">
-                                <span className="block text-xs font-extrabold text-white leading-none">{stats.late}</span>
-                                <span className="text-[8px] text-amber-50 font-bold">Terlambat</span>
+                        </div>
+                        <div className="flex flex-col justify-end border-l border-slate-100 pl-2.5">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Terlambat</span>
+                            <div className="flex items-baseline gap-0.5 mt-0.5">
+                                <span className="text-base font-black text-amber-600 leading-none">{stats.late}</span>
+                                <span className="text-[8px] text-slate-400 font-semibold">staf</span>
                             </div>
-                            <div className="bg-rose-600/50 border border-rose-400/30 rounded p-1 hover:bg-rose-600/60 transition-colors">
-                                <span className="block text-xs font-extrabold text-white leading-none">{stats.absent}</span>
-                                <span className="text-[8px] text-rose-50 font-bold">Mangkir</span>
+                        </div>
+                        <div className="flex flex-col justify-end border-l border-slate-100 pl-2.5">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Mangkir</span>
+                            <div className="flex items-baseline gap-0.5 mt-0.5">
+                                <span className="text-base font-black text-rose-500 leading-none">{stats.absent}</span>
+                                <span className="text-[8px] text-slate-400 font-semibold">staf</span>
                             </div>
                         </div>
                     </div>
