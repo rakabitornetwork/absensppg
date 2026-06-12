@@ -102,8 +102,8 @@ export default function MainLayout({ children, title }) {
                                 </div>
                             )}
                             <div>
-                                <h1 className="font-bold text-xs leading-tight text-slate-900">SPPG MBG</h1>
-                                <p className="text-[10px] text-slate-400 font-medium tracking-wide">Nutrition Portal</p>
+                                <h1 className="font-bold text-xs leading-tight text-slate-900">{props.appTitle || 'SPPG MBG'}</h1>
+                                <p className="text-[10px] text-slate-400 font-medium tracking-wide">{props.appSubtitle || 'Nutrition Portal'}</p>
                             </div>
                         </div>
                         {/* Close button for mobile menu */}
