@@ -180,13 +180,13 @@ export default function MainLayout({ children, title }) {
 
                     {/* Clock & Info Widget */}
                     <div className="flex items-center gap-2 sm:gap-4">
-                        {/* Version Tag Badge (similar to screenshot) */}
+                        {/* Version Tag Badge (similar to screenshot, light mode) */}
                         <Link 
                             href="/update"
-                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:py-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 rounded-md text-[10px] sm:text-[11px] font-semibold shadow-sm shadow-slate-950/10 transition-colors"
+                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 rounded-md text-[10px] sm:text-[11px] font-bold shadow-xs transition-colors"
                         >
                             <Tag className="w-3 h-3 text-slate-400 shrink-0" />
-                            <span>Tag: <span className="text-white font-bold">{props.appVersion}-{props.appCommitHash}</span></span>
+                            <span>Tag: <span className="text-slate-800 font-extrabold">{props.appVersion}-{props.appCommitHash}</span></span>
                             <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M7 10l5 5 5-5H7z" />
                             </svg>

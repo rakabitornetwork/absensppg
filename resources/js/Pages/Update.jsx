@@ -128,10 +128,10 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
                         Kembali ke Dashboard
                     </Link>
 
-                    {/* Screenshot-like version badge */}
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-900 border border-slate-800 text-slate-200 rounded-md text-[10px] sm:text-[11px] font-semibold shadow-xs">
+                    {/* Screenshot-like version badge, light mode */}
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-slate-200 text-slate-600 rounded-md text-[10px] sm:text-[11px] font-bold shadow-xs">
                         <Tag className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Tag: <span className="text-white font-bold">{currentVersion}-{commitHash}</span></span>
+                        <span>Tag: <span className="text-slate-800 font-extrabold">{currentVersion}-{commitHash}</span></span>
                         <svg className="w-2.5 h-2.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M7 10l5 5 5-5H7z" />
                         </svg>
@@ -190,16 +190,6 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
                             </div>
                         </div>
 
-                        {/* Connection Warning */}
-                        <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] text-slate-500 leading-normal flex items-start gap-2">
-                            <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                            <div>
-                                <strong>Catatan Penting:</strong>
-                                <p className="mt-0.5">
-                                    Update otomatis menjalankan perintah `git pull` dari repositori GitHub publik. Pastikan server VPS Anda memiliki koneksi internet dan izin tulis pada folder root project.
-                                </p>
-                            </div>
-                        </div>
 
                     </div>
 
