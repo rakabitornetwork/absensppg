@@ -111,7 +111,7 @@ class AttendanceController extends Controller
 
             if ($isLate) {
                 // Calculate lateness in minutes relative to the grace time
-                $lateMinutes = $now->diffInMinutes($lateGrace);
+                $lateMinutes = (int) $now->diffInMinutes($lateGrace, true);
                 $status = 'Late';
             } else {
                 $status = 'Present';
@@ -184,7 +184,7 @@ class AttendanceController extends Controller
             $graceTime = Carbon::parse($lateGraceTimeStr);
             
             if ($clockInTime->gt($graceTime)) {
-                $lateMinutes = $clockInTime->diffInMinutes($graceTime);
+                $lateMinutes = (int) $clockInTime->diffInMinutes($graceTime, true);
             }
         }
 
