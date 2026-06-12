@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Payroll::truncate();
         \App\Models\Attendance::truncate();
         \App\Models\Employee::truncate();
+        \App\Models\Shift::truncate();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         // 2. Create Admin User
@@ -47,6 +48,28 @@ class DatabaseSeeder extends Seeder
             SppgSetting::updateOrCreate(['key' => $key], ['value' => $val]);
         }
 
+        // Create Default Shifts
+        $shiftPagi = \App\Models\Shift::create([
+            'name' => 'Shift Pagi',
+            'start_time' => '05:00',
+            'grace_time' => '05:30',
+            'end_time' => '13:00',
+        ]);
+
+        $shiftSiang = \App\Models\Shift::create([
+            'name' => 'Shift Siang',
+            'start_time' => '12:00',
+            'grace_time' => '12:30',
+            'end_time' => '20:00',
+        ]);
+
+        $shiftStandar = \App\Models\Shift::create([
+            'name' => 'Shift Standar',
+            'start_time' => '08:00',
+            'grace_time' => '08:30',
+            'end_time' => '16:00',
+        ]);
+
         // 3. Create Employees
         $employeesData = [
             [
@@ -59,6 +82,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 35000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-BUDI-001',
+                'shift_id' => $shiftStandar->id,
             ],
             [
                 'nip' => 'SPPG-MBG-002',
@@ -70,6 +94,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 30000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-SITI-002',
+                'shift_id' => $shiftStandar->id,
             ],
             [
                 'nip' => 'SPPG-MBG-003',
@@ -81,6 +106,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 25000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-AGUS-003',
+                'shift_id' => $shiftPagi->id,
             ],
             [
                 'nip' => 'SPPG-MBG-004',
@@ -92,6 +118,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 25000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-LINA-004',
+                'shift_id' => $shiftPagi->id,
             ],
             [
                 'nip' => 'SPPG-MBG-005',
@@ -103,6 +130,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 35000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-EKO-005',
+                'shift_id' => $shiftSiang->id,
             ],
             [
                 'nip' => 'SPPG-MBG-006',
@@ -114,6 +142,7 @@ class DatabaseSeeder extends Seeder
                 'daily_allowance' => 25000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-DEWI-006',
+                'shift_id' => $shiftStandar->id,
             ],
         ];
 
@@ -175,19 +204,27 @@ class DatabaseSeeder extends Seeder
                 }
 
                 // Present. Let's decide if they are late
-                // Grace time is 06:30, start is 06:00
                 $latePercent = 15; // 15% chance of being late
                 $isLate = rand(1, 100) <= $latePercent;
 
+                $shift = $emp->shift;
+                $startTimeStr = $shift ? $shift->start_time : '06:00';
+                $graceTimeStr = $shift ? $shift->grace_time : '06:30';
+                $endTimeStr = $shift ? $shift->end_time : '15:00';
+
+                $startTime = Carbon::createFromTimeString($startTimeStr);
+                $graceTime = Carbon::createFromTimeString($graceTimeStr);
+                $endTime = Carbon::createFromTimeString($endTimeStr);
+
                 if ($isLate) {
-                    $lateMinutes = rand(1, 45); // late by 1 to 45 mins
-                    $checkInHour = 6;
-                    $checkInMinute = 30 + $lateMinutes;
-                    if ($checkInMinute >= 60) {
-                        $checkInHour += 1;
-                        $checkInMinute -= 60;
-                    }
-                    $clockIn = sprintf('%02d:%02d:%02d', $checkInHour, $checkInMinute, rand(0, 59));
+                    $lateMinutesRand = rand(1, 45);
+                    $checkInTime = $graceTime->copy()->addMinutes($lateMinutesRand);
+                    $clockIn = $checkInTime->format('H:i:') . sprintf('%02d', rand(0, 59));
+                    
+                    // Calculate late minutes relative to the start_time on the same day
+                    $todayStart = Carbon::today()->setTimeFromTimeString($startTimeStr);
+                    $todayCheckIn = Carbon::today()->setTimeFromTimeString($clockIn);
+                    $lateMinutes = (int) $todayCheckIn->diffInMinutes($todayStart);
                     $status = 'Late';
 
                     if ($isMay) {
@@ -195,14 +232,12 @@ class DatabaseSeeder extends Seeder
                     }
                 } else {
                     $lateMinutes = 0;
-                    // Check in between 05:40 and 06:29
-                    $checkInHour = rand(5, 6);
-                    if ($checkInHour === 5) {
-                        $checkInMinute = rand(40, 59);
-                    } else {
-                        $checkInMinute = rand(0, 29);
-                    }
-                    $clockIn = sprintf('%02d:%02d:%02d', $checkInHour, $checkInMinute, rand(0, 59));
+                    // Check in between (startTime - 20 minutes) and graceTime
+                    $minStart = $startTime->copy()->subMinutes(20);
+                    $totalRangeMinutes = (int) $minStart->diffInMinutes($graceTime);
+                    $randomOffset = rand(0, max(1, $totalRangeMinutes));
+                    $checkInTime = $minStart->addMinutes($randomOffset);
+                    $clockIn = $checkInTime->format('H:i:') . sprintf('%02d', rand(0, 59));
                     $status = 'Present';
                 }
 
@@ -210,8 +245,9 @@ class DatabaseSeeder extends Seeder
                     $workdaysCount[$emp->id]++;
                 }
 
-                // Clock out time between 15:00 and 15:30
-                $clockOut = sprintf('15:%02d:%02d', rand(0, 30), rand(0, 59));
+                // Clock out time between endTime and endTime + 30 minutes
+                $clockOutTime = $endTime->copy()->addMinutes(rand(0, 30));
+                $clockOut = $clockOutTime->format('H:i:') . sprintf('%02d', rand(0, 59));
 
                 Attendance::updateOrCreate(
                     ['employee_id' => $emp->id, 'date' => $date->copy()],

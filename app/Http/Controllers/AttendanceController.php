@@ -77,7 +77,8 @@ class AttendanceController extends Controller
             'qr_token' => ['required', 'string'],
         ]);
 
-        $employee = Employee::where('qr_token', $validated['qr_token'])
+        $employee = Employee::with('shift')
+            ->where('qr_token', $validated['qr_token'])
             ->where('status', 'Active')
             ->first();
 
@@ -100,8 +101,9 @@ class AttendanceController extends Controller
 
         if (!$attendance) {
             // CLOCK IN FLOW
-            $workStartTimeStr = SppgSetting::getValue('work_start_time', '06:00');
-            $lateGraceTimeStr = SppgSetting::getValue('late_grace_time', '06:30');
+            $shift = $employee->shift;
+            $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
+            $lateGraceTimeStr = $shift ? $shift->grace_time : SppgSetting::getValue('late_grace_time', '06:30');
 
             $workStart = Carbon::createFromFormat('H:i', $workStartTimeStr)->setDate($now->year, $now->month, $now->day);
             $lateGrace = Carbon::createFromFormat('H:i', $lateGraceTimeStr)->setDate($now->year, $now->month, $now->day);
@@ -179,7 +181,10 @@ class AttendanceController extends Controller
         // Calculate late minutes if status is Late and clock_in is provided
         $lateMinutes = 0;
         if ($validated['status'] === 'Late' && $validated['clock_in']) {
-            $lateGraceTimeStr = SppgSetting::getValue('late_grace_time', '06:30');
+            $employee = Employee::with('shift')->find($validated['employee_id']);
+            $shift = $employee ? $employee->shift : null;
+            $lateGraceTimeStr = $shift ? $shift->grace_time : SppgSetting::getValue('late_grace_time', '06:30');
+            
             $clockInTime = Carbon::parse($validated['clock_in']);
             $graceTime = Carbon::parse($lateGraceTimeStr);
             

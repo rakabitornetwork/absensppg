@@ -8,14 +8,18 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Models\Shift;
+
 class EmployeeController extends Controller
 {
     public function index(): Response
     {
-        $employees = Employee::orderBy('nip', 'asc')->get();
+        $employees = Employee::with('shift')->orderBy('nip', 'asc')->get();
+        $shifts = Shift::all();
 
         return Inertia::render('Employees', [
             'employees' => $employees,
+            'shifts' => $shifts,
         ]);
     }
 
@@ -31,6 +35,7 @@ class EmployeeController extends Controller
             'daily_allowance' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:Active,Inactive'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'shift_id' => ['nullable', 'exists:shifts,id'],
         ]);
 
         if ($request->hasFile('photo')) {
@@ -63,6 +68,7 @@ class EmployeeController extends Controller
             'daily_allowance' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:Active,Inactive'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'shift_id' => ['nullable', 'exists:shifts,id'],
         ]);
 
         if ($request->hasFile('photo')) {
@@ -125,7 +131,7 @@ class EmployeeController extends Controller
 
     public function printCards(): Response
     {
-        $employees = Employee::where('status', 'Active')->orderBy('nip', 'asc')->get();
+        $employees = Employee::with('shift')->where('status', 'Active')->orderBy('nip', 'asc')->get();
         
         return Inertia::render('PrintCards', [
             'employees' => $employees,

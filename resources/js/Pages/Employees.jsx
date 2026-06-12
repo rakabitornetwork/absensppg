@@ -15,7 +15,7 @@ import {
     UserCircle2
 } from 'lucide-react';
 
-export default function Employees({ employees = [] }) {
+export default function Employees({ employees = [], shifts = [] }) {
     const { props } = usePage();
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
     const officeAddress = props.officeAddress || '';
@@ -98,6 +98,7 @@ export default function Employees({ employees = [] }) {
         photo: null,
         photo_path: '',
         photo_preview: null,
+        shift_id: '',
     });
 
     const formatRupiah = (value) => {
@@ -125,6 +126,7 @@ export default function Employees({ employees = [] }) {
             photo: null,
             photo_path: '',
             photo_preview: null,
+            shift_id: shifts.length > 0 ? shifts[0].id : '',
         });
     };
 
@@ -144,6 +146,7 @@ export default function Employees({ employees = [] }) {
             photo: null,
             photo_path: emp.photo_path || '',
             photo_preview: null,
+            shift_id: emp.shift_id || '',
         });
         setEditingId(emp.id);
         setEditMode(true);
@@ -296,6 +299,7 @@ export default function Employees({ employees = [] }) {
                                     </th>
                                     <th className="py-2.5">Karyawan (NIP)</th>
                                     <th className="py-2.5">Posisi / Kontak</th>
+                                    <th className="py-2.5">Shift Kerja</th>
                                     <th className="py-2.5 text-right">Gaji Pokok</th>
                                     <th className="py-2.5 text-right">Uang Harian</th>
                                     <th className="py-2.5 text-center">Status</th>
@@ -305,7 +309,7 @@ export default function Employees({ employees = [] }) {
                             <tbody className="divide-y divide-slate-50">
                                 {filteredEmployees.length === 0 ? (
                                     <tr>
-                                        <td colSpan="7" className="text-center py-8 text-slate-400 font-semibold">
+                                        <td colSpan="8" className="text-center py-8 text-slate-400 font-semibold">
                                             Karyawan tidak ditemukan.
                                         </td>
                                     </tr>
@@ -327,6 +331,16 @@ export default function Employees({ employees = [] }) {
                                             <td className="py-3">
                                                 <span className="font-bold text-slate-700">{emp.role}</span>
                                                 <span className="block text-[10px] text-slate-400 truncate max-w-[160px] font-medium">{emp.phone || '-'}</span>
+                                            </td>
+                                            <td className="py-3 text-slate-700">
+                                                {emp.shift ? (
+                                                    <div>
+                                                        <span className="font-bold block">{emp.shift.name}</span>
+                                                        <span className="text-[10px] text-slate-400 font-semibold tabular-nums">{emp.shift.start_time} - {emp.shift.end_time}</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-slate-400 font-medium text-[10px]">Default Unit</span>
+                                                )}
                                             </td>
                                             <td className="py-3 text-right font-extrabold text-slate-800 tabular-nums">
                                                 {formatRupiah(emp.base_salary)}
@@ -552,6 +566,23 @@ export default function Employees({ employees = [] }) {
                             </div>
 
                             <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Shift Kerja</label>
+                                <select
+                                    value={data.shift_id}
+                                    onChange={(e) => setData('shift_id', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                                >
+                                    <option value="">-- Gunakan Setelan Default Unit --</option>
+                                    {shifts.map((s) => (
+                                        <option key={s.id} value={s.id}>
+                                            {s.name} ({s.start_time} - {s.end_time})
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.shift_id && <p className="text-[10px] text-rose-600 mt-0.5">{errors.shift_id}</p>}
+                            </div>
+
+                            <div>
                                 <label className="block text-[10px] font-bold text-slate-600 mb-1">Status Keaktifan</label>
                                 <div className="flex gap-4 mt-1 text-xs font-semibold">
                                     <label className="flex items-center gap-1 cursor-pointer">
@@ -632,6 +663,11 @@ export default function Employees({ employees = [] }) {
                                         {cardPreview.role}
                                     </span>
                                     <span className="block text-[8px] font-bold text-slate-400 mt-1 tabular-nums">NIP: {cardPreview.nip}</span>
+                                    {cardPreview.shift && (
+                                        <span className="block text-[7.5px] font-bold text-slate-500 mt-0.5 uppercase tracking-wide">
+                                            Shift: {cardPreview.shift.name}
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* QR Code SVG */}

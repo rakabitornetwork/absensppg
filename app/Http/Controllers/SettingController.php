@@ -7,14 +7,18 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Models\Shift;
+
 class SettingController extends Controller
 {
     public function index(): Response
     {
         $settings = SppgSetting::pluck('value', 'key')->toArray();
+        $shifts = Shift::all();
 
         return Inertia::render('Settings', [
             'settings' => $settings,
+            'shifts' => $shifts,
         ]);
     }
 
@@ -66,5 +70,40 @@ class SettingController extends Controller
         }
 
         return redirect()->back()->with('success', 'Pengaturan berhasil disimpan.');
+    }
+
+    public function storeShift(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'grace_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'end_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+        ]);
+
+        Shift::create($validated);
+
+        return redirect()->back()->with('success', 'Shift baru berhasil ditambahkan.');
+    }
+
+    public function updateShift(Request $request, Shift $shift)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'grace_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'end_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
+        ]);
+
+        $shift->update($validated);
+
+        return redirect()->back()->with('success', 'Informasi shift berhasil diperbarui.');
+    }
+
+    public function destroyShift(Shift $shift)
+    {
+        $shift->delete();
+
+        return redirect()->back()->with('success', 'Shift berhasil dihapus.');
     }
 }

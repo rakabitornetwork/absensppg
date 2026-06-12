@@ -42,6 +42,9 @@ Route::middleware(['auth'])->group(function () {
     // Pengaturan
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'update']);
+    Route::post('/settings/shifts', [SettingController::class, 'storeShift']);
+    Route::post('/settings/shifts/{shift}/update', [SettingController::class, 'updateShift']);
+    Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
 
     // Update Aplikasi
     Route::get('/update', [UpdateController::class, 'index']);

@@ -77,6 +77,11 @@ export default function PrintCards({ employees = [] }) {
                                     {emp.role}
                                 </span>
                                 <span className="block text-[8px] font-bold text-slate-400 mt-1 tabular-nums">NIP: {emp.nip}</span>
+                                {emp.shift && (
+                                    <span className="block text-[7.5px] font-bold text-slate-500 mt-0.5 uppercase tracking-wide">
+                                        Shift: {emp.shift.name}
+                                    </span>
+                                )}
                             </div>
 
                             {/* QR Code SVG */}
