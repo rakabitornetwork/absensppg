@@ -25,6 +25,7 @@ export default function Employees({ employees = [] }) {
     const [editingId, setEditingId] = useState(null);
     const [cardPreview, setCardPreview] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
+    const [isCustomRole, setIsCustomRole] = useState(false);
 
     const rolesList = [
         'Kepala Satuan',
@@ -34,6 +35,52 @@ export default function Employees({ employees = [] }) {
         'Pengantar/Kurir',
         'Administrasi'
     ];
+
+    // Dynamically extract unique roles that are not in the default rolesList
+    const uniqueCustomRoles = employees
+        ? employees
+              .map(emp => emp.role)
+              .filter(role => role && !rolesList.includes(role))
+              .filter((value, index, self) => self.indexOf(value) === index)
+        : [];
+
+    const allRoles = [...rolesList, ...uniqueCustomRoles];
+
+    const getRolePrefix = (role) => {
+        if (!role) return 'EMP';
+        const parts = role.split(/[\s/]+/);
+        if (parts.length > 1) {
+            return parts.map(p => p.charAt(0).toUpperCase()).join('');
+        }
+        return role.substring(0, 3).toUpperCase();
+    };
+
+    const suggestNip = (role) => {
+        const prefix = `SPPG-${getRolePrefix(role)}`;
+        // Find all employees with NIP starting with this prefix
+        const matchingEmployees = employees.filter(emp => emp.nip && emp.nip.startsWith(prefix));
+        let maxNum = 0;
+        matchingEmployees.forEach(emp => {
+            const parts = emp.nip.split('-');
+            const lastPart = parts[parts.length - 1];
+            const num = parseInt(lastPart, 10);
+            if (!isNaN(num) && num > maxNum) {
+                maxNum = num;
+            }
+        });
+        const nextNum = maxNum + 1;
+        return `${prefix}-${String(nextNum).padStart(3, '0')}`;
+    };
+
+    const cleanNumber = (val) => {
+        const clean = val.replace(/[^0-9]/g, '');
+        return clean ? parseInt(clean, 10) : 0;
+    };
+
+    const formatInputNumber = (val) => {
+        if (val === 0 || !val) return '';
+        return new Intl.NumberFormat('id-ID').format(val);
+    };
 
     const { data, setData, post, reset, errors } = useForm({
         nip: '',
@@ -55,12 +102,26 @@ export default function Employees({ employees = [] }) {
     };
 
     const handleAddClick = () => {
-        reset();
         setEditMode(false);
+        setIsCustomRole(false);
         setShowForm(true);
+        const defaultRole = 'Juru Masak';
+        setData({
+            nip: suggestNip(defaultRole),
+            name: '',
+            role: defaultRole,
+            email: '',
+            phone: '',
+            base_salary: 0,
+            daily_allowance: 0,
+            status: 'Active',
+        });
     };
 
     const handleEditClick = (emp) => {
+        const isCustom = !rolesList.includes(emp.role);
+        setIsCustomRole(isCustom);
+
         setData({
             nip: emp.nip,
             name: emp.name,
@@ -318,7 +379,7 @@ export default function Employees({ employees = [] }) {
                                     type="text"
                                     value={data.nip}
                                     onChange={(e) => setData('nip', e.target.value)}
-                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-mono"
                                     placeholder="SPPG-MBG-XXX"
                                     required
                                 />
@@ -341,14 +402,64 @@ export default function Employees({ employees = [] }) {
                             <div>
                                 <label className="block text-[10px] font-bold text-slate-600 mb-1">Posisi / Jabatan</label>
                                 <select
-                                    value={data.role}
-                                    onChange={(e) => setData('role', e.target.value)}
-                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                                    value={isCustomRole ? 'custom' : data.role}
+                                    onChange={(e) => {
+                                        if (e.target.value === 'custom') {
+                                            setIsCustomRole(true);
+                                            setData('role', '');
+                                        } else {
+                                            setIsCustomRole(false);
+                                            setData(prev => ({
+                                                ...prev,
+                                                role: e.target.value,
+                                                nip: editMode ? prev.nip : suggestNip(e.target.value)
+                                            }));
+                                        }
+                                    }}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
                                 >
-                                    {rolesList.map(r => (
+                                    {allRoles.map(r => (
                                         <option key={r} value={r}>{r}</option>
                                     ))}
+                                    <option value="custom">+ Tambah Posisi Baru...</option>
                                 </select>
+
+                                {isCustomRole && (
+                                    <div className="mt-2 p-2 bg-slate-50 border border-slate-100 rounded-lg animate-in slide-in-from-top-1 duration-200">
+                                        <label className="block text-[9px] font-bold text-teal-700 mb-1 uppercase">Input Posisi / Jabatan Baru</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={data.role}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setData(prev => ({
+                                                        ...prev,
+                                                        role: val,
+                                                        nip: editMode ? prev.nip : suggestNip(val)
+                                                    }));
+                                                }}
+                                                className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                                                placeholder="Contoh: Staff Kebersihan"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsCustomRole(false);
+                                                    setData(prev => ({
+                                                        ...prev,
+                                                        role: rolesList[0],
+                                                        nip: editMode ? prev.nip : suggestNip(rolesList[0])
+                                                    }));
+                                                }}
+                                                className="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2.5 py-1 border border-slate-200 rounded-lg hover:bg-slate-50 bg-white cursor-pointer transition-colors"
+                                            >
+                                                Batal
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -378,21 +489,21 @@ export default function Employees({ employees = [] }) {
                                 <div>
                                     <label className="block text-[10px] font-bold text-slate-600 mb-1">Gaji Pokok (Bulan)</label>
                                     <input
-                                        type="number"
-                                        value={data.base_salary}
-                                        onChange={(e) => setData('base_salary', parseInt(e.target.value) || 0)}
+                                        type="text"
+                                        value={formatInputNumber(data.base_salary)}
+                                        onChange={(e) => setData('base_salary', cleanNumber(e.target.value))}
                                         className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums"
-                                        min="0"
+                                        placeholder="Contoh: 5.000.000"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold text-slate-600 mb-1">Uang Harian (Transport/Makan)</label>
                                     <input
-                                        type="number"
-                                        value={data.daily_allowance}
-                                        onChange={(e) => setData('daily_allowance', parseInt(e.target.value) || 0)}
+                                        type="text"
+                                        value={formatInputNumber(data.daily_allowance)}
+                                        onChange={(e) => setData('daily_allowance', cleanNumber(e.target.value))}
                                         className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums"
-                                        min="0"
+                                        placeholder="Contoh: 50.000"
                                     />
                                 </div>
                             </div>
