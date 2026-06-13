@@ -33,6 +33,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
         late_penalty_per_minute: settings.late_penalty_per_minute || 1000,
         meal_target: settings.meal_target || 250,
         app_logo: null,
+        app_browser_title: settings.app_browser_title || 'SPPG Absensi & Payroll',
         app_title: settings.app_title || 'SPPG MBG',
         app_subtitle: settings.app_subtitle || 'Nutrition Portal',
         office_address: settings.office_address || '',
@@ -179,6 +180,24 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         </div>
 
                         {/* App Title & Subtitle Grid */}
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <Building className="w-3.5 h-3.5 text-slate-400" />
+                                Nama Tab Browser
+                            </label>
+                            <input
+                                type="text"
+                                value={data.app_browser_title}
+                                onChange={(e) => setData('app_browser_title', e.target.value)}
+                                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 font-bold"
+                                placeholder="Contoh: SPPG Absensi & Payroll"
+                                maxLength="80"
+                                required
+                            />
+                            <p className="text-[9px] text-slate-400 mt-1">Nama ini akan tampil di tab browser, menggantikan tulisan Laravel.</p>
+                            {errors.app_browser_title && <p className="text-[10px] text-rose-600 mt-1">{errors.app_browser_title}</p>}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">

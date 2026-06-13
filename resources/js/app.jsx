@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-const appName = import.meta.env.VITE_APP_NAME || 'SPPG Absensi & Payroll';
+const appName = document.querySelector('meta[name="app-browser-title"]')?.getAttribute('content') || 'SPPG Absensi & Payroll';
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,

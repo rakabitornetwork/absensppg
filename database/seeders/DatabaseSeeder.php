@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
             'late_grace_time' => '06:30',
             'late_penalty_per_minute' => '1000',
             'office_name' => 'SPPG Sukajadi Mandiri',
+            'app_browser_title' => 'SPPG Absensi & Payroll',
             'meal_target' => '250', // Target porsi makan gratis harian
         ];
 
