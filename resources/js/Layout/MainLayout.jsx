@@ -69,9 +69,9 @@ export default function MainLayout({ children, title }) {
         { name: 'Data Karyawan', href: '/employees', icon: Users },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
+        { name: 'Database', href: '/database', icon: Database },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
-        { name: 'Database', href: '/database', icon: Database },
     ];
 
     const isActive = (href) => {
@@ -91,7 +91,7 @@ export default function MainLayout({ children, title }) {
 
             {/* Sidebar */}
             <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.35),transparent_30%),linear-gradient(180deg,#061A40_0%,#0B2F6B_55%,#075985_100%)] border-r border-white/10 flex flex-col justify-between shrink-0 shadow-2xl shadow-blue-950/30 transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div>
+                <div className="min-h-0">
                     {/* Brand/Header */}
                     <div className="h-14 border-b border-white/10 flex items-center px-4 justify-between">
                         <div className="flex items-center gap-2.5">
@@ -119,7 +119,7 @@ export default function MainLayout({ children, title }) {
                     </div>
 
                     {/* Navigation Links */}
-                    <nav className="p-2 space-y-1">
+                    <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-9rem)]">
                         {navigation.map((item) => {
                             const Icon = item.icon;
                             const active = isActive(item.href);
