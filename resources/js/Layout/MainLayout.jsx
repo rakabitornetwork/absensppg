@@ -14,7 +14,6 @@ import {
     AlertCircle,
     X,
     Menu,
-    Tag,
     RefreshCw
 } from 'lucide-react';
 
@@ -186,18 +185,6 @@ export default function MainLayout({ children, title }) {
 
                     {/* Clock & Info Widget */}
                     <div className="flex items-center gap-2 sm:gap-4">
-                        {/* Version Tag Badge (similar to screenshot, light mode) */}
-                        <Link 
-                            href="/update"
-                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 bg-white/85 hover:bg-blue-50 border border-blue-100 text-blue-700 rounded-md text-[10px] sm:text-[11px] font-bold shadow-xs transition-colors"
-                        >
-                            <Tag className="w-3 h-3 text-blue-500 shrink-0" />
-                            <span>Tag: <span className="text-blue-950 font-extrabold">{props.appVersion}-{props.appCommitHash}</span></span>
-                            <svg className="w-2.5 h-2.5 text-blue-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M7 10l5 5 5-5H7z" />
-                            </svg>
-                        </Link>
-
                         <div className="bg-blue-50/80 border border-blue-100 rounded-lg px-2.5 py-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-blue-700">
                             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 animate-pulse" />
                             <span className="text-blue-950 tabular-nums">{formatTime(time)}</span>
