@@ -51,7 +51,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 </div>
                 <div className="self-start sm:self-auto text-[10px] bg-blue-50 text-blue-800 border border-blue-100 rounded-md px-2 py-0.5 font-bold flex items-center gap-1 shrink-0">
                     <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                    Sistem Standar SPPG MBG
+                    Sistem Informasi {settings.office_name || 'SPPG'}
                 </div>
             </div>
 
