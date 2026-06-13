@@ -69,7 +69,7 @@ export default function MainLayout({ children, title }) {
         { name: 'Data Karyawan', href: '/employees', icon: Users },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
-        { name: 'Database', href: '/database-maintenance', icon: Database },
+        { name: 'Database', href: '/pemeliharaan-data', icon: Database },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
     ];

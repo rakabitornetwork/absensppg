@@ -36,7 +36,7 @@ export default function Database({ tableStats = [] }) {
             return;
         }
 
-        postRestore('/database-maintenance/restore', {
+        postRestore('/pemeliharaan-data/restore', {
             forceFormData: true,
             onSuccess: () => {
                 resetRestore();
@@ -52,7 +52,7 @@ export default function Database({ tableStats = [] }) {
             return;
         }
 
-        postReset('/database-maintenance/reset', {
+        postReset('/pemeliharaan-data/reset', {
             onSuccess: () => resetResetForm(),
         });
     };
@@ -79,7 +79,7 @@ export default function Database({ tableStats = [] }) {
                             Unduh file backup JSON berisi data akun, pengaturan, shift, karyawan, absensi, dan payroll.
                         </p>
                         <a
-                            href="/database-maintenance/backup"
+                            href="/pemeliharaan-data/backup"
                             className="inline-flex w-full items-center justify-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm active:translate-y-[1px] transition-all"
                         >
                             <Archive className="w-3.5 h-3.5" />
