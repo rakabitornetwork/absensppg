@@ -17,15 +17,10 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-[linear-gradient(145deg,#061A40_0%,#0B2F6B_52%,#075985_100%)] flex items-center justify-center p-4 antialiased font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-[#b5e0ea] flex items-center justify-center p-4 antialiased font-sans relative overflow-hidden">
             <Head title="Masuk" />
-            
-            {/* Background Decorative Gradient Rings */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-sky-300/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/25 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-200/60 to-transparent" />
 
-            <div className="w-full max-w-[380px] bg-white/95 backdrop-blur-md border border-white/70 rounded-2xl shadow-2xl shadow-blue-950/30 p-6 z-10">
+            <div className="w-full max-w-[380px] bg-white/90 backdrop-blur-md border border-white/80 rounded-2xl shadow-2xl shadow-blue-900/12 p-6 z-10">
                 {/* Brand Logo */}
                 <div className="flex flex-col items-center text-center mb-6">
                     {appLogo ? (
