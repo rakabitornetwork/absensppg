@@ -17,13 +17,14 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 // Public Attendance Scanner
+Route::redirect('/', '/scanner');
 Route::get('/scanner', [AttendanceController::class, 'showScanner']);
 Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
 
 // Protected Admin Routes
 Route::middleware(['auth'])->group(function () {
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // Profil Admin
     Route::get('/profile', [ProfileController::class, 'edit']);

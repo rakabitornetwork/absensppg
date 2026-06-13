@@ -63,7 +63,7 @@ export default function MainLayout({ children, title }) {
     };
 
     const navigation = [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Data Karyawan', href: '/employees', icon: Users },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
@@ -73,7 +73,7 @@ export default function MainLayout({ children, title }) {
     ];
 
     const isActive = (href) => {
-        if (href === '/') return url === '/';
+        if (href === '/dashboard') return url === '/dashboard';
         return url.startsWith(href);
     };
 

@@ -295,7 +295,7 @@ export default function Scanner({ settings }) {
 
                 {auth?.user && (
                     <Link
-                        href="/"
+                        href="/dashboard"
                         className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-extrabold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
                     >
                         <ArrowLeft className="h-3.5 w-3.5" />

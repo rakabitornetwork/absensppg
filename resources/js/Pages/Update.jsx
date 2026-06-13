@@ -125,7 +125,7 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
                 {/* Back Link */}
                 <div className="mb-4 flex items-center justify-between">
                     <Link 
-                        href="/" 
+                        href="/dashboard" 
                         className="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-800 transition-colors uppercase"
                     >
                         <ArrowLeft className="w-3.5 h-3.5" />
