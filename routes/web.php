@@ -60,8 +60,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update/run', [UpdateController::class, 'runUpdate']);
 
     // Pemeliharaan Database
-    Route::get('/database', [DatabaseMaintenanceController::class, 'index']);
-    Route::get('/database/backup', [DatabaseMaintenanceController::class, 'backup']);
-    Route::post('/database/restore', [DatabaseMaintenanceController::class, 'restore']);
-    Route::post('/database/reset', [DatabaseMaintenanceController::class, 'reset']);
+    Route::get('/database-maintenance', [DatabaseMaintenanceController::class, 'index']);
+    Route::get('/database-maintenance/backup', [DatabaseMaintenanceController::class, 'backup']);
+    Route::post('/database-maintenance/restore', [DatabaseMaintenanceController::class, 'restore']);
+    Route::post('/database-maintenance/reset', [DatabaseMaintenanceController::class, 'reset']);
 });
