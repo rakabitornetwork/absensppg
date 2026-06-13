@@ -6,6 +6,7 @@ import {
     Users, 
     Calendar, 
     Banknote, 
+    Database,
     Settings, 
     LogOut, 
     Clock, 
@@ -70,6 +71,7 @@ export default function MainLayout({ children, title }) {
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
+        { name: 'Database', href: '/database', icon: Database },
     ];
 
     const isActive = (href) => {

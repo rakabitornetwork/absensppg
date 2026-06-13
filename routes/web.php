@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DatabaseMaintenanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
@@ -57,4 +58,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/update', [UpdateController::class, 'index']);
     Route::post('/update/check', [UpdateController::class, 'checkForUpdates']);
     Route::post('/update/run', [UpdateController::class, 'runUpdate']);
+
+    // Pemeliharaan Database
+    Route::get('/database', [DatabaseMaintenanceController::class, 'index']);
+    Route::get('/database/backup', [DatabaseMaintenanceController::class, 'backup']);
+    Route::post('/database/restore', [DatabaseMaintenanceController::class, 'restore']);
+    Route::post('/database/reset', [DatabaseMaintenanceController::class, 'reset']);
 });
