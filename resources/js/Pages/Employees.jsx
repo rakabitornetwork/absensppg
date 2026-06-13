@@ -700,7 +700,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                 level="H"
                                             />
                                         </div>
-                                        <p className="mt-1.5 text-[5.8px] text-blue-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
+                                        <p className="mt-1 mb-2 text-[5.8px] text-blue-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
                                     </div>
 
                                     {/* Office Info */}
