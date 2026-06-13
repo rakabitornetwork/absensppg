@@ -49,8 +49,8 @@ export default function Dashboard({ stats, recentScans, settings }) {
                     <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Ikhtisar Layanan</h2>
                     <p className="text-[10px] text-slate-500 font-medium">Laporan status operasional SPPG untuk tanggal {stats.date}</p>
                 </div>
-                <div className="self-start sm:self-auto text-[10px] bg-teal-50 text-teal-800 border border-teal-100 rounded-md px-2 py-0.5 font-bold flex items-center gap-1 shrink-0">
-                    <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                <div className="self-start sm:self-auto text-[10px] bg-blue-50 text-blue-800 border border-blue-100 rounded-md px-2 py-0.5 font-bold flex items-center gap-1 shrink-0">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                     Sistem Standar SPPG MBG
                 </div>
             </div>
@@ -59,9 +59,9 @@ export default function Dashboard({ stats, recentScans, settings }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
                 
                 {/* Attendance Rate */}
-                <div className="bg-gradient-to-br from-teal-500 to-emerald-600 text-white rounded-xl p-3.5 shadow-md shadow-teal-500/10 hover:shadow-lg hover:shadow-teal-500/20 transition-all flex flex-col justify-between min-h-[105px]">
+                <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-sky-600 text-white rounded-xl p-3.5 shadow-md shadow-blue-700/10 hover:shadow-lg hover:shadow-blue-700/20 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-teal-100/90 uppercase tracking-wider">Persentase Kehadiran</span>
+                        <span className="text-[10px] font-bold text-blue-100/90 uppercase tracking-wider">Persentase Kehadiran</span>
                         <div className="p-1 rounded-lg bg-white/20 text-white">
                             <TrendingUp className="w-3.5 h-3.5" />
                         </div>
@@ -69,7 +69,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                     <div className="flex items-end justify-between">
                         <div>
                             <h3 className="text-xl font-extrabold text-white leading-none mb-1">{stats.attendance_rate}%</h3>
-                            <p className="text-[9px] text-teal-50/80 font-semibold">{stats.present} dari {stats.total_employees} karyawan masuk</p>
+                            <p className="text-[9px] text-blue-50/80 font-semibold">{stats.present} dari {stats.total_employees} karyawan masuk</p>
                         </div>
                         {/* Simple circular gauge indicator */}
                         <div className="w-8 h-8 rounded-full border border-white/20 relative flex items-center justify-center">

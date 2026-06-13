@@ -17,25 +17,28 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 antialiased font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-[linear-gradient(145deg,#061A40_0%,#0B2F6B_52%,#075985_100%)] flex items-center justify-center p-4 antialiased font-sans relative overflow-hidden">
             <Head title="Masuk" />
             
             {/* Background Decorative Gradient Rings */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-sky-300/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/25 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-200/60 to-transparent" />
 
-            <div className="w-full max-w-[380px] bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-100/50 p-6 z-10">
+            <div className="w-full max-w-[380px] bg-white/95 backdrop-blur-md border border-white/70 rounded-2xl shadow-2xl shadow-blue-950/30 p-6 z-10">
                 {/* Brand Logo */}
                 <div className="flex flex-col items-center text-center mb-6">
                     {appLogo ? (
-                        <img src={appLogo} className="w-12 h-12 rounded-2xl object-cover shadow-md border border-slate-100 mb-3" alt="Logo" />
+                        <div className="w-14 h-14 rounded-2xl bg-white border border-blue-100 flex items-center justify-center shadow-lg shadow-blue-900/10 mb-3 overflow-hidden">
+                            <img src={appLogo} className="w-full h-full object-contain p-1.5" alt="Logo" />
+                        </div>
                     ) : (
-                        <div className="w-11 h-11 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-lg shadow-teal-600/20 mb-3 animate-pulse">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-700 to-sky-400 flex items-center justify-center text-white shadow-lg shadow-blue-600/20 mb-3 animate-pulse">
                             <ShieldCheck className="w-6 h-6" />
                         </div>
                     )}
-                    <h1 className="text-base font-bold text-slate-900 leading-tight">SPPG Absensi & Payroll</h1>
-                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                    <h1 className="text-base font-bold text-blue-950 leading-tight">SPPG Absensi & Payroll</h1>
+                    <p className="text-[11px] text-blue-700/75 font-medium mt-1">
                         Program Makan Bergizi Gratis (MBG) Indonesia
                     </p>
                 </div>
@@ -58,7 +61,7 @@ export default function Login() {
                                 className={`w-full text-xs pl-9 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-1 transition-all duration-150 ${
                                     errors.email 
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' 
-                                        : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/20'
+                                        : 'border-blue-100 focus:border-blue-600 focus:ring-blue-500/20'
                                 }`}
                                 placeholder="nama@sppg.com"
                                 required
@@ -85,7 +88,7 @@ export default function Login() {
                                 className={`w-full text-xs pl-9 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-1 transition-all duration-150 ${
                                     errors.password 
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' 
-                                        : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/20'
+                                        : 'border-blue-100 focus:border-blue-600 focus:ring-blue-500/20'
                                 }`}
                                 placeholder="••••••••"
                                 required
@@ -102,7 +105,7 @@ export default function Login() {
                                 type="checkbox"
                                 checked={data.remember}
                                 onChange={(e) => setData('remember', e.target.checked)}
-                                className="w-3.5 h-3.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500/20"
+                                className="w-3.5 h-3.5 rounded border-blue-200 text-blue-700 focus:ring-blue-500/20"
                             />
                             <span className="text-[10px] text-slate-500 font-bold">Ingat saya</span>
                         </label>
@@ -111,7 +114,7 @@ export default function Login() {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg shadow-teal-600/10 hover:shadow-teal-600/20 active:translate-y-[1px] transition-all duration-150 flex items-center justify-center gap-2"
+                        className="w-full bg-gradient-to-r from-blue-800 via-blue-700 to-sky-600 hover:from-blue-900 hover:via-blue-800 hover:to-sky-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg shadow-blue-700/20 active:translate-y-[1px] transition-all duration-150 flex items-center justify-center gap-2"
                     >
                         {processing ? (
                             <>
@@ -125,7 +128,7 @@ export default function Login() {
                 </form>
 
                 {/* Info Credentials for Demo */}
-                <div className="mt-5 p-3 rounded-lg bg-teal-50/50 border border-teal-100/60 text-[10px] text-teal-900">
+                <div className="mt-5 p-3 rounded-lg bg-blue-50/80 border border-blue-100 text-[10px] text-blue-950">
                     <p className="font-bold mb-1">Informasi Akun Demo:</p>
                     <p>Email: <span className="font-semibold select-all">admin@sppg.com</span></p>
                     <p>Sandi: <span className="font-semibold select-all">12345678</span></p>

@@ -79,7 +79,7 @@ export default function MainLayout({ children, title }) {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50/50 flex text-slate-800 antialiased font-sans">
+        <div className="min-h-screen bg-[#061A40] flex text-slate-800 antialiased font-sans">
             {/* Mobile Sidebar Backdrop Overlay */}
             {sidebarOpen && (
                 <div 
@@ -89,34 +89,36 @@ export default function MainLayout({ children, title }) {
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-white border-r border-slate-100 flex flex-col justify-between shrink-0 shadow-sm transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.35),transparent_30%),linear-gradient(180deg,#061A40_0%,#0B2F6B_55%,#075985_100%)] border-r border-white/10 flex flex-col justify-between shrink-0 shadow-2xl shadow-blue-950/30 transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div>
                     {/* Brand/Header */}
-                    <div className="h-14 border-b border-slate-100 flex items-center px-4 justify-between">
+                    <div className="h-14 border-b border-white/10 flex items-center px-4 justify-between">
                         <div className="flex items-center gap-2.5">
                             {props.appLogo ? (
-                                <img src={props.appLogo} className="w-8 h-8 rounded-lg object-cover shadow-sm border border-slate-100" alt="Logo" />
+                                <div className="w-8 h-8 rounded-xl bg-white/95 border border-white flex items-center justify-center shadow-lg shadow-blue-950/20 overflow-hidden">
+                                    <img src={props.appLogo} className="w-full h-full object-contain p-1" alt="Logo" />
+                                </div>
                             ) : (
-                                <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-sky-300 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
                                     <span className="font-bold text-sm tracking-wider">GZ</span>
                                 </div>
                             )}
                             <div>
-                                <h1 className="font-bold text-xs leading-tight text-slate-900">{props.appTitle || 'SPPG MBG'}</h1>
-                                <p className="text-[10px] text-slate-400 font-medium tracking-wide">{props.appSubtitle || 'Nutrition Portal'}</p>
+                                <h1 className="font-bold text-xs leading-tight text-white">{props.appTitle || 'SPPG MBG'}</h1>
+                                <p className="text-[10px] text-blue-100/75 font-medium tracking-wide">{props.appSubtitle || 'Nutrition Portal'}</p>
                             </div>
                         </div>
                         {/* Close button for mobile menu */}
                         <button 
                             onClick={() => setSidebarOpen(false)}
-                            className="p-1 rounded-lg hover:bg-slate-50 text-slate-400 hover:text-slate-600 lg:hidden border border-slate-100"
+                            className="p-1 rounded-lg hover:bg-white/10 text-blue-100 hover:text-white lg:hidden border border-white/10"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     </div>
 
                     {/* Navigation Links */}
-                    <nav className="p-2 space-y-0.5">
+                    <nav className="p-2 space-y-1">
                         {navigation.map((item) => {
                             const Icon = item.icon;
                             const active = isActive(item.href);
@@ -127,11 +129,11 @@ export default function MainLayout({ children, title }) {
                                     onClick={() => setSidebarOpen(false)}
                                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
                                         active 
-                                            ? 'bg-teal-50 text-teal-700 shadow-sm shadow-teal-500/5' 
-                                            : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50'
+                                            ? 'bg-white/[0.16] text-white shadow-sm shadow-sky-500/10 ring-1 ring-white/10' 
+                                            : 'text-blue-100/78 hover:text-white hover:bg-white/10'
                                     }`}
                                 >
-                                    <Icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${active ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                                    <Icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${active ? 'text-sky-200' : 'text-blue-200/65'}`} />
                                     {item.name}
                                 </Link>
                             );
@@ -140,19 +142,19 @@ export default function MainLayout({ children, title }) {
                 </div>
 
                 {/* Sidebar Footer User Info */}
-                <div className="p-2 border-t border-slate-100 bg-slate-50/40">
+                <div className="p-2 border-t border-white/10 bg-blue-950/25">
                     <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
-                        <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-inner border border-white">
+                        <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shadow-inner border border-white/15">
                             A
                         </div>
                         <div className="overflow-hidden">
-                            <p className="text-[11px] font-bold text-slate-900 truncate leading-none mb-0.5">{auth?.user?.name || 'Admin SPPG'}</p>
-                            <p className="text-[9px] text-slate-500 truncate leading-none">{auth?.user?.email || 'admin@sppg.com'}</p>
+                            <p className="text-[11px] font-bold text-white truncate leading-none mb-0.5">{auth?.user?.name || 'Admin SPPG'}</p>
+                            <p className="text-[9px] text-blue-100/65 truncate leading-none">{auth?.user?.email || 'admin@sppg.com'}</p>
                         </div>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-rose-600 hover:bg-rose-50/70 hover:text-rose-700 transition-all duration-150"
+                        className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-rose-100 hover:bg-rose-500/15 hover:text-white transition-all duration-150"
                     >
                         <LogOut className="w-3.5 h-3.5 shrink-0" />
                         Keluar
@@ -161,24 +163,24 @@ export default function MainLayout({ children, title }) {
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 flex flex-col min-w-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.18),transparent_28%),linear-gradient(135deg,#eff6ff_0%,#f8fafc_46%,#e0f2fe_100%)]">
                 {/* Header */}
-                <header className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 lg:px-6 shadow-sm shadow-slate-100/50">
+                <header className="h-14 bg-white/86 backdrop-blur-md border-b border-blue-100/70 flex items-center justify-between px-4 lg:px-6 shadow-sm shadow-blue-900/5">
                     <div className="flex items-center">
                         {/* Hamburger toggle button on mobile */}
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="p-1 rounded-lg hover:bg-slate-50 border border-slate-200 text-slate-600 mr-2.5 lg:hidden"
+                            className="p-1 rounded-lg hover:bg-blue-50 border border-blue-100 text-blue-800 mr-2.5 lg:hidden"
                         >
                             <Menu className="w-4 h-4" />
                         </button>
 
                         {/* Page Title & Breadcrumb */}
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-950">
-                            <Building className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-blue-950">
+                            <Building className="w-3.5 h-3.5 text-blue-500" />
                             <span className="hidden sm:inline">{props.officeName}</span>
-                            <span className="hidden sm:inline text-slate-300">/</span>
-                            <span className="text-teal-700 font-semibold">{title}</span>
+                            <span className="hidden sm:inline text-blue-200">/</span>
+                            <span className="text-blue-700 font-semibold">{title}</span>
                         </div>
                     </div>
 
@@ -187,19 +189,19 @@ export default function MainLayout({ children, title }) {
                         {/* Version Tag Badge (similar to screenshot, light mode) */}
                         <Link 
                             href="/update"
-                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 rounded-md text-[10px] sm:text-[11px] font-bold shadow-xs transition-colors"
+                            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:py-1 bg-white/85 hover:bg-blue-50 border border-blue-100 text-blue-700 rounded-md text-[10px] sm:text-[11px] font-bold shadow-xs transition-colors"
                         >
-                            <Tag className="w-3 h-3 text-slate-400 shrink-0" />
-                            <span>Tag: <span className="text-slate-800 font-extrabold">{props.appVersion}-{props.appCommitHash}</span></span>
-                            <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <Tag className="w-3 h-3 text-blue-500 shrink-0" />
+                            <span>Tag: <span className="text-blue-950 font-extrabold">{props.appVersion}-{props.appCommitHash}</span></span>
+                            <svg className="w-2.5 h-2.5 text-blue-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M7 10l5 5 5-5H7z" />
                             </svg>
                         </Link>
 
-                        <div className="bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-slate-600">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-600 animate-pulse" />
-                            <span className="text-slate-800 tabular-nums">{formatTime(time)}</span>
-                            <span className="text-slate-300 hidden sm:inline">|</span>
+                        <div className="bg-blue-50/80 border border-blue-100 rounded-lg px-2.5 py-1 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-blue-700">
+                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 animate-pulse" />
+                            <span className="text-blue-950 tabular-nums">{formatTime(time)}</span>
+                            <span className="text-blue-200 hidden sm:inline">|</span>
                             <span className="hidden sm:inline">{formatDate(time)}</span>
                         </div>
                     </div>
