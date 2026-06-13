@@ -24,7 +24,7 @@ export default function Login() {
                 {/* Brand Logo */}
                 <div className="flex flex-col items-center text-center mb-6">
                     {appLogo ? (
-                        <div className="w-14 h-14 rounded-2xl bg-white border border-blue-100 flex items-center justify-center shadow-lg shadow-blue-900/10 mb-3 overflow-hidden">
+                        <div className="w-14 h-14 rounded-2xl bg-transparent flex items-center justify-center mb-3 overflow-hidden">
                             <img src={appLogo} className="w-full h-full object-contain p-1.5" alt="Logo" />
                         </div>
                     ) : (
