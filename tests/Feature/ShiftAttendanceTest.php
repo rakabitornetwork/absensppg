@@ -327,4 +327,35 @@ class ShiftAttendanceTest extends TestCase
         $response->assertStatus(400);
         $response->assertJsonPath('status', 'warning');
     }
+
+    public function test_scan_out_first_does_not_create_clock_in_attendance(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        Employee::create([
+            'nip' => 'SPPG-MBG-776',
+            'name' => 'Karyawan Pulang Dulu',
+            'role' => 'Juru Masak',
+            'email' => 'pulang.dulu@sppg.com',
+            'phone' => '081234567876',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-PULANG-DULU',
+        ]);
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-PULANG-DULU',
+            'mode' => 'out',
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJsonPath('status', 'warning');
+
+        $this->assertDatabaseCount('attendances', 0);
+    }
 }

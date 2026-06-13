@@ -17,7 +17,8 @@ export default function Scanner({ settings }) {
     const [manualToken, setManualToken] = useState('');
     const [scanMode, setScanMode] = useState('in'); // 'in' or 'out'
     const qrScannerRef = useRef(null);
-    const lastScanRef = useRef({ token: null, time: 0 });
+    const lastScanRef = useRef({ token: null, mode: null, time: 0 });
+    const scanModeRef = useRef('in');
 
     // Audio chime generator using Web Audio API
     const playChime = (type) => {
@@ -175,17 +176,23 @@ export default function Scanner({ settings }) {
         }
     };
 
+    const changeScanMode = (mode) => {
+        scanModeRef.current = mode;
+        setScanMode(mode);
+    };
+
     const handleScan = (token) => {
         // Prevent double trigger during execution
         if (processing) return;
 
         const now = Date.now();
-        if (lastScanRef.current.token === token && (now - lastScanRef.current.time) < 5000) {
+        const currentMode = scanModeRef.current;
+        if (lastScanRef.current.token === token && lastScanRef.current.mode === currentMode && (now - lastScanRef.current.time) < 5000) {
             console.log("Ignoring duplicate scan of token:", token);
             return;
         }
 
-        lastScanRef.current = { token, time: now };
+        lastScanRef.current = { token, mode: currentMode, time: now };
         setProcessing(true);
         setErrorMsg('');
 
@@ -202,7 +209,7 @@ export default function Scanner({ settings }) {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ qr_token: token, mode: scanMode })
+            body: JSON.stringify({ qr_token: token, mode: currentMode })
         })
         .then(async (res) => {
             const data = await res.json();
@@ -265,14 +272,14 @@ export default function Scanner({ settings }) {
                         <div className="w-full flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 mb-3.5">
                             <button
                                 type="button"
-                                onClick={() => setScanMode('in')}
+                                onClick={() => changeScanMode('in')}
                                 className={`flex-1 py-1.5 text-[10px] font-extrabold rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${scanMode === 'in' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-850'}`}
                             >
                                 SCAN MASUK
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setScanMode('out')}
+                                onClick={() => changeScanMode('out')}
                                 className={`flex-1 py-1.5 text-[10px] font-extrabold rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${scanMode === 'out' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-850'}`}
                             >
                                 SCAN PULANG
