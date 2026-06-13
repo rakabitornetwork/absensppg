@@ -212,20 +212,20 @@ export default function MainLayout({ children, title }) {
 
             {/* Notification Toast */}
             {showToast && (
-                <div className={`fixed bottom-4 right-4 z-50 flex items-center gap-2.5 px-3 py-2.5 rounded-xl border shadow-lg animate-in slide-in-from-bottom-2 duration-300 max-w-sm ${
+                <div className={`fixed top-4 right-4 z-50 flex max-w-sm items-center gap-2.5 rounded-full border px-4 py-2.5 shadow-xl shadow-slate-900/15 ${
                     toastType === 'success' 
-                        ? 'bg-teal-50 border-teal-200 text-teal-900' 
-                        : 'bg-rose-50 border-rose-200 text-rose-900'
+                        ? 'bg-emerald-600 border-emerald-500 text-white' 
+                        : 'bg-rose-600 border-rose-500 text-white'
                 }`}>
                     {toastType === 'success' ? (
-                        <CheckCircle className="w-4 h-4 text-teal-600 shrink-0" />
+                        <CheckCircle className="w-4 h-4 shrink-0" />
                     ) : (
-                        <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                        <AlertCircle className="w-4 h-4 shrink-0" />
                     )}
-                    <span className="text-xs font-semibold leading-relaxed flex-1">{toastMsg}</span>
+                    <span className="flex-1 text-xs font-bold leading-relaxed">{toastMsg}</span>
                     <button 
                         onClick={() => setShowToast(false)} 
-                        className="text-slate-400 hover:text-slate-600 transition-colors p-0.5 rounded-lg hover:bg-black/5"
+                        className="rounded-full p-0.5 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
                     >
                         <X className="w-3.5 h-3.5" />
                     </button>
