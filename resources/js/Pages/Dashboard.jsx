@@ -59,9 +59,9 @@ export default function Dashboard({ stats, recentScans, settings }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
                 
                 {/* Attendance Rate */}
-                <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-sky-600 text-white rounded-xl p-3.5 shadow-md shadow-blue-700/10 hover:shadow-lg hover:shadow-blue-700/20 transition-all flex flex-col justify-between min-h-[105px]">
+                <div className="bg-gradient-to-br from-lime-600 via-green-600 to-emerald-700 text-white rounded-xl p-3.5 shadow-md shadow-green-600/10 hover:shadow-lg hover:shadow-green-600/20 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-blue-100/90 uppercase tracking-wider">Persentase Kehadiran</span>
+                        <span className="text-[10px] font-bold text-lime-100/90 uppercase tracking-wider">Persentase Kehadiran</span>
                         <div className="p-1 rounded-lg bg-white/20 text-white">
                             <TrendingUp className="w-3.5 h-3.5" />
                         </div>
@@ -69,7 +69,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                     <div className="flex items-end justify-between">
                         <div>
                             <h3 className="text-xl font-extrabold text-white leading-none mb-1">{stats.attendance_rate}%</h3>
-                            <p className="text-[9px] text-blue-50/80 font-semibold">{stats.present} dari {stats.total_employees} karyawan masuk</p>
+                            <p className="text-[9px] text-lime-50/80 font-semibold">{stats.present} dari {stats.total_employees} karyawan masuk</p>
                         </div>
                         {/* Simple circular gauge indicator */}
                         <div className="w-8 h-8 rounded-full border border-white/20 relative flex items-center justify-center">
@@ -80,9 +80,9 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 </div>
 
                 {/* Today's Staff Breakdown */}
-                <div className="bg-gradient-to-br from-violet-700 via-indigo-700 to-fuchsia-600 text-white rounded-xl p-3.5 shadow-md shadow-indigo-700/10 hover:shadow-lg hover:shadow-indigo-700/20 transition-all flex flex-col justify-between min-h-[105px]">
+                <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-sky-600 text-white rounded-xl p-3.5 shadow-md shadow-blue-700/10 hover:shadow-lg hover:shadow-blue-700/20 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-violet-100/90 uppercase tracking-wider">Kehadiran Hari Ini</span>
+                        <span className="text-[10px] font-bold text-blue-100/90 uppercase tracking-wider">Kehadiran Hari Ini</span>
                         <div className="p-1 rounded-lg bg-white/20 text-white shrink-0">
                             <Users className="w-3.5 h-3.5" />
                         </div>
