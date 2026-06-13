@@ -142,15 +142,23 @@ export default function MainLayout({ children, title }) {
 
                 {/* Sidebar Footer User Info */}
                 <div className="p-2 border-t border-white/10 bg-blue-950/25">
-                    <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
-                        <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shadow-inner border border-white/15">
-                            A
-                        </div>
+                    <Link href="/profile" className="flex items-center gap-2 px-2 py-1.5 mb-1 rounded-lg hover:bg-white/10 transition-colors">
+                        {auth?.user?.avatar_path ? (
+                            <img
+                                src={auth.user.avatar_path}
+                                className="w-7 h-7 rounded-full object-cover shadow-inner border border-white/20"
+                                alt={auth?.user?.name || 'Admin'}
+                            />
+                        ) : (
+                            <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shadow-inner border border-white/15">
+                                {(auth?.user?.name || 'A').charAt(0).toUpperCase()}
+                            </div>
+                        )}
                         <div className="overflow-hidden">
                             <p className="text-[11px] font-bold text-white truncate leading-none mb-0.5">{auth?.user?.name || 'Admin SPPG'}</p>
                             <p className="text-[9px] text-blue-100/65 truncate leading-none">{auth?.user?.email || 'admin@sppg.com'}</p>
                         </div>
-                    </div>
+                    </Link>
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-rose-600 text-white hover:bg-rose-700 shadow-sm shadow-rose-950/20 transition-all duration-150"
