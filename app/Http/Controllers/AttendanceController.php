@@ -94,13 +94,17 @@ class AttendanceController extends Controller
 
         // Get current local time and date
         $now = Carbon::now();
-        $todayStr = $now->toDateString();
         $timeStr = $now->toTimeString();
 
-        // Check if there is already an attendance record for today
+        $scanContext = $this->resolveScanContext($employee, $now);
+        $attendanceDate = $scanContext['attendanceDate'];
+
+        // Check if there is already an attendance record for this shift date.
         $attendance = Attendance::where('employee_id', $employee->id)
-            ->where('date', Carbon::parse($todayStr))
+            ->whereDate('date', $attendanceDate)
             ->first();
+
+        $attendanceForOut = $this->findAttendanceForClockOut($employee, $now, $scanContext, $attendance);
 
         // Determine action based on mode
         if ($mode === 'in') {
@@ -112,26 +116,27 @@ class AttendanceController extends Controller
             }
             $action = 'in';
         } elseif ($mode === 'out') {
-            if (!$attendance) {
+            if (!$attendanceForOut) {
                 return response()->json([
                     'status' => 'warning',
                     'message' => "Karyawan {$employee->name} belum melakukan scan masuk hari ini. Silakan scan masuk terlebih dahulu.",
                 ], 400);
             }
+            $attendance = $attendanceForOut;
             $action = 'out';
         } else {
             // Auto-detect fallback (API compatibility / tests)
-            $action = !$attendance ? 'in' : 'out';
+            if ($attendanceForOut && !$attendanceForOut->clock_out) {
+                $attendance = $attendanceForOut;
+                $action = 'out';
+            } else {
+                $action = !$attendance ? 'in' : 'out';
+            }
         }
 
         if ($action === 'in') {
             // CLOCK IN FLOW
-            $shift = $employee->shift;
-            $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
-            $lateGraceTimeStr = $shift ? $shift->grace_time : SppgSetting::getValue('late_grace_time', '06:30');
-
-            $workStart = Carbon::createFromFormat('H:i', $workStartTimeStr)->setDate($now->year, $now->month, $now->day);
-            $lateGrace = Carbon::createFromFormat('H:i', $lateGraceTimeStr)->setDate($now->year, $now->month, $now->day);
+            $lateGrace = $scanContext['lateGrace'];
 
             $isLate = $now->gt($lateGrace);
             $lateMinutes = 0;
@@ -146,7 +151,7 @@ class AttendanceController extends Controller
 
             $attendance = Attendance::create([
                 'employee_id' => $employee->id,
-                'date' => $todayStr,
+                'date' => $attendanceDate,
                 'clock_in' => $timeStr,
                 'status' => $status,
                 'late_minutes' => $lateMinutes,
@@ -190,6 +195,70 @@ class AttendanceController extends Controller
                 'message' => "Selamat jalan {$employee->name}, berhasil pulang pada pukul " . $now->format('H:i') . ". Hati-hati di jalan!",
             ]);
         }
+    }
+
+    private function resolveScanContext(Employee $employee, Carbon $now): array
+    {
+        $shift = $employee->shift;
+        $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
+        $lateGraceTimeStr = $shift ? $shift->grace_time : SppgSetting::getValue('late_grace_time', '06:30');
+        $workEndTimeStr = $shift ? $shift->end_time : null;
+
+        $attendanceDate = $now->copy()->startOfDay();
+        $isOvernight = $shift && $workEndTimeStr && $this->isOvernightShift($workStartTimeStr, $workEndTimeStr);
+
+        if ($isOvernight) {
+            $endToday = $this->timeOnDate($workEndTimeStr, $now);
+
+            if ($now->lt($endToday)) {
+                $attendanceDate->subDay();
+            }
+        }
+
+        $workStart = $this->timeOnDate($workStartTimeStr, $attendanceDate);
+        $lateGrace = $this->timeOnDate($lateGraceTimeStr, $attendanceDate);
+
+        if ($isOvernight && $lateGrace->lt($workStart)) {
+            $lateGrace->addDay();
+        }
+
+        return [
+            'attendanceDate' => $attendanceDate->toDateString(),
+            'lateGrace' => $lateGrace,
+            'isOvernight' => $isOvernight,
+        ];
+    }
+
+    private function findAttendanceForClockOut(Employee $employee, Carbon $now, array $scanContext, ?Attendance $attendance): ?Attendance
+    {
+        if ($attendance) {
+            return $attendance;
+        }
+
+        if (!$scanContext['isOvernight']) {
+            return null;
+        }
+
+        return Attendance::where('employee_id', $employee->id)
+            ->whereDate('date', $now->copy()->subDay()->toDateString())
+            ->first();
+    }
+
+    private function isOvernightShift(string $startTime, string $endTime): bool
+    {
+        return $this->minutesFromTime($endTime) < $this->minutesFromTime($startTime);
+    }
+
+    private function minutesFromTime(string $time): int
+    {
+        $parsed = Carbon::parse($time);
+
+        return ($parsed->hour * 60) + $parsed->minute;
+    }
+
+    private function timeOnDate(string $time, Carbon $date): Carbon
+    {
+        return Carbon::parse($date->toDateString() . ' ' . $time);
     }
 
     public function manualStore(Request $request)

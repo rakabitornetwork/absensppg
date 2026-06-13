@@ -135,6 +135,109 @@ class ShiftAttendanceTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_overnight_shift_scan_after_midnight_is_late_for_previous_shift_date(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Malam',
+            'start_time' => '20:00',
+            'grace_time' => '20:05',
+            'end_time' => '07:30',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-666',
+            'name' => 'Karyawan Malam',
+            'role' => 'Juru Masak',
+            'email' => 'malam@sppg.com',
+            'phone' => '081234567866',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-MALAM',
+            'shift_id' => $shift->id,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 6, 13, 5, 0, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MALAM',
+            'mode' => 'in',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('attendance_status', 'Late');
+        $response->assertJsonPath('late_minutes', 535);
+
+        $attendance = Attendance::where('employee_id', $employee->id)->first();
+
+        $this->assertTrue($attendance->date->isSameDay('2026-06-12'));
+        $this->assertSame('05:00:00', $attendance->clock_in);
+        $this->assertSame('Late', $attendance->status);
+        $this->assertSame(535, $attendance->late_minutes);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_overnight_shift_clock_out_after_midnight_updates_previous_shift_attendance(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Malam',
+            'start_time' => '20:00',
+            'grace_time' => '20:05',
+            'end_time' => '07:30',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-665',
+            'name' => 'Karyawan Pulang Malam',
+            'role' => 'Juru Masak',
+            'email' => 'pulang.malam@sppg.com',
+            'phone' => '081234567865',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-PULANG-MALAM',
+            'shift_id' => $shift->id,
+        ]);
+
+        Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-06-12',
+            'clock_in' => '20:00:00',
+            'status' => 'Present',
+            'late_minutes' => 0,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 6, 13, 7, 45, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-PULANG-MALAM',
+            'mode' => 'out',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('type', 'out');
+
+        $attendance = Attendance::where('employee_id', $employee->id)->first();
+
+        $this->assertTrue($attendance->date->isSameDay('2026-06-12'));
+        $this->assertSame('07:45:00', $attendance->clock_out);
+
+        Carbon::setTestNow();
+    }
+
     public function test_admin_can_delete_attendance_record(): void
     {
         $admin = User::create([
