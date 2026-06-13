@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Head, Link } from '@inertiajs/react';
-import MainLayout from '../Layout/MainLayout';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, Check, ShieldAlert, Sparkles, Loader2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Camera, Check, ShieldAlert, Sparkles, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Scanner({ settings }) {
+    const { props } = usePage();
+    const { auth, appLogo, appTitle, appSubtitle, officeName } = props;
     const [cameras, setCameras] = useState([
         { id: 'user', label: 'Kamera Depan Default' },
         { id: 'environment', label: 'Kamera Belakang Default' }
@@ -270,8 +271,38 @@ export default function Scanner({ settings }) {
     };
 
     return (
-        <MainLayout title="Scan Presensi QR">
+        <div className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(20,184,166,0.16),transparent_28%),linear-gradient(135deg,#ecfeff_0%,#f8fafc_48%,#dbeafe_100%)] p-4 text-slate-800 antialiased font-sans sm:p-6">
             <Head title="Scan QR Code" />
+
+            <div className="mx-auto mb-5 flex max-w-5xl flex-col gap-3 rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm shadow-blue-900/5 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    {appLogo ? (
+                        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white">
+                            <img src={appLogo} className="h-full w-full object-contain p-1.5" alt="Logo" />
+                        </div>
+                    ) : (
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-600 text-white shadow-lg shadow-teal-500/20">
+                            <Camera className="h-5 w-5" />
+                        </div>
+                    )}
+                    <div>
+                        <h1 className="text-sm font-extrabold leading-tight text-slate-950">Scan Absensi</h1>
+                        <p className="text-[10px] font-bold text-slate-500">
+                            {officeName || appTitle || 'SPPG MBG'}{appSubtitle ? ` - ${appSubtitle}` : ''}
+                        </p>
+                    </div>
+                </div>
+
+                {auth?.user && (
+                    <Link
+                        href="/"
+                        className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-extrabold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                    >
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                        Kembali ke Dashboard
+                    </Link>
+                )}
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-5xl mx-auto">
                 
@@ -455,6 +486,6 @@ export default function Scanner({ settings }) {
                 </div>
 
             </div>
-        </MainLayout>
+        </div>
     );
 }

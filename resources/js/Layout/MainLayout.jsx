@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { 
     LayoutDashboard, 
-    QrCode, 
     Users, 
     Calendar, 
     Banknote, 
@@ -65,7 +64,6 @@ export default function MainLayout({ children, title }) {
 
     const navigation = [
         { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-        { name: 'Scan Absensi', href: '/scanner', icon: QrCode },
         { name: 'Data Karyawan', href: '/employees', icon: Users },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },

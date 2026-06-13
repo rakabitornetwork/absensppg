@@ -16,6 +16,10 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
+// Public Attendance Scanner
+Route::get('/scanner', [AttendanceController::class, 'showScanner']);
+Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
+
 // Protected Admin Routes
 Route::middleware(['auth'])->group(function () {
     // Dashboard
@@ -35,8 +39,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 
     // Absensi
-    Route::get('/scanner', [AttendanceController::class, 'showScanner']);
-    Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
     Route::get('/attendances', [AttendanceController::class, 'index']);
     Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
     Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
