@@ -6,6 +6,7 @@ import { ArrowLeft, Printer, UserCircle2 } from 'lucide-react';
 export default function PrintCards({ employees = [] }) {
     const { props } = usePage();
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
+    const appLogo = props.appLogo || '';
     const officeAddress = props.officeAddress || '';
     const officeWhatsapp = props.officeWhatsapp || '';
     const officeEmail = props.officeEmail || '';
@@ -74,8 +75,12 @@ export default function PrintCards({ employees = [] }) {
                                         <h2 className="text-[9px] font-black leading-tight uppercase text-white mt-1 max-w-[150px]">{officeName}</h2>
                                         <p className="text-[6px] text-blue-100/85 font-bold uppercase tracking-[0.18em] mt-0.5">SPPG MBG</p>
                                     </div>
-                                    <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0 shadow-inner">
-                                        <span className="text-[10px] font-black tracking-tight text-blue-100">ID</span>
+                                    <div className="w-8 h-8 rounded-xl bg-white/95 border border-white flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
+                                        {appLogo ? (
+                                            <img src={appLogo} className="w-full h-full object-contain p-1" alt="Logo SPPG" />
+                                        ) : (
+                                            <span className="text-[10px] font-black tracking-tight text-blue-900">ID</span>
+                                        )}
                                     </div>
                                 </div>
 
