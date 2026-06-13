@@ -95,7 +95,7 @@ export default function MainLayout({ children, title }) {
                     <div className="h-14 border-b border-white/10 flex items-center px-4 justify-between">
                         <div className="flex items-center gap-2.5">
                             {props.appLogo ? (
-                                <div className="w-8 h-8 rounded-xl bg-white/95 border border-white flex items-center justify-center shadow-lg shadow-blue-950/20 overflow-hidden">
+                                <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
                                     <img src={props.appLogo} className="w-full h-full object-contain p-1" alt="Logo" />
                                 </div>
                             ) : (
