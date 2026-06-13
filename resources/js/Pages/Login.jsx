@@ -122,12 +122,6 @@ export default function Login() {
                     </button>
                 </form>
 
-                {/* Info Credentials for Demo */}
-                <div className="mt-5 p-3 rounded-lg bg-blue-50/80 border border-blue-100 text-[10px] text-blue-950">
-                    <p className="font-bold mb-1">Informasi Akun Demo:</p>
-                    <p>Email: <span className="font-semibold select-all">admin@sppg.com</span></p>
-                    <p>Sandi: <span className="font-semibold select-all">12345678</span></p>
-                </div>
             </div>
         </div>
     );
