@@ -237,22 +237,22 @@ export default function Employees({ employees = [], shifts = [] }) {
             `}</style>
 
             {/* Title / Action bar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 mb-5 sm:mb-4">
+                <div className="space-y-1">
                     <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Daftar Karyawan SPPG</h2>
                     <p className="text-[10px] text-slate-500 font-medium">Manajemen staff operasional pemenuhan gizi MBG</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
                     <Link
                         href="/employees/print-cards"
-                        className="bg-white border border-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-1.5 active:translate-y-[1px]"
+                        className="bg-white border border-slate-200 text-slate-700 text-xs font-bold px-3 py-2 sm:py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 active:translate-y-[1px]"
                     >
                         <Printer className="w-3.5 h-3.5 text-slate-500" />
                         Cetak Kartu Karyawan
                     </Link>
                     <button
                         onClick={handleAddClick}
-                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow shadow-teal-500/10 hover:shadow-teal-500/20 transition-all flex items-center gap-1 active:translate-y-[1px]"
+                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-2 sm:py-1.5 rounded-lg shadow shadow-teal-500/10 hover:shadow-teal-500/20 transition-all flex items-center justify-center gap-1 active:translate-y-[1px]"
                     >
                         <Plus className="w-3.5 h-3.5" />
                         Tambah Karyawan
@@ -261,8 +261,8 @@ export default function Employees({ employees = [], shifts = [] }) {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white border border-slate-100 rounded-xl p-3 shadow-sm mb-4 flex flex-col md:flex-row gap-3">
-                <div className="flex-1 relative">
+            <div className="bg-white border border-slate-100 rounded-xl p-3 sm:p-3.5 shadow-sm mb-5 sm:mb-4 flex flex-col md:flex-row gap-3 sm:gap-3.5">
+                <div className="flex-1 relative min-w-0">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
                         <Search className="w-4 h-4" />
                     </span>
@@ -270,16 +270,16 @@ export default function Employees({ employees = [], shifts = [] }) {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-slate-50/50"
+                        className="w-full text-xs pl-8 pr-3 py-2 sm:py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-slate-50/50"
                         placeholder="Cari berdasarkan nama atau NIP..."
                     />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col min-[420px]:flex-row min-[420px]:items-center gap-1.5 min-[420px]:gap-2 md:w-auto">
                     <span className="text-[10px] font-bold text-slate-500 uppercase shrink-0">Filter Posisi:</span>
                     <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="text-xs border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
+                        className="w-full min-[420px]:w-auto text-xs border border-slate-200 rounded-lg p-2 sm:p-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
                     >
                         <option value="All">Semua Posisi</option>
                         {rolesList.map(role => (
@@ -290,15 +290,15 @@ export default function Employees({ employees = [], shifts = [] }) {
             </div>
 
             {/* Main Area (Table + Optional Form Side-by-Side) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-5 items-start">
                 
                 {/* Table (Takes 8 cols if form is open, 12 if closed) */}
-                <div className={`bg-white border border-slate-100 rounded-xl p-4 shadow-sm ${showForm ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
+                <div className={`bg-white border border-slate-100 rounded-xl p-3 sm:p-4 shadow-sm ${showForm ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
+                    <div className="overflow-x-auto pb-1 -mx-1 px-1">
+                        <table className="w-full min-w-[920px] text-left text-xs table-fixed">
                             <thead>
                                 <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
-                                    <th className="py-2.5 pl-3 w-8">
+                                    <th className="w-[44px] py-2.5 pl-3 pr-2">
                                         <input
                                             type="checkbox"
                                             checked={filteredEmployees.length > 0 && filteredEmployees.every(emp => selectedIds.includes(emp.id))}
@@ -306,13 +306,13 @@ export default function Employees({ employees = [], shifts = [] }) {
                                             className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
                                         />
                                     </th>
-                                    <th className="py-2.5">Karyawan (NIP)</th>
-                                    <th className="py-2.5">Posisi / Kontak</th>
-                                    <th className="py-2.5">Shift Kerja</th>
-                                    <th className="py-2.5 text-right">Gaji Pokok</th>
-                                    <th className="py-2.5 text-right">Uang Harian</th>
-                                    <th className="py-2.5 text-center">Status</th>
-                                    <th className="py-2.5 text-right">Aksi</th>
+                                    <th className="w-[180px] py-2.5 px-3">Karyawan (NIP)</th>
+                                    <th className="w-[170px] py-2.5 px-3">Posisi / Kontak</th>
+                                    <th className="w-[145px] py-2.5 px-3">Shift Kerja</th>
+                                    <th className="w-[125px] py-2.5 px-3 text-right">Gaji Pokok</th>
+                                    <th className="w-[125px] py-2.5 px-3 text-right">Uang Harian</th>
+                                    <th className="w-[78px] py-2.5 px-3 text-center">Status</th>
+                                    <th className="w-[110px] py-2.5 pl-3 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
@@ -325,7 +325,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                 ) : (
                                     filteredEmployees.map((emp) => (
                                         <tr key={emp.id} className={`hover:bg-slate-50/30 transition-colors ${selectedIds.includes(emp.id) ? 'bg-teal-50/20' : ''}`}>
-                                            <td className="py-3 pl-3">
+                                            <td className="py-3 pl-3 pr-2 align-middle">
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedIds.includes(emp.id)}
@@ -333,15 +333,15 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                     className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
                                                 />
                                             </td>
-                                            <td className="py-3 font-bold text-slate-900">
+                                            <td className="py-3 px-3 font-bold text-slate-900 align-middle">
                                                 {emp.name}
                                                 <span className="block text-[10px] text-slate-400 font-medium tabular-nums">{emp.nip}</span>
                                             </td>
-                                            <td className="py-3">
+                                            <td className="py-3 px-3 align-middle">
                                                 <span className="font-bold text-slate-700">{emp.role}</span>
                                                 <span className="block text-[10px] text-slate-400 truncate max-w-[160px] font-medium">{emp.phone || '-'}</span>
                                             </td>
-                                            <td className="py-3 text-slate-700">
+                                            <td className="py-3 px-3 text-slate-700 align-middle">
                                                 {emp.shift ? (
                                                     <div>
                                                         <span className="font-bold block">{emp.shift.name}</span>
@@ -351,16 +351,16 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                     <span className="text-slate-400 font-medium text-[10px]">Default Unit</span>
                                                 )}
                                             </td>
-                                            <td className="py-3 text-right font-extrabold text-slate-800 tabular-nums">
+                                            <td className="py-3 px-3 text-right font-extrabold text-slate-800 tabular-nums align-middle whitespace-nowrap">
                                                 {formatRupiah(emp.base_salary)}
                                             </td>
-                                            <td className="py-3 text-right font-extrabold text-slate-800 tabular-nums">
+                                            <td className="py-3 px-3 text-right font-extrabold text-slate-800 tabular-nums align-middle whitespace-nowrap">
                                                 {formatRupiah(emp.daily_allowance)}
                                             </td>
-                                            <td className="py-3 text-center">
+                                            <td className="py-3 px-3 text-center align-middle">
                                                 <span className={`inline-block w-2 h-2 rounded-full ${emp.status === 'Active' ? 'bg-teal-500' : 'bg-slate-300'}`} title={emp.status} />
                                             </td>
-                                            <td className="py-3 text-right">
+                                            <td className="py-3 pl-3 text-right align-middle">
                                                 <div className="flex justify-end gap-1.5">
                                                     <button
                                                         onClick={() => setCardPreview(emp)}
