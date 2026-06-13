@@ -15,6 +15,10 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard({ stats, recentScans, settings }) {
+    const attendanceRate = Math.max(0, Math.min(100, Number(stats.attendance_rate) || 0));
+    const attendanceCircleRadius = 15;
+    const attendanceCircleCircumference = 2 * Math.PI * attendanceCircleRadius;
+    const attendanceCircleOffset = attendanceCircleCircumference * (1 - attendanceRate / 100);
     
     const formatRupiah = (value) => {
         return new Intl.NumberFormat('id-ID', {
@@ -71,9 +75,28 @@ export default function Dashboard({ stats, recentScans, settings }) {
                             <h3 className="text-xl font-extrabold text-white leading-none mb-1">{stats.attendance_rate}%</h3>
                             <p className="text-[9px] text-lime-50/80 font-semibold">{stats.present} dari {stats.total_employees} karyawan masuk</p>
                         </div>
-                        {/* Simple circular gauge indicator */}
-                        <div className="w-8 h-8 rounded-full border border-white/20 relative flex items-center justify-center">
-                            <div className="absolute inset-0 rounded-full border border-white border-t-transparent border-r-transparent rotate-45" />
+                        <div className="w-9 h-9 relative flex items-center justify-center shrink-0">
+                            <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
+                                <circle
+                                    cx="18"
+                                    cy="18"
+                                    r={attendanceCircleRadius}
+                                    fill="none"
+                                    stroke="rgba(255,255,255,0.22)"
+                                    strokeWidth="2.5"
+                                />
+                                <circle
+                                    cx="18"
+                                    cy="18"
+                                    r={attendanceCircleRadius}
+                                    fill="none"
+                                    stroke="rgba(255,255,255,0.95)"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeDasharray={attendanceCircleCircumference}
+                                    strokeDashoffset={attendanceCircleOffset}
+                                />
+                            </svg>
                             <span className="text-[9px] font-bold text-white">{stats.present}/{stats.total_employees}</span>
                         </div>
                     </div>
