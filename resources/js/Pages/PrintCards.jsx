@@ -18,6 +18,14 @@ export default function PrintCards({ employees = [] }) {
     return (
         <div className="min-h-screen bg-slate-100 print:bg-white p-6 print:p-0 antialiased font-sans">
             <Head title="Cetak Kartu Karyawan" />
+            <style>{`
+                @media print {
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                }
+            `}</style>
 
             {/* Print Header Controls (Hidden during printing) */}
             <div className="max-w-4xl mx-auto mb-6 bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center justify-between print:hidden">
@@ -50,63 +58,87 @@ export default function PrintCards({ employees = [] }) {
                     {employees.map((emp) => (
                         <div 
                             key={emp.id} 
-                            className="bg-white border-2 border-slate-300 rounded-xl p-4 flex flex-col items-center justify-between h-[105mm] w-[74mm] mx-auto relative overflow-hidden shadow-sm print:shadow-none print:border-slate-400"
+                            className="h-[105mm] w-[74mm] mx-auto relative overflow-hidden rounded-[22px] bg-slate-950 text-white shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10 print:shadow-none break-inside-avoid"
                         >
-                            {/* Color Bar */}
-                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-600 to-emerald-500" />
-                            
-                            {/* Card Brand Header */}
-                            <div className="text-center mt-2.5 mb-3">
-                                <h2 className="text-[9px] font-extrabold text-slate-950 tracking-wide uppercase leading-tight">{officeName}</h2>
-                                <p className="text-[6.5px] text-teal-700 font-extrabold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
-                            </div>
+                            {/* Premium background layers */}
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(20,184,166,0.42),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(245,158,11,0.22),transparent_26%),linear-gradient(145deg,#020617_0%,#0f172a_55%,#042f2e_100%)]" />
+                            <div className="absolute -top-14 -right-12 w-32 h-32 rounded-full border-[18px] border-white/5" />
+                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-300 via-teal-300 to-cyan-300" />
+                            <div className="absolute inset-x-3 bottom-3 h-28 rounded-[24px] bg-white/[0.06] blur-sm" />
 
-                            {/* Avatar placeholder / Photo */}
-                            <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200 mb-2 overflow-hidden shrink-0">
-                                {emp.photo_path ? (
-                                    <img src={emp.photo_path} className="w-full h-full object-cover" alt={emp.name} />
-                                ) : (
-                                    <UserCircle2 className="w-10 h-10 text-slate-300" />
-                                )}
-                            </div>
-
-                            {/* Info */}
-                            <div className="text-center mb-2.5">
-                                <h3 className="text-xs font-extrabold text-slate-950 leading-tight truncate max-w-[200px]">{emp.name}</h3>
-                                <span className="inline-block text-[8px] font-extrabold text-teal-700 bg-teal-50 border border-teal-100 px-1.5 py-0.5 rounded-md mt-1 uppercase tracking-wide">
-                                    {emp.role}
-                                </span>
-                                <span className="block text-[8px] font-bold text-slate-400 mt-1 tabular-nums">NIP: {emp.nip}</span>
-                                {emp.shift && (
-                                    <span className="block text-[7.5px] font-bold text-slate-500 mt-0.5 uppercase tracking-wide">
-                                        Shift: {emp.shift.name}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* QR Code SVG */}
-                            <div className="bg-white border border-slate-200 p-2 rounded-lg shadow-inner">
-                                <QRCodeSVG 
-                                    value={emp.qr_token} 
-                                    size={95} 
-                                    level="H"
-                                />
-                            </div>
-
-                            {/* Office Info */}
-                            {(officeAddress || officeWhatsapp || officeEmail) && (
-                                <div className="text-[5.5px] text-slate-400 font-semibold text-center mt-1.5 max-w-[200px] leading-tight space-y-0.5 border-t border-slate-100 pt-1 w-full">
-                                    {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
-                                    <div className="flex justify-center gap-1.5 flex-wrap">
-                                        {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
-                                        {officeEmail && <span className="truncate max-w-[80px]">Email: {officeEmail}</span>}
+                            <div className="relative z-10 h-full p-4 flex flex-col">
+                                {/* Brand Header */}
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="text-[5.5px] font-black tracking-[0.24em] uppercase text-amber-200/90">Official Staff Card</p>
+                                        <h2 className="text-[9px] font-black leading-tight uppercase text-white mt-1 max-w-[150px]">{officeName}</h2>
+                                        <p className="text-[6px] text-teal-100/80 font-bold uppercase tracking-[0.18em] mt-0.5">SPPG MBG</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0 shadow-inner">
+                                        <span className="text-[10px] font-black tracking-tight text-amber-100">ID</span>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Footer Tag */}
-                            <div className="mt-2 text-center border-t border-slate-100 w-full pt-1.5">
-                                <span className="text-[5px] text-slate-400 font-extrabold tracking-widest uppercase">{officeNotes}</span>
+                                {/* Employee Photo */}
+                                <div className="flex flex-col items-center mt-4">
+                                    <div className="relative">
+                                        <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-amber-200 via-teal-200 to-cyan-300 opacity-90" />
+                                        <div className="relative w-[22mm] h-[22mm] rounded-full bg-slate-100 flex items-center justify-center border-[3px] border-slate-950 overflow-hidden shadow-xl">
+                                            {emp.photo_path ? (
+                                                <img src={emp.photo_path} className="w-full h-full object-cover" alt={emp.name} />
+                                            ) : (
+                                                <UserCircle2 className="w-14 h-14 text-slate-300" />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="text-center mt-3 w-full">
+                                        <h3 className="text-[13px] font-black text-white leading-tight truncate px-1">{emp.name}</h3>
+                                        <span className="inline-flex max-w-full mt-1.5 px-2 py-0.5 rounded-full bg-amber-200 text-slate-950 border border-amber-100 text-[7px] font-black uppercase tracking-[0.12em] truncate">
+                                            {emp.role}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Detail Strip */}
+                                <div className="mt-3 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="text-[5.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
+                                        <span className="text-[7px] font-black text-white tabular-nums truncate">{emp.nip}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="text-[5.5px] font-black tracking-[0.18em] uppercase text-slate-300">Shift</span>
+                                        <span className="text-[7px] font-black text-teal-100 uppercase truncate">{emp.shift?.name || 'Default Unit'}</span>
+                                    </div>
+                                </div>
+
+                                {/* QR Area */}
+                                <div className="mt-auto flex flex-col items-center">
+                                    <div className="bg-white p-2.5 rounded-2xl shadow-xl border border-white">
+                                        <QRCodeSVG 
+                                            value={emp.qr_token} 
+                                            size={92} 
+                                            level="H"
+                                        />
+                                    </div>
+                                    <p className="mt-1.5 text-[5.8px] text-teal-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
+                                </div>
+
+                                {/* Office Info */}
+                                {(officeAddress || officeWhatsapp || officeEmail) && (
+                                    <div className="mt-2 text-[5.5px] text-slate-300/85 font-semibold text-center leading-tight space-y-0.5">
+                                        {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
+                                        <div className="flex justify-center gap-1.5 flex-wrap">
+                                            {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
+                                            {officeEmail && <span className="truncate max-w-[86px]">Email: {officeEmail}</span>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Footer Tag */}
+                                <div className="mt-2 text-center border-t border-white/10 pt-1.5">
+                                    <span className="text-[5px] text-amber-100/80 font-black tracking-[0.2em] uppercase">{officeNotes}</span>
+                                </div>
                             </div>
                         </div>
                     ))}
