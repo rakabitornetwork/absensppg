@@ -304,11 +304,11 @@ export default function Scanner({ settings }) {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-5xl mx-auto items-stretch">
                 
                 {/* Left Side: Scanner Viewport (7 columns) */}
-                <div className="lg:col-span-7 space-y-4">
-                    <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col items-center">
+                <div className="lg:col-span-7">
+                    <div className="h-full min-h-[560px] bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col items-center">
                         <div className="w-full flex items-center gap-2 border-b border-slate-50 pb-2 mb-3">
                             <Camera className="w-4.5 h-4.5 text-teal-600" />
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Kamera Scanner</h3>
@@ -381,12 +381,12 @@ export default function Scanner({ settings }) {
                                 {errorMsg}
                             </div>
                         )}
-                    </div>
+                        <div className="flex-1" />
 
-                    {/* Manual Input Fallback */}
-                    <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
-                        <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Input Kode Manual (Alternatif)</h4>
-                        <form onSubmit={handleManualSubmit} className="flex gap-2">
+                        {/* Manual Input Fallback */}
+                        <div className="w-full border-t border-slate-100 pt-4 mt-4">
+                            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Input Kode Manual (Alternatif)</h4>
+                            <form onSubmit={handleManualSubmit} className="flex gap-2">
                             <input
                                 type="text"
                                 value={manualToken}
@@ -401,14 +401,15 @@ export default function Scanner({ settings }) {
                             >
                                 Kirim
                             </button>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 {/* Right Side: Scan Response Card (5 columns) */}
                 <div className="lg:col-span-5">
-                    <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm min-h-[380px] flex flex-col justify-between">
-                        <div>
+                    <div className="h-full min-h-[560px] bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                        <div className="flex flex-1 flex-col">
                             <div className="flex items-center gap-1.5 border-b border-slate-50 pb-2 mb-4">
                                 <Sparkles className="w-4 h-4 text-amber-500" />
                                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Hasil Pemindaian</h3>
@@ -416,7 +417,7 @@ export default function Scanner({ settings }) {
 
                             {/* Response Display Box */}
                             {!scanResult ? (
-                                <div className="text-center py-20 text-slate-400">
+                                <div className="flex flex-1 flex-col items-center justify-center text-center text-slate-400">
                                     <div className="w-12 h-12 rounded-full border border-dashed border-slate-300 flex items-center justify-center mx-auto mb-2 text-slate-300">
                                         <Camera className="w-5 h-5" />
                                     </div>
