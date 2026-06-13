@@ -239,6 +239,115 @@ class ShiftAttendanceTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_employee_cannot_clock_out_before_shift_end_time(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Pagi',
+            'start_time' => '08:00',
+            'grace_time' => '08:05',
+            'end_time' => '13:00',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-664',
+            'name' => 'Karyawan Pulang Awal',
+            'role' => 'Juru Masak',
+            'email' => 'pulang.awal@sppg.com',
+            'phone' => '081234567864',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-PULANG-AWAL',
+            'shift_id' => $shift->id,
+        ]);
+
+        Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-06-13',
+            'clock_in' => '08:00:00',
+            'status' => 'Present',
+            'late_minutes' => 0,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 6, 13, 12, 30, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-PULANG-AWAL',
+            'mode' => 'out',
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJsonPath('status', 'warning');
+        $this->assertStringContainsString('belum dapat scan pulang', $response->json('message'));
+
+        $this->assertDatabaseHas('attendances', [
+            'employee_id' => $employee->id,
+            'clock_out' => null,
+        ]);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_overnight_shift_cannot_clock_out_before_next_day_end_time(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Malam',
+            'start_time' => '20:00',
+            'grace_time' => '20:05',
+            'end_time' => '07:30',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-663',
+            'name' => 'Karyawan Pulang Awal Malam',
+            'role' => 'Juru Masak',
+            'email' => 'pulang.awal.malam@sppg.com',
+            'phone' => '081234567863',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-PULANG-AWAL-MALAM',
+            'shift_id' => $shift->id,
+        ]);
+
+        Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-06-12',
+            'clock_in' => '20:00:00',
+            'status' => 'Present',
+            'late_minutes' => 0,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 6, 13, 7, 0, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-PULANG-AWAL-MALAM',
+            'mode' => 'out',
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJsonPath('status', 'warning');
+        $this->assertStringContainsString('Jam pulang shift adalah pukul 07:30', $response->json('message'));
+
+        $attendance = Attendance::where('employee_id', $employee->id)->first();
+
+        $this->assertNull($attendance->clock_out);
+
+        Carbon::setTestNow();
+    }
+
     public function test_admin_can_delete_attendance_record(): void
     {
         $admin = User::create([
@@ -276,6 +385,8 @@ class ShiftAttendanceTest extends TestCase
 
     public function test_employee_scan_mode_prevents_double_scan(): void
     {
+        Carbon::setTestNow(Carbon::create(2026, 6, 13, 16, 0, 0));
+
         $admin = User::create([
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
@@ -327,6 +438,8 @@ class ShiftAttendanceTest extends TestCase
         ]);
         $response->assertStatus(400);
         $response->assertJsonPath('status', 'warning');
+
+        Carbon::setTestNow();
     }
 
     public function test_scan_out_first_does_not_create_clock_in_attendance(): void

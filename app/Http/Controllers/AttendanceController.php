@@ -179,6 +179,15 @@ class AttendanceController extends Controller
                 ], 400);
             }
 
+            $workEnd = $this->resolveWorkEndForAttendanceDate($employee, Carbon::parse($attendance->date));
+
+            if ($now->lt($workEnd)) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => "Karyawan {$employee->name} belum dapat scan pulang. Jam pulang shift adalah pukul " . $workEnd->format('H:i') . ".",
+                ], 400);
+            }
+
             $attendance->update([
                 'clock_out' => $timeStr,
             ]);
@@ -202,10 +211,10 @@ class AttendanceController extends Controller
         $shift = $employee->shift;
         $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
         $lateGraceTimeStr = $shift ? $shift->grace_time : SppgSetting::getValue('late_grace_time', '06:30');
-        $workEndTimeStr = $shift ? $shift->end_time : null;
+        $workEndTimeStr = $shift ? $shift->end_time : SppgSetting::getValue('work_end_time', '15:00');
 
         $attendanceDate = $now->copy()->startOfDay();
-        $isOvernight = $shift && $workEndTimeStr && $this->isOvernightShift($workStartTimeStr, $workEndTimeStr);
+        $isOvernight = $workEndTimeStr && $this->isOvernightShift($workStartTimeStr, $workEndTimeStr);
 
         if ($isOvernight) {
             $endToday = $this->timeOnDate($workEndTimeStr, $now);
@@ -242,6 +251,21 @@ class AttendanceController extends Controller
         return Attendance::where('employee_id', $employee->id)
             ->whereDate('date', $now->copy()->subDay()->toDateString())
             ->first();
+    }
+
+    private function resolveWorkEndForAttendanceDate(Employee $employee, Carbon $attendanceDate): Carbon
+    {
+        $shift = $employee->shift;
+        $workStartTimeStr = $shift ? $shift->start_time : SppgSetting::getValue('work_start_time', '06:00');
+        $workEndTimeStr = $shift ? $shift->end_time : SppgSetting::getValue('work_end_time', '15:00');
+        $workStart = $this->timeOnDate($workStartTimeStr, $attendanceDate);
+        $workEnd = $this->timeOnDate($workEndTimeStr, $attendanceDate);
+
+        if ($this->isOvernightShift($workStartTimeStr, $workEndTimeStr) && $workEnd->lt($workStart)) {
+            $workEnd->addDay();
+        }
+
+        return $workEnd;
     }
 
     private function isOvernightShift(string $startTime, string $endTime): bool
