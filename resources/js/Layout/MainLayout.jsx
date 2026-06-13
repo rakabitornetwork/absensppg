@@ -154,7 +154,7 @@ export default function MainLayout({ children, title }) {
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-rose-100 hover:bg-rose-500/15 hover:text-white transition-all duration-150"
+                        className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-rose-600 text-white hover:bg-rose-700 shadow-sm shadow-rose-950/20 transition-all duration-150"
                     >
                         <LogOut className="w-3.5 h-3.5 shrink-0" />
                         Keluar

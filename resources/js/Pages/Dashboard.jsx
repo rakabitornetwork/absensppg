@@ -80,9 +80,9 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 </div>
 
                 {/* Today's Staff Breakdown */}
-                <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-xl p-3.5 shadow-md shadow-indigo-500/10 hover:shadow-lg hover:shadow-indigo-500/20 transition-all flex flex-col justify-between min-h-[105px]">
+                <div className="bg-gradient-to-br from-violet-700 via-indigo-700 to-fuchsia-600 text-white rounded-xl p-3.5 shadow-md shadow-indigo-700/10 hover:shadow-lg hover:shadow-indigo-700/20 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-indigo-100/90 uppercase tracking-wider">Kehadiran Hari Ini</span>
+                        <span className="text-[10px] font-bold text-violet-100/90 uppercase tracking-wider">Kehadiran Hari Ini</span>
                         <div className="p-1 rounded-lg bg-white/20 text-white shrink-0">
                             <Users className="w-3.5 h-3.5" />
                         </div>
