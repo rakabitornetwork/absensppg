@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update/run', [UpdateController::class, 'runUpdate']);
 
     // Pemeliharaan Database
+    Route::any('/database/{legacyPath?}', [DatabaseMaintenanceController::class, 'legacyRedirect'])->where('legacyPath', '.*');
     Route::get('/pemeliharaan-data', [DatabaseMaintenanceController::class, 'index']);
     Route::get('/pemeliharaan-data/backup', [DatabaseMaintenanceController::class, 'backup']);
     Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);

@@ -51,6 +51,18 @@ class DatabaseMaintenanceController extends Controller
         ]);
     }
 
+    public function legacyRedirect(?string $legacyPath = null)
+    {
+        $legacyAction = trim((string) $legacyPath, '/');
+        $allowedActions = ['backup', 'restore', 'reset'];
+
+        if (in_array($legacyAction, $allowedActions, true)) {
+            return redirect("/pemeliharaan-data/{$legacyAction}", 307);
+        }
+
+        return redirect('/pemeliharaan-data', 307);
+    }
+
     public function backup()
     {
         $payload = [

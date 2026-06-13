@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # Redirect legacy database maintenance URLs before Apache treats /database as a public folder.
+    RewriteRule ^database/?$ /pemeliharaan-data [R=307,L]
+    RewriteRule ^database/(backup|restore|reset)/?$ /pemeliharaan-data/$1 [R=307,L]
+    RewriteRule ^database/.*$ /pemeliharaan-data [R=307,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
