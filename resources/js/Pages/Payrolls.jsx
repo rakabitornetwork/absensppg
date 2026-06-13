@@ -144,19 +144,19 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
 
             {/* Payroll Data Table */}
             <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto pb-1">
+                    <table className="w-full min-w-[980px] text-left text-xs table-fixed">
                         <thead>
                             <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
-                                <th className="py-2.5">Karyawan (NIP)</th>
-                                <th className="py-2.5 text-center">Kehadiran</th>
-                                <th className="py-2.5 text-right">Gaji Pokok</th>
-                                <th className="py-2.5 text-right">Tunj. Harian</th>
-                                <th className="py-2.5 text-right text-teal-700">Bonus</th>
-                                <th className="py-2.5 text-right text-rose-700">Potongan</th>
-                                <th className="py-2.5 text-right">Gaji Bersih</th>
-                                <th className="py-2.5 text-center">Status</th>
-                                <th className="py-2.5 text-right">Aksi</th>
+                                <th className="w-[210px] py-2.5 pr-5">Karyawan (NIP)</th>
+                                <th className="w-[92px] py-2.5 px-3 text-center">Kehadiran</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right">Gaji Pokok</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right">Tunj. Harian</th>
+                                <th className="w-[110px] py-2.5 px-3 text-right text-teal-700">Bonus</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right text-rose-700">Potongan</th>
+                                <th className="w-[145px] py-2.5 px-3 text-right">Gaji Bersih</th>
+                                <th className="w-[100px] py-2.5 px-3 text-center">Status</th>
+                                <th className="w-[78px] py-2.5 pl-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 font-semibold text-slate-700">
@@ -176,22 +176,22 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                             ) : (
                                 payrolls.map((p) => (
                                     <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="py-3 font-bold text-slate-950">
+                                        <td className="py-3 pr-5 font-bold text-slate-950 align-middle">
                                             {p.employee.name}
                                             <span className="block text-[9.5px] text-slate-400 font-medium tabular-nums">{p.employee.nip} • {p.employee.role}</span>
                                         </td>
-                                        <td className="py-3 text-center tabular-nums font-bold">
+                                        <td className="py-3 px-3 text-center tabular-nums font-bold align-middle whitespace-nowrap">
                                             <span className="text-slate-800" title="Hari Hadir">{p.days_present}H</span>
                                             {p.days_late > 0 && (
                                                 <span className="text-amber-600 ml-1.5" title="Hari Terlambat">({p.days_late}T)</span>
                                             )}
                                         </td>
-                                        <td className="py-3 text-right font-bold tabular-nums text-slate-600">{formatRupiah(p.base_salary)}</td>
-                                        <td className="py-3 text-right font-bold tabular-nums text-slate-600">{formatRupiah(p.daily_allowances_total)}</td>
-                                        <td className="py-3 text-right font-bold tabular-nums text-teal-600">+{formatRupiah(p.bonuses)}</td>
-                                        <td className="py-3 text-right font-bold tabular-nums text-rose-600">-{formatRupiah(p.deductions)}</td>
-                                        <td className="py-3 text-right font-extrabold tabular-nums text-slate-950 bg-slate-50/30">{formatRupiah(p.net_salary)}</td>
-                                        <td className="py-3 text-center">
+                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.base_salary)}</td>
+                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.daily_allowances_total)}</td>
+                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-teal-600 align-middle whitespace-nowrap">+{formatRupiah(p.bonuses)}</td>
+                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-rose-600 align-middle whitespace-nowrap">-{formatRupiah(p.deductions)}</td>
+                                        <td className="py-3 px-3 text-right font-extrabold tabular-nums text-slate-950 bg-slate-50/30 align-middle whitespace-nowrap">{formatRupiah(p.net_salary)}</td>
+                                        <td className="py-3 px-3 text-center align-middle">
                                             <span className={`inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded-md ${
                                                 p.status === 'Paid'
                                                     ? 'bg-teal-50 text-teal-700 border border-teal-100'
@@ -204,7 +204,7 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                                 {p.status === 'Draft' && 'Draft'}
                                             </span>
                                         </td>
-                                        <td className="py-3 text-right">
+                                        <td className="py-3 pl-3 text-right align-middle">
                                             <div className="flex justify-end gap-1.5">
                                                 <button
                                                     onClick={() => handleEditClick(p)}
