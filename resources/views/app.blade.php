@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @php
-            $browserTitle = \App\Models\SppgSetting::getValue('app_browser_title', 'SPPG Absensi & Payroll');
+            $browserTitle = \App\Models\SppgSetting::getValue('app_title', 'SPPG MBG');
             $appLogo = \App\Models\SppgSetting::getValue('app_logo');
         @endphp
         <meta charset="utf-8">

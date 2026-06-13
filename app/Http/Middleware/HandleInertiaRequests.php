@@ -60,7 +60,6 @@ class HandleInertiaRequests extends Middleware
             'appVersion' => '1.2',
             'appCommitHash' => $commitHash,
             'appLogo' => \App\Models\SppgSetting::getValue('app_logo'),
-            'appBrowserTitle' => \App\Models\SppgSetting::getValue('app_browser_title', 'SPPG Absensi & Payroll'),
             'officeName' => \App\Models\SppgSetting::getValue('office_name', 'SPPG Sukajadi Mandiri'),
             'appTitle' => \App\Models\SppgSetting::getValue('app_title', 'SPPG MBG'),
             'appSubtitle' => \App\Models\SppgSetting::getValue('app_subtitle', 'Nutrition Portal'),

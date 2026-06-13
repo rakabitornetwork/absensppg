@@ -31,7 +31,6 @@ class SettingController extends Controller
             'late_penalty_per_minute' => ['required', 'numeric', 'min:0'],
             'meal_target' => ['required', 'numeric', 'min:0'],
             'app_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-            'app_browser_title' => ['required', 'string', 'max:80'],
             'app_title' => ['required', 'string', 'max:50'],
             'app_subtitle' => ['required', 'string', 'max:50'],
             'office_address' => ['nullable', 'string', 'max:500'],
