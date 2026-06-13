@@ -5,11 +5,6 @@ import { AlertTriangle, Archive, Database as DatabaseIcon, Download, RotateCcw, 
 
 export default function Database({ tableStats = [] }) {
     const [selectedFileName, setSelectedFileName] = useState('');
-    const cardClass = 'h-full min-h-[300px] bg-white rounded-3xl p-5 shadow-sm flex flex-col';
-    const iconClass = 'w-10 h-10 rounded-2xl flex items-center justify-center mb-4';
-    const titleClass = 'text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-2';
-    const descriptionClass = 'text-[10px] text-slate-500 leading-relaxed';
-    const actionButtonClass = 'inline-flex h-10 w-full items-center justify-center gap-1.5 text-white text-xs font-bold px-3 rounded-xl shadow-sm active:translate-y-[1px] transition-all disabled:opacity-50';
 
     const {
         data: restoreData,
@@ -75,21 +70,18 @@ export default function Database({ tableStats = [] }) {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
-                    <div className={`${cardClass} border border-slate-100`}>
-                        <div>
-                            <div className={`${iconClass} bg-blue-50 text-blue-700`}>
-                                <Download className="w-4 h-4" />
-                            </div>
-                            <h3 className={titleClass}>Backup Database</h3>
-                            <p className={descriptionClass}>
-                                Unduh file backup JSON berisi data akun, pengaturan, shift, karyawan, absensi, dan payroll.
-                            </p>
+                    <div className="h-full min-h-[260px] bg-white border border-slate-100 rounded-3xl p-5 shadow-sm flex flex-col">
+                        <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center mb-4">
+                            <Download className="w-4 h-4" />
                         </div>
-                        <div className="flex-1" />
-                        <div className="pt-5">
+                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-2">Backup Database</h3>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">
+                            Unduh file backup JSON berisi data akun, pengaturan, shift, karyawan, absensi, dan payroll.
+                        </p>
+                        <div className="mt-auto pt-5">
                             <a
                                 href="/pemeliharaan-data/backup"
-                                className={`${actionButtonClass} bg-blue-700 hover:bg-blue-800`}
+                                className="inline-flex h-10 w-full items-center justify-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3 rounded-xl shadow-sm active:translate-y-[1px] transition-all"
                             >
                                 <Archive className="w-3.5 h-3.5" />
                                 Download Backup
@@ -97,18 +89,16 @@ export default function Database({ tableStats = [] }) {
                         </div>
                     </div>
 
-                    <form onSubmit={handleRestoreSubmit} className={`${cardClass} border border-slate-100`}>
-                        <div>
-                            <div className={`${iconClass} bg-amber-50 text-amber-700`}>
-                                <Upload className="w-4 h-4" />
-                            </div>
-                            <h3 className={titleClass}>Restore Database</h3>
-                            <p className={descriptionClass}>
-                                Upload file backup .mbg. Ketik <span className="font-extrabold text-slate-900">RESTORE</span> untuk konfirmasi.
-                            </p>
+                    <form onSubmit={handleRestoreSubmit} className="h-full min-h-[260px] bg-white border border-slate-100 rounded-3xl p-5 shadow-sm flex flex-col">
+                        <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mb-4">
+                            <Upload className="w-4 h-4" />
                         </div>
+                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-2">Restore Database</h3>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">
+                            Upload file backup .mbg. Ketik <span className="font-extrabold text-slate-900">RESTORE</span> untuk konfirmasi.
+                        </p>
 
-                        <div className="flex-1 pt-5 space-y-3">
+                        <div className="mt-auto pt-5 space-y-3">
                             <label className="flex h-10 w-full cursor-pointer items-center overflow-hidden rounded-xl border border-slate-200 bg-white text-xs text-slate-500 transition-colors hover:border-amber-200">
                                 <span className="h-full shrink-0 bg-amber-50 px-3 text-[10px] font-extrabold text-amber-700 flex items-center">
                                     Choose File
@@ -137,13 +127,11 @@ export default function Database({ tableStats = [] }) {
                                 placeholder="Ketik RESTORE"
                             />
                             {restoreErrors.confirmation && <p className="text-[10px] text-rose-600">{restoreErrors.confirmation}</p>}
-                        </div>
 
-                        <div className="pt-5">
                             <button
                                 type="submit"
                                 disabled={restoring || !restoreData.backup_file}
-                                className={`${actionButtonClass} bg-amber-600 hover:bg-amber-700`}
+                                className="inline-flex h-10 w-full items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 rounded-xl shadow-sm active:translate-y-[1px] transition-all disabled:opacity-50"
                             >
                                 <Upload className="w-3.5 h-3.5" />
                                 {restoring ? 'Memproses...' : 'Restore Backup'}
@@ -151,18 +139,16 @@ export default function Database({ tableStats = [] }) {
                         </div>
                     </form>
 
-                    <form onSubmit={handleResetSubmit} className={`${cardClass} border border-rose-100`}>
-                        <div>
-                            <div className={`${iconClass} bg-rose-50 text-rose-700`}>
-                                <RotateCcw className="w-4 h-4" />
-                            </div>
-                            <h3 className={titleClass}>Reset Data Operasional</h3>
-                            <p className={descriptionClass}>
-                                Mengosongkan karyawan, shift, absensi, dan payroll. Akun admin dan pengaturan tidak dihapus.
-                            </p>
+                    <form onSubmit={handleResetSubmit} className="h-full min-h-[260px] bg-white border border-rose-100 rounded-3xl p-5 shadow-sm flex flex-col">
+                        <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center mb-4">
+                            <RotateCcw className="w-4 h-4" />
                         </div>
+                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-2">Reset Data Operasional</h3>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">
+                            Mengosongkan karyawan, shift, absensi, dan payroll. Akun admin dan pengaturan tidak dihapus.
+                        </p>
 
-                        <div className="flex-1 pt-5 space-y-3">
+                        <div className="mt-auto pt-5 space-y-3">
                             <div className="min-h-[66px] p-3 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-2">
                                 <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                                 <p className="text-[10px] text-rose-700 font-semibold leading-relaxed">
@@ -178,13 +164,11 @@ export default function Database({ tableStats = [] }) {
                                 placeholder="Ketik RESET"
                             />
                             {resetErrors.confirmation && <p className="text-[10px] text-rose-600">{resetErrors.confirmation}</p>}
-                        </div>
 
-                        <div className="pt-5">
                             <button
                                 type="submit"
                                 disabled={resetting}
-                                className={`${actionButtonClass} bg-rose-600 hover:bg-rose-700`}
+                                className="inline-flex h-10 w-full items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 rounded-xl shadow-sm active:translate-y-[1px] transition-all disabled:opacity-50"
                             >
                                 <RotateCcw className="w-3.5 h-3.5" />
                                 {resetting ? 'Mengosongkan...' : 'Reset Data'}
