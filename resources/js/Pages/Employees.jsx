@@ -692,7 +692,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     </div>
 
                                     {/* QR Code SVG */}
-                                    <div className="mt-5 flex flex-col items-center">
+                                    <div className="mt-3 flex flex-col items-center">
                                         <div className="bg-white p-2.5 rounded-2xl shadow-xl border border-white">
                                             <QRCodeSVG 
                                                 value={cardPreview.qr_token} 
