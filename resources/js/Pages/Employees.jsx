@@ -226,6 +226,14 @@ export default function Employees({ employees = [], shifts = [] }) {
     return (
         <MainLayout title="Data Karyawan">
             <Head title="Kelola Karyawan" />
+            <style>{`
+                @media print {
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                }
+            `}</style>
 
             {/* Title / Action bar */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
@@ -632,66 +640,85 @@ export default function Employees({ employees = [], shifts = [] }) {
                             </button>
                         </div>
 
-                        {/* ID Badge Body (Designed like a premium badge) */}
+                        {/* ID Badge Body */}
                         <div className="p-6 bg-slate-50 flex flex-col items-center">
-                            
-                            {/* Card Frame (High Density Premium Light) */}
-                            <div className="w-[240px] bg-white border border-slate-200 rounded-xl p-4 shadow-lg flex flex-col items-center justify-between relative overflow-hidden">
-                                
-                                {/* Top Banner Design */}
-                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600" />
-                                
-                                {/* SPPG Title */}
-                                <div className="text-center mt-2 mb-3">
-                                    <h4 className="text-[10px] font-extrabold text-slate-900 leading-none uppercase">{officeName}</h4>
-                                    <p className="text-[7px] text-teal-700 font-bold uppercase tracking-widest mt-0.5">Makan Bergizi Gratis</p>
-                                </div>
+                            <div className="h-[105mm] w-[74mm] relative overflow-hidden rounded-[22px] bg-slate-950 text-white shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10">
+                                {/* Premium background layers */}
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(59,130,246,0.48),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(14,165,233,0.28),transparent_26%),linear-gradient(145deg,#061A40_0%,#0B2F6B_54%,#075985_100%)]" />
+                                <div className="absolute -top-14 -right-12 w-32 h-32 rounded-full border-[18px] border-white/5" />
+                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-sky-400 to-blue-200" />
+                                <div className="absolute inset-x-3 bottom-3 h-28 rounded-[24px] bg-white/[0.06] blur-sm" />
 
-                                {/* Employee Photo or Avatar Placeholder */}
-                                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 mb-2 relative overflow-hidden shrink-0">
-                                    {cardPreview.photo_path ? (
-                                        <img src={cardPreview.photo_path} className="w-full h-full object-cover" alt={cardPreview.name} />
-                                    ) : (
-                                        <UserCircle2 className="w-12 h-12 text-slate-300" />
-                                    )}
-                                </div>
-
-                                {/* Details */}
-                                <div className="text-center mb-3">
-                                    <h5 className="text-xs font-extrabold text-slate-950 leading-tight">{cardPreview.name}</h5>
-                                    <span className="inline-block text-[8px] font-extrabold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded-md mt-1 border border-teal-100 uppercase tracking-wide">
-                                        {cardPreview.role}
-                                    </span>
-                                    <span className="block text-[8px] font-bold text-slate-400 mt-1 tabular-nums">NIP: {cardPreview.nip}</span>
-                                    {cardPreview.shift && (
-                                        <span className="block text-[7.5px] font-bold text-slate-500 mt-0.5 uppercase tracking-wide">
-                                            Shift: {cardPreview.shift.name}
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* QR Code SVG */}
-                                <div className="bg-white border border-slate-100 p-2 rounded-lg shadow-sm">
-                                    <QRCodeSVG 
-                                        value={cardPreview.qr_token} 
-                                        size={90} 
-                                        level="H" // High error correction
-                                    />
-                                </div>
-
-                                {/* Office Info */}
-                                {(officeAddress || officeWhatsapp || officeEmail) && (
-                                    <div className="text-[6px] text-slate-400 font-semibold text-center mt-2 max-w-[200px] leading-tight space-y-0.5 border-t border-slate-100 pt-1.5 w-full">
-                                        {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
-                                        <div className="flex justify-center gap-1.5 flex-wrap">
-                                            {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
-                                            {officeEmail && <span className="truncate max-w-[100px]">Email: {officeEmail}</span>}
+                                <div className="relative z-10 h-full p-4 flex flex-col">
+                                    {/* Brand Header */}
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <p className="text-[5.5px] font-black tracking-[0.24em] uppercase text-sky-100/90">Official Staff Card</p>
+                                            <h4 className="text-[9px] font-black leading-tight uppercase text-white mt-1 max-w-[150px]">{officeName}</h4>
+                                            <p className="text-[6px] text-blue-100/85 font-bold uppercase tracking-[0.18em] mt-0.5">SPPG MBG</p>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0 shadow-inner">
+                                            <span className="text-[10px] font-black tracking-tight text-blue-100">ID</span>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Footer info */}
-                                <span className="text-[5px] text-slate-400 font-extrabold tracking-wide mt-3 uppercase text-center w-full">{officeNotes}</span>
+                                    {/* Employee Photo */}
+                                    <div className="flex flex-col items-center mt-4">
+                                        <div className="relative">
+                                            <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-blue-200 via-sky-200 to-white opacity-95" />
+                                            <div className="relative w-[22mm] h-[22mm] rounded-full bg-slate-100 flex items-center justify-center border-[3px] border-slate-950 overflow-hidden shadow-xl">
+                                                {cardPreview.photo_path ? (
+                                                    <img src={cardPreview.photo_path} className="w-full h-full object-cover" alt={cardPreview.name} />
+                                                ) : (
+                                                    <UserCircle2 className="w-14 h-14 text-slate-300" />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="text-center mt-3 w-full">
+                                            <h5 className="text-[13px] font-black text-white leading-tight truncate px-1">{cardPreview.name}</h5>
+                                            <span className="inline-flex max-w-full mt-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-950 border border-blue-200 text-[7px] font-black uppercase tracking-[0.12em] truncate">
+                                                {cardPreview.role}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Detail Strip */}
+                                    <div className="mt-3 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="text-[5.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
+                                            <span className="text-[7px] font-black text-white tabular-nums truncate">{cardPreview.nip}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* QR Code SVG */}
+                                    <div className="mt-5 flex flex-col items-center">
+                                        <div className="bg-white p-2.5 rounded-2xl shadow-xl border border-white">
+                                            <QRCodeSVG 
+                                                value={cardPreview.qr_token} 
+                                                size={92} 
+                                                level="H"
+                                            />
+                                        </div>
+                                        <p className="mt-1.5 text-[5.8px] text-blue-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
+                                    </div>
+
+                                    {/* Office Info */}
+                                    {(officeAddress || officeWhatsapp || officeEmail) && (
+                                        <div className="mt-2 text-[5.5px] text-slate-300/85 font-semibold text-center leading-tight space-y-0.5">
+                                            {officeAddress && <p className="truncate" title={officeAddress}>{officeAddress}</p>}
+                                            <div className="flex justify-center gap-1.5 flex-wrap">
+                                                {officeWhatsapp && <span>WA: {officeWhatsapp}</span>}
+                                                {officeEmail && <span className="truncate max-w-[86px]">Email: {officeEmail}</span>}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Footer info */}
+                                    <div className="mt-2 text-center border-t border-white/10 pt-1.5">
+                                        <span className="text-[5px] text-blue-100/85 font-black tracking-[0.2em] uppercase">{officeNotes}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
