@@ -46,7 +46,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
             {/* Dashboard Summary Row */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4">
                 <div>
-                    <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Ikhtisar Layanan</h2>
+                    <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Ringkasan Hari Ini</h2>
                     <p className="text-[10px] text-slate-500 font-medium">Laporan status operasional SPPG untuk tanggal {stats.date}</p>
                 </div>
                 <div className="self-start sm:self-auto text-[10px] bg-blue-50 text-blue-800 border border-blue-100 rounded-md px-2 py-0.5 font-bold flex items-center gap-1 shrink-0">
@@ -179,7 +179,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 <div className="lg:col-span-2 bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
-                            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Aliran Scan Terbaru</h3>
+                            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Riwayat Scan Terbaru</h3>
                             <Link 
                                 href="/scanner" 
                                 className="text-[10px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors"
