@@ -144,19 +144,16 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
 
                 {/* Main Header */}
                 <div className="mb-5">
-                    <h2 className="text-base font-extrabold text-slate-900 leading-none mb-1">Update Otomatis SPPG</h2>
-                    <p className="text-[10px] text-slate-500 font-medium">
-                        Perbarui kode aplikasi dan struktur database secara instan langsung dari GitHub repository <span className="font-bold text-slate-800">{repoName}</span>.
-                    </p>
+                    <h2 className="text-base font-extrabold text-slate-900 leading-none mb-1">Update Otomatis</h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
                     
                     {/* Status & Info Panel */}
-                    <div className="md:col-span-1 space-y-4">
+                    <div className="md:col-span-1 space-y-4 h-full">
                         
                         {/* Current Status Card */}
-                        <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
+                        <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm h-full min-h-[236px]">
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3 border-b border-slate-50 pb-1.5">
                                 Status Sistem
                             </h3>
@@ -198,10 +195,10 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
                     </div>
 
                     {/* Check & Run Panel */}
-                    <div className="md:col-span-2 space-y-4">
+                    <div className="md:col-span-2 space-y-4 h-full">
                         
                         {/* Control Actions */}
-                        <div className="bg-white border border-slate-100 rounded-xl p-5 shadow-sm">
+                        <div className="bg-white border border-slate-100 rounded-xl p-5 shadow-sm h-full min-h-[236px]">
                             <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-2">
                                 <div className="flex items-center gap-2">
                                     <GithubIcon className="w-4 h-4 text-slate-800" />
