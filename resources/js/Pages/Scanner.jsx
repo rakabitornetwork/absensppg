@@ -20,6 +20,21 @@ export default function Scanner({ settings }) {
     const lastScanRef = useRef({ token: null, mode: null, time: 0 });
     const scanModeRef = useRef('in');
 
+    const formatMinutesDuration = (minutes) => {
+        const totalMinutes = Number(minutes) || 0;
+
+        if (totalMinutes < 60) {
+            return `${totalMinutes} menit`;
+        }
+
+        const hours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        return remainingMinutes > 0
+            ? `${hours} jam ${remainingMinutes} menit`
+            : `${hours} jam`;
+    };
+
     // Audio chime generator using Web Audio API
     const playChime = (type) => {
         try {
@@ -401,7 +416,7 @@ export default function Scanner({ settings }) {
 
                                             {scanResult.attendance_status === 'Late' && (
                                                 <div className="mt-3 p-2 bg-amber-50 border border-amber-100 rounded-lg text-[9px] text-amber-800 font-bold leading-normal">
-                                                    Terlambat {scanResult.late_minutes} menit. Denda akan diakumulasikan ke penggajian bulanan.
+                                                    Terlambat {formatMinutesDuration(scanResult.late_minutes)}. Denda akan diakumulasikan ke penggajian bulanan.
                                                 </div>
                                             )}
                                         </div>

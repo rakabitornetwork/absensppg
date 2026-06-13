@@ -173,6 +173,7 @@ class ShiftAttendanceTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonPath('attendance_status', 'Late');
         $response->assertJsonPath('late_minutes', 535);
+        $this->assertStringContainsString('Terlambat 8 jam 55 menit', $response->json('message'));
 
         $attendance = Attendance::where('employee_id', $employee->id)->first();
 

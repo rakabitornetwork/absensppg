@@ -52,6 +52,21 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
         router.get('/attendances', { month, year: newYear }, { preserveState: true });
     };
 
+    const formatMinutesDuration = (minutes) => {
+        const totalMinutes = Number(minutes) || 0;
+
+        if (totalMinutes < 60) {
+            return `${totalMinutes} menit`;
+        }
+
+        const hours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        return remainingMinutes > 0
+            ? `${hours} jam ${remainingMinutes} menit`
+            : `${hours} jam`;
+    };
+
     const handleOpenCorrection = (employeeId, dayNum) => {
         // Find if there is an existing record for this day
         const empRecord = records.find(r => r.employee_id === employeeId);
@@ -254,7 +269,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                                                         key={d} 
                                                         onClick={() => handleOpenCorrection(rec.employee_id, d)}
                                                         className={`p-1 border border-slate-100 ${cellClass}`}
-                                                        title={dayRecord ? `${rec.name} (${d}/${month}): ${dayRecord.status} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}` : `Klik untuk input presensi tgl ${d}`}
+                                                        title={dayRecord ? `${rec.name} (${d}/${month}): ${dayRecord.status}${dayRecord.status === 'Late' ? ` (${formatMinutesDuration(dayRecord.late_minutes)})` : ''} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}` : `Klik untuk input presensi tgl ${d}`}
                                                     >
                                                         {text}
                                                     </td>

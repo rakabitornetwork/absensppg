@@ -24,6 +24,21 @@ export default function Dashboard({ stats, recentScans, settings }) {
         }).format(value);
     };
 
+    const formatMinutesDuration = (minutes) => {
+        const totalMinutes = Number(minutes) || 0;
+
+        if (totalMinutes < 60) {
+            return `${totalMinutes} menit`;
+        }
+
+        const hours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        return remainingMinutes > 0
+            ? `${hours} jam ${remainingMinutes} menit`
+            : `${hours} jam`;
+    };
+
     return (
         <MainLayout title="Dashboard">
             <Head title="Dashboard" />
@@ -214,7 +229,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                                                             : 'bg-rose-50 text-rose-700 border border-rose-100'
                                                     }`}>
                                                         {scan.status === 'Present' && 'Masuk'}
-                                                        {scan.status === 'Late' && `Terlambat (${scan.late_minutes}m)`}
+                                                        {scan.status === 'Late' && `Terlambat (${formatMinutesDuration(scan.late_minutes)})`}
                                                         {scan.status === 'Leave' && 'Izin'}
                                                         {scan.status === 'Absent' && 'Mangkir'}
                                                     </span>

@@ -168,7 +168,7 @@ class AttendanceController extends Controller
                 'time' => $now->format('H:i'),
                 'attendance_status' => $status,
                 'late_minutes' => $lateMinutes,
-                'message' => "Halo {$employee->name}, berhasil masuk pada pukul " . $now->format('H:i') . ($isLate ? " (Terlambat {$lateMinutes} menit)" : " (Tepat Waktu)") . ".",
+                'message' => "Halo {$employee->name}, berhasil masuk pada pukul " . $now->format('H:i') . ($isLate ? " (Terlambat {$this->formatMinutesDuration($lateMinutes)})" : " (Tepat Waktu)") . ".",
             ]);
         } else {
             // CLOCK OUT FLOW
@@ -259,6 +259,23 @@ class AttendanceController extends Controller
     private function timeOnDate(string $time, Carbon $date): Carbon
     {
         return Carbon::parse($date->toDateString() . ' ' . $time);
+    }
+
+    private function formatMinutesDuration(int $minutes): string
+    {
+        if ($minutes < 60) {
+            return "{$minutes} menit";
+        }
+
+        $hours = intdiv($minutes, 60);
+        $remainingMinutes = $minutes % 60;
+        $formatted = "{$hours} jam";
+
+        if ($remainingMinutes > 0) {
+            $formatted .= " {$remainingMinutes} menit";
+        }
+
+        return $formatted;
     }
 
     public function manualStore(Request $request)
