@@ -276,15 +276,19 @@ export default function Scanner({ settings }) {
 
             <div className="mx-auto mb-5 flex max-w-5xl flex-col gap-3 rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm shadow-blue-900/5 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                    {appLogo ? (
-                        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white">
+                    <Link
+                        href="/login"
+                        className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+                        aria-label="Masuk ke halaman login"
+                    >
+                        {appLogo ? (
                             <img src={appLogo} className="h-full w-full object-contain p-1.5" alt="Logo" />
-                        </div>
-                    ) : (
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-600 text-white shadow-lg shadow-teal-500/20">
-                            <Camera className="h-5 w-5" />
-                        </div>
-                    )}
+                        ) : (
+                            <span className="flex h-full w-full items-center justify-center bg-teal-600 text-white shadow-lg shadow-teal-500/20">
+                                <Camera className="h-5 w-5" />
+                            </span>
+                        )}
+                    </Link>
                     <div>
                         <h1 className="text-sm font-extrabold leading-tight text-slate-950">Scan Absensi</h1>
                         <p className="text-[10px] font-bold text-slate-500">
