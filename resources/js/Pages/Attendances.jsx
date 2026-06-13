@@ -204,7 +204,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                     {/* Legend */}
                     <div className="flex flex-wrap items-center gap-3.5 mb-3 border-b border-slate-50 pb-2 text-[10px] font-bold text-slate-500">
                         <span className="text-slate-700">Keterangan:</span>
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-teal-500 inline-block" /> H = Masuk Tepat Waktu</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500 inline-block" /> H = Masuk Tepat Waktu</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-amber-500 inline-block" /> T = Terlambat Scan</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-rose-500 inline-block" /> A = Mangkir / Alpa</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-500 inline-block" /> I = Izin / Sakit</span>
@@ -220,7 +220,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                                     {daysArray.map((d) => (
                                         <th key={d} className="py-2 px-1 min-w-[20px] font-bold select-none">{d}</th>
                                     ))}
-                                    <th className="py-2 px-2 font-bold text-teal-700 min-w-[24px]">H</th>
+                                    <th className="py-2 px-2 font-bold text-green-700 min-w-[24px]">H</th>
                                     <th className="py-2 px-2 font-bold text-amber-700 min-w-[24px]">T</th>
                                     <th className="py-2 px-2 font-bold text-rose-700 min-w-[24px]">A</th>
                                     <th className="py-2 px-2 font-bold text-blue-700 min-w-[24px]">I</th>
@@ -250,7 +250,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
 
                                                 if (dayRecord) {
                                                     if (dayRecord.status === 'Present') {
-                                                        cellClass = "bg-teal-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
+                                                        cellClass = "bg-green-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
                                                         text = "H";
                                                     } else if (dayRecord.status === 'Late') {
                                                         cellClass = "bg-amber-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
@@ -277,7 +277,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                                             })}
 
                                             {/* Summaries */}
-                                            <td className="py-2.5 px-2 text-teal-600 font-bold bg-teal-50/20">{rec.summary.present}</td>
+                                            <td className="py-2.5 px-2 text-green-600 font-bold bg-green-50/20">{rec.summary.present}</td>
                                             <td className="py-2.5 px-2 text-amber-600 font-bold bg-amber-50/20">{rec.summary.late}</td>
                                             <td className="py-2.5 px-2 text-rose-600 font-bold bg-rose-50/20">{rec.summary.absent}</td>
                                             <td className="py-2.5 px-2 text-blue-600 font-bold bg-blue-50/20">{rec.summary.leave}</td>
