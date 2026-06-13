@@ -288,45 +288,45 @@ export default function Update({ currentVersion, commitHash, gitAvailable, isGit
                                     )}
                                 </div>
                             )}
-                        </div>
 
-                        {/* Console terminal window for execution logs */}
-                        {(logs.length > 0 || status === 'updating') && (
-                            <div className="bg-slate-900 text-slate-100 border border-slate-950 rounded-xl p-4 shadow-md font-mono text-[10px] leading-relaxed">
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <Terminal className="w-3.5 h-3.5 text-slate-400" />
-                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Log Konsol Update VPS</span>
+                            {/* Console terminal window for execution logs */}
+                            {(logs.length > 0 || status === 'updating') && (
+                                <div className="mt-4 bg-slate-900 text-slate-100 border border-slate-950 rounded-xl p-4 shadow-md font-mono text-[10px] leading-relaxed">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <Terminal className="w-3.5 h-3.5 text-slate-400" />
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Log Konsol Update VPS</span>
+                                        </div>
+                                        <div className="flex gap-1.5">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                                            <span className="w-2.5 h-2.5 rounded-full bg-teal-500/80" />
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1.5">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-                                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                                        <span className="w-2.5 h-2.5 rounded-full bg-teal-500/80" />
+                                    <div className="max-h-48 overflow-y-auto space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800">
+                                        {logs.map((log, index) => (
+                                            <div key={index} className="whitespace-pre-wrap">
+                                                {log.startsWith('Executing:') ? (
+                                                    <span className="text-teal-400 font-bold">$ {log.substring(11)}</span>
+                                                ) : log.startsWith('Error:') || log.startsWith('Migration Error:') ? (
+                                                    <span className="text-rose-400">{log}</span>
+                                                ) : log.startsWith('Peringatan:') ? (
+                                                    <span className="text-amber-400">{log}</span>
+                                                ) : (
+                                                    <span className="text-slate-300">{log}</span>
+                                                )}
+                                            </div>
+                                        ))}
+                                        {updating && (
+                                            <div className="flex items-center gap-1.5 text-teal-400 mt-1">
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                <span>Mengeksekusi perintah shell...</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="max-h-48 overflow-y-auto space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800">
-                                    {logs.map((log, index) => (
-                                        <div key={index} className="whitespace-pre-wrap">
-                                            {log.startsWith('Executing:') ? (
-                                                <span className="text-teal-400 font-bold">$ {log.substring(11)}</span>
-                                            ) : log.startsWith('Error:') || log.startsWith('Migration Error:') ? (
-                                                <span className="text-rose-400">{log}</span>
-                                            ) : log.startsWith('Peringatan:') ? (
-                                                <span className="text-amber-400">{log}</span>
-                                            ) : (
-                                                <span className="text-slate-300">{log}</span>
-                                            )}
-                                        </div>
-                                    ))}
-                                    {updating && (
-                                        <div className="flex items-center gap-1.5 text-teal-400 mt-1">
-                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                            <span>Mengeksekusi perintah shell...</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                     </div>
 
