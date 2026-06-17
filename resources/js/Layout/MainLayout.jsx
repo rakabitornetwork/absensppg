@@ -76,7 +76,7 @@ export default function MainLayout({ children, title }) {
         { name: 'Database', href: '/pemeliharaan-data', icon: Database },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
-        { name: 'Pengguna (RBAC)', href: '/users', icon: ShieldCheck },
+        { name: 'Manajemen user', href: '/users', icon: ShieldCheck },
     ];
 
     const userRole = auth?.user?.role || 'admin';
@@ -84,7 +84,7 @@ export default function MainLayout({ children, title }) {
         if (userRole === 'distributor') {
             return ['Dashboard', 'Target Distribusi', 'Realisasi Distribusi'].includes(item.name);
         }
-        if (item.name === 'Pengguna (RBAC)' && userRole !== 'superadmin' && userRole !== 'admin') {
+        if (item.name === 'Manajemen user' && userRole !== 'superadmin' && userRole !== 'admin') {
             return false;
         }
         return true;
