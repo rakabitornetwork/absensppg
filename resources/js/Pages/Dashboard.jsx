@@ -232,26 +232,59 @@ export default function Dashboard({ stats, recentScans, settings }) {
                         {distributionPoints.length === 0 ? (
                             <p className="text-xs text-slate-400 font-bold py-2">Belum ada titik penerima yang dikonfigurasi.</p>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                {distributionPoints.map((point) => (
-                                    <div key={point.id} className="bg-slate-50 border border-slate-100/70 p-2.5 rounded-lg flex items-center justify-between">
-                                        <div className="min-w-0">
-                                            <span className="block text-xs font-bold text-slate-800 truncate" title={point.name}>{point.name}</span>
-                                            <span className="block text-[8px] font-bold text-slate-400 uppercase mt-0.5">{point.qty} Porsi</span>
+                            <div className="flex flex-col md:flex-row gap-5">
+                                {/* SVG Horizontal Bar Chart */}
+                                <div className="w-full md:w-[45%] bg-slate-50/50 p-3 rounded-xl border border-slate-100/70 flex flex-col justify-center">
+                                    <span className="block text-[8px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">Visualisasi Porsi per Sekolah</span>
+                                    <svg className="w-full h-auto" viewBox="0 0 320 115" style={{ overflow: 'visible' }}>
+                                        {distributionPoints.map((point, idx) => {
+                                            const maxQty = Math.max(100, ...distributionPoints.map(p => p.qty));
+                                            const barWidth = Math.max(10, Math.round((point.qty / maxQty) * 160));
+                                            const yOffset = idx * 24 + 10;
+                                            const barColor = point.status === 'Delivered' ? '#10b981' : point.status === 'In Progress' ? '#3b82f6' : '#94a3b8';
+                                            
+                                            return (
+                                                <g key={point.id}>
+                                                    {/* School Name */}
+                                                    <text x="0" y={yOffset + 5} className="text-[9px] font-bold fill-slate-700" textAnchor="start">
+                                                        {point.name.length > 15 ? point.name.substring(0, 13) + '..' : point.name}
+                                                    </text>
+                                                    {/* Bar Background */}
+                                                    <rect x="95" y={yOffset - 3} width="160" height="8" rx="4" fill="#f1f5f9" />
+                                                    {/* Colored Bar */}
+                                                    <rect x="95" y={yOffset - 3} width={barWidth} height="8" rx="4" fill={barColor} className="transition-all duration-500 ease-out" />
+                                                    {/* Quantity Text */}
+                                                    <text x={95 + barWidth + 6} y={yOffset + 5} className="text-[9.5px] font-black fill-slate-800 tabular-nums">
+                                                        {point.qty}
+                                                    </text>
+                                                </g>
+                                            );
+                                        })}
+                                    </svg>
+                                </div>
+                                
+                                {/* Info Cards List */}
+                                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    {distributionPoints.map((point) => (
+                                        <div key={point.id} className="bg-slate-50 border border-slate-100/70 p-2.5 rounded-lg flex items-center justify-between">
+                                            <div className="min-w-0">
+                                                <span className="block text-xs font-bold text-slate-800 truncate" title={point.name}>{point.name}</span>
+                                                <span className="block text-[8px] font-bold text-slate-400 uppercase mt-0.5">{point.qty} Porsi</span>
+                                            </div>
+                                            <div>
+                                                <span className={`inline-block text-[8px] font-black px-1.5 py-0.5 rounded ${
+                                                    point.status === 'Delivered'
+                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                        : point.status === 'In Progress'
+                                                        ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                        : 'bg-slate-100 text-slate-500 border border-slate-200'
+                                                }`}>
+                                                    {point.status === 'Delivered' ? 'Tiba' : point.status === 'In Progress' ? 'Kirim' : 'Pending'}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <span className={`inline-block text-[8px] font-black px-1.5 py-0.5 rounded ${
-                                                point.status === 'Delivered'
-                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                    : point.status === 'In Progress'
-                                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                                    : 'bg-slate-100 text-slate-500 border border-slate-200'
-                                            }`}>
-                                                {point.status === 'Delivered' ? 'Tiba' : point.status === 'In Progress' ? 'Kirim' : 'Pending'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
