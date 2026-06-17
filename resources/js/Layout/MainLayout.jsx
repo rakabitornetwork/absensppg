@@ -142,21 +142,21 @@ export default function MainLayout({ children, title }) {
 
                 {/* Sidebar Footer User Info */}
                 <div className="p-2 border-t border-white/10 bg-blue-950/25">
-                    <Link href="/profile" className="flex items-center gap-2 px-2 py-1.5 mb-1 rounded-lg hover:bg-white/10 transition-colors">
+                    <Link href="/profile" className="flex items-center gap-2.5 px-2 py-2 mb-1 rounded-lg hover:bg-white/10 transition-colors">
                         {auth?.user?.avatar_path ? (
                             <img
                                 src={auth.user.avatar_path}
-                                className="w-7 h-7 rounded-full object-cover shadow-inner border border-white/20"
+                                className="w-9 h-9 rounded-full object-cover shadow-inner border border-white/20"
                                 alt={auth?.user?.name || 'Admin'}
                             />
                         ) : (
-                            <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shadow-inner border border-white/15">
+                            <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-sm font-bold shadow-inner border border-white/15">
                                 {(auth?.user?.name || 'A').charAt(0).toUpperCase()}
                             </div>
                         )}
                         <div className="overflow-hidden">
-                            <p className="text-[11px] font-bold text-white truncate leading-none mb-0.5">{auth?.user?.name || 'Admin SPPG'}</p>
-                            <p className="text-[9px] text-blue-100/65 truncate leading-none">{auth?.user?.email || 'admin@sppg.com'}</p>
+                            <p className="text-[13px] font-bold text-white truncate leading-tight mb-0.5">{auth?.user?.name || 'Admin SPPG'}</p>
+                            <p className="text-[11px] text-blue-100/65 truncate leading-tight">{auth?.user?.email || 'admin@sppg.com'}</p>
                         </div>
                     </Link>
                     <button
