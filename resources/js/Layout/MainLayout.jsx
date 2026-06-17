@@ -91,15 +91,15 @@ export default function MainLayout({ children, title }) {
             <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.35),transparent_30%),linear-gradient(180deg,#061A40_0%,#0B2F6B_55%,#075985_100%)] border-r border-white/10 flex flex-col justify-between shrink-0 shadow-2xl shadow-blue-950/30 transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="min-h-0">
                     {/* Brand/Header */}
-                    <div className="h-14 border-b border-white/10 flex items-center px-4 justify-between">
-                        <div className="flex items-center gap-2.5">
+                    <div className="h-16 border-b border-white/10 flex items-center px-4 justify-between">
+                        <div className="flex items-center gap-3">
                             {props.appLogo ? (
-                                <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
-                                    <img src={props.appLogo} className="w-full h-full object-contain p-1" alt="Logo" />
+                                <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
+                                    <img src={props.appLogo} className="w-full h-full object-contain" alt="Logo" />
                                 </div>
                             ) : (
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-sky-300 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
-                                    <span className="font-bold text-sm tracking-wider">GZ</span>
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-sky-300 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+                                    <span className="font-bold text-base tracking-wider">GZ</span>
                                 </div>
                             )}
                             <div>
