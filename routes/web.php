@@ -11,6 +11,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\DistributionTargetController;
 use App\Http\Controllers\DistributionRealizationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -74,12 +75,18 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);
     });
 
-    // Superadmin (IT Team) only - Delete / Reset operations
+    // Superadmin (IT Team) only - Delete / Reset operations & User / RBAC Management
     Route::middleware(['role:superadmin'])->group(function () {
         Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
         Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
         Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
         Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
         Route::post('/pemeliharaan-data/reset', [DatabaseMaintenanceController::class, 'reset']);
+
+        // User & RBAC Management
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::post('/users/{user}/update', [UserController::class, 'update']);
+        Route::post('/users/{user}/delete', [UserController::class, 'destroy']);
     });
 });

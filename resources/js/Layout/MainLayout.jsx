@@ -17,7 +17,8 @@ import {
     RefreshCw,
     Heart,
     CookingPot,
-    TrendingUp
+    TrendingUp,
+    ShieldCheck
 } from 'lucide-react';
 
 export default function MainLayout({ children, title }) {
@@ -75,12 +76,16 @@ export default function MainLayout({ children, title }) {
         { name: 'Database', href: '/pemeliharaan-data', icon: Database },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
+        { name: 'Pengguna (RBAC)', href: '/users', icon: ShieldCheck },
     ];
 
     const userRole = auth?.user?.role || 'admin';
     const filteredNavigation = navigation.filter(item => {
         if (userRole === 'distributor') {
             return ['Dashboard', 'Target Distribusi', 'Realisasi Distribusi'].includes(item.name);
+        }
+        if (item.name === 'Pengguna (RBAC)' && userRole !== 'superadmin') {
+            return false;
         }
         return true;
     });
