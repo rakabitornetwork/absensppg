@@ -641,8 +641,8 @@ export default function Employees({ employees = [], shifts = [] }) {
                             }
                             #print-card-badge {
                                 position: absolute;
-                                left: 0;
-                                top: 0;
+                                left: 5mm;
+                                top: 5mm;
                                 margin: 0;
                                 padding: 0;
                                 box-shadow: none !important;
