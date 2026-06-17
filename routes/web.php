@@ -9,6 +9,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\DistributionTargetController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -56,6 +57,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/shifts', [SettingController::class, 'storeShift']);
     Route::post('/settings/shifts/{shift}/update', [SettingController::class, 'updateShift']);
     Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
+
+    // Target Distribusi Harian
+    Route::get('/target-distribusi', [DistributionTargetController::class, 'index']);
+    Route::post('/target-distribusi', [DistributionTargetController::class, 'update']);
 
     // Update Aplikasi
     Route::get('/update', [UpdateController::class, 'index']);

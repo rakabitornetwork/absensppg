@@ -15,7 +15,8 @@ import {
     X,
     Menu,
     RefreshCw,
-    Heart
+    Heart,
+    CookingPot
 } from 'lucide-react';
 
 export default function MainLayout({ children, title }) {
@@ -66,6 +67,7 @@ export default function MainLayout({ children, title }) {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Data Karyawan', href: '/employees', icon: Users },
+        { name: 'Target Distribusi', href: '/target-distribusi', icon: CookingPot },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
         { name: 'Database', href: '/pemeliharaan-data', icon: Database },
