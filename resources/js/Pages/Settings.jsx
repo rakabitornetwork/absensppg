@@ -258,7 +258,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 <input
                                     type="number"
                                     value={data.late_penalty_per_minute}
-                                    onChange={(e) => setData('late_penalty_per_minute', parseInt(e.target.value) || 0)}
+                                    onChange={(e) => setData('late_penalty_per_minute', e.target.value)}
                                     className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums font-bold"
                                     min="0"
                                     required
@@ -273,7 +273,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 <input
                                     type="number"
                                     value={data.meal_target}
-                                    onChange={(e) => setData('meal_target', parseInt(e.target.value) || 0)}
+                                    onChange={(e) => setData('meal_target', e.target.value)}
                                     className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums font-bold"
                                     min="0"
                                     required
