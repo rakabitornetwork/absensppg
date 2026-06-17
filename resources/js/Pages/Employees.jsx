@@ -17,6 +17,7 @@ import {
 
 export default function Employees({ employees = [], shifts = [] }) {
     const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
     const appLogo = props.appLogo || '';
     const officeAddress = props.officeAddress || '';
@@ -376,13 +377,15 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                     >
                                                         <Edit2 className="w-3.5 h-3.5" />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleDelete(emp.id)}
-                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
-                                                        title="Hapus"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </button>
+                                                    {userRole === 'superadmin' && (
+                                                        <button
+                                                            onClick={() => handleDelete(emp.id)}
+                                                            className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                            title="Hapus"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -789,14 +792,16 @@ export default function Employees({ employees = [], shifts = [] }) {
                         >
                             Batal
                         </button>
-                        <button
-                            onClick={handleBulkDelete}
-                            className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
-                        >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Hapus Massal
-                        </button>
-                    </div>
+                        {userRole === 'superadmin' && (
+                                                            <button
+                                                                onClick={handleBulkDelete}
+                                                                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                Hapus Massal
+                                                            </button>
+                                                        )}
+                                                    </div>
                 </div>
             )}
         </MainLayout>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
-import { AlertTriangle, Archive, Database as DatabaseIcon, Download, RotateCcw, Upload } from 'lucide-react';
+import { AlertTriangle, Archive, Database as DatabaseIcon, Download, RotateCcw, Upload, Lock } from 'lucide-react';
 
 export default function Database({ tableStats = [] }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const [selectedFileName, setSelectedFileName] = useState('');
     const cardClass = 'h-full min-h-[300px] bg-white rounded-3xl p-5 shadow-sm flex flex-col';
     const iconClass = 'w-10 h-10 rounded-2xl flex items-center justify-center mb-4';
@@ -162,34 +164,57 @@ export default function Database({ tableStats = [] }) {
                             </p>
                         </div>
 
-                        <div className="flex-1 pt-5 space-y-3">
-                            <div className="min-h-[66px] p-3 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-2">
-                                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                                <p className="text-[10px] text-rose-700 font-semibold leading-relaxed">
-                                    Pastikan sudah backup sebelum reset. Data yang dihapus tidak dapat dikembalikan tanpa file backup.
-                                </p>
+                        {userRole === 'superadmin' ? (
+                            <>
+                                <div className="flex-1 pt-5 space-y-3">
+                                    <div className="min-h-[66px] p-3 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-2">
+                                        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-rose-700 font-semibold leading-relaxed">
+                                            Pastikan sudah backup sebelum reset. Data yang dihapus tidak dapat dikembalikan tanpa file backup.
+                                        </p>
+                                    </div>
+
+                                    <input
+                                        type="text"
+                                        value={resetData.confirmation}
+                                        onChange={(e) => setResetData('confirmation', e.target.value)}
+                                        className="w-full h-10 text-xs px-3 border border-slate-200 rounded-xl focus:outline-none focus:border-rose-500 font-bold"
+                                        placeholder="Ketik RESET"
+                                    />
+                                    {resetErrors.confirmation && <p className="text-[10px] text-rose-600">{resetErrors.confirmation}</p>}
+                                </div>
+
+                                <div className="pt-5">
+                                    <button
+                                        type="submit"
+                                        disabled={resetting}
+                                        className={`${actionButtonClass} bg-rose-600 hover:bg-rose-700`}
+                                    >
+                                        <RotateCcw className="w-3.5 h-3.5" />
+                                        {resetting ? 'Mengosongkan...' : 'Reset Data'}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex-1 pt-5 flex flex-col justify-center">
+                                <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl flex items-start gap-2">
+                                    <AlertTriangle className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                                    <p className="text-[10px] text-slate-600 font-semibold leading-relaxed">
+                                        Akses Ditolak: Hanya IT Team (Superadmin) yang diizinkan untuk mengosongkan/reset database operasional.
+                                    </p>
+                                </div>
+                                <div className="pt-5">
+                                    <button
+                                        type="button"
+                                        disabled
+                                        className={`${actionButtonClass} bg-slate-300 cursor-not-allowed text-slate-500`}
+                                    >
+                                        <Lock className="w-3.5 h-3.5" />
+                                        Reset Terkunci
+                                    </button>
+                                </div>
                             </div>
-
-                            <input
-                                type="text"
-                                value={resetData.confirmation}
-                                onChange={(e) => setResetData('confirmation', e.target.value)}
-                                className="w-full h-10 text-xs px-3 border border-slate-200 rounded-xl focus:outline-none focus:border-rose-500 font-bold"
-                                placeholder="Ketik RESET"
-                            />
-                            {resetErrors.confirmation && <p className="text-[10px] text-rose-600">{resetErrors.confirmation}</p>}
-                        </div>
-
-                        <div className="pt-5">
-                            <button
-                                type="submit"
-                                disabled={resetting}
-                                className={`${actionButtonClass} bg-rose-600 hover:bg-rose-700`}
-                            >
-                                <RotateCcw className="w-3.5 h-3.5" />
-                                {resetting ? 'Mengosongkan...' : 'Reset Data'}
-                            </button>
-                        </div>
+                        )}
                     </form>
                 </div>
 

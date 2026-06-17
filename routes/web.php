@@ -25,57 +25,61 @@ Route::post('/attendance/scan', [AttendanceController::class, 'scan']);
 
 // Protected Admin Routes
 Route::middleware(['auth'])->group(function () {
-    // Dashboard
+    // Shared Routes: Dashboard, Profile, and Distribution Pages (accessible by superadmin, admin, distributor)
     Route::get('/dashboard', [DashboardController::class, 'index']);
-
-    // Profil Admin
+    
     Route::get('/profile', [ProfileController::class, 'edit']);
     Route::post('/profile', [ProfileController::class, 'update']);
     Route::post('/profile/avatar/delete', [ProfileController::class, 'destroyAvatar']);
 
-    // Karyawan CRUD
-    Route::get('/employees', [EmployeeController::class, 'index']);
-    Route::post('/employees', [EmployeeController::class, 'store']);
-    Route::post('/employees/{employee}/update', [EmployeeController::class, 'update']);
-    Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
-    Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
-    Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
-
-    // Absensi
-    Route::get('/attendances', [AttendanceController::class, 'index']);
-    Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
-    Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
-
-    // Payroll
-    Route::get('/payrolls', [PayrollController::class, 'index']);
-    Route::post('/payrolls/generate', [PayrollController::class, 'generate']);
-    Route::post('/payrolls/{payroll}/update', [PayrollController::class, 'update']);
-    Route::get('/payrolls/{payroll}/payslip', [PayrollController::class, 'payslip']);
-
-    // Pengaturan
-    Route::get('/settings', [SettingController::class, 'index']);
-    Route::post('/settings', [SettingController::class, 'update']);
-    Route::post('/settings/shifts', [SettingController::class, 'storeShift']);
-    Route::post('/settings/shifts/{shift}/update', [SettingController::class, 'updateShift']);
-    Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
-
-    // Target Distribusi Harian
     Route::get('/target-distribusi', [DistributionTargetController::class, 'index']);
     Route::post('/target-distribusi', [DistributionTargetController::class, 'update']);
 
-    // Realisasi Distribusi Harian & Bulanan
     Route::get('/realisasi-distribusi', [DistributionRealizationController::class, 'index']);
     Route::post('/realisasi-distribusi/lock', [DistributionRealizationController::class, 'lockToday']);
 
-    // Update Aplikasi
-    Route::get('/update', [UpdateController::class, 'index']);
-    Route::post('/update/check', [UpdateController::class, 'checkForUpdates']);
-    Route::post('/update/run', [UpdateController::class, 'runUpdate']);
+    // Admin & Superadmin only
+    Route::middleware(['role:superadmin,admin'])->group(function () {
+        // Karyawan CRUD (Write/Edit)
+        Route::get('/employees', [EmployeeController::class, 'index']);
+        Route::post('/employees', [EmployeeController::class, 'store']);
+        Route::post('/employees/{employee}/update', [EmployeeController::class, 'update']);
+        Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 
-    // Pemeliharaan Database
-    Route::any('/database/{legacyPath?}', [DatabaseMaintenanceController::class, 'legacyRedirect'])->where('legacyPath', '.*');
-    Route::get('/pemeliharaan-data', [DatabaseMaintenanceController::class, 'index']);
-    Route::get('/pemeliharaan-data/backup', [DatabaseMaintenanceController::class, 'backup']);
-    Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);
-    Route::post('/pemeliharaan-data/reset', [DatabaseMaintenanceController::class, 'reset']);
+        // Absensi (Write/Edit)
+        Route::get('/attendances', [AttendanceController::class, 'index']);
+        Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
+
+        // Payroll
+        Route::get('/payrolls', [PayrollController::class, 'index']);
+        Route::post('/payrolls/generate', [PayrollController::class, 'generate']);
+        Route::post('/payrolls/{payroll}/update', [PayrollController::class, 'update']);
+        Route::get('/payrolls/{payroll}/payslip', [PayrollController::class, 'payslip']);
+
+        // Pengaturan
+        Route::get('/settings', [SettingController::class, 'index']);
+        Route::post('/settings', [SettingController::class, 'update']);
+        Route::post('/settings/shifts', [SettingController::class, 'storeShift']);
+        Route::post('/settings/shifts/{shift}/update', [SettingController::class, 'updateShift']);
+
+        // Update Aplikasi
+        Route::get('/update', [UpdateController::class, 'index']);
+        Route::post('/update/check', [UpdateController::class, 'checkForUpdates']);
+        Route::post('/update/run', [UpdateController::class, 'runUpdate']);
+
+        // Pemeliharaan Database
+        Route::any('/database/{legacyPath?}', [DatabaseMaintenanceController::class, 'legacyRedirect'])->where('legacyPath', '.*');
+        Route::get('/pemeliharaan-data', [DatabaseMaintenanceController::class, 'index']);
+        Route::get('/pemeliharaan-data/backup', [DatabaseMaintenanceController::class, 'backup']);
+        Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);
+    });
+
+    // Superadmin (IT Team) only - Delete / Reset operations
+    Route::middleware(['role:superadmin'])->group(function () {
+        Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
+        Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
+        Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
+        Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
+        Route::post('/pemeliharaan-data/reset', [DatabaseMaintenanceController::class, 'reset']);
+    });
 });

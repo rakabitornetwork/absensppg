@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
     TrendingUp, 
@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 
 export default function DistributionRealizations({ todayConfig = {}, history = [] }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const [activeTab, setActiveTab] = useState('daily'); // 'daily' or 'monthly'
     const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
 
@@ -182,7 +184,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                         </p>
                                     </div>
 
-                                    {!todayConfig.is_locked && (
+                                    {!todayConfig.is_locked && (userRole === 'superadmin' || userRole === 'admin') && (
                                         <button
                                             type="button"
                                             onClick={handleLockRealisasi}

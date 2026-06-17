@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
     CookingPot, 
@@ -22,6 +22,8 @@ export default function DistributionTargets({
     kitchenStaff = [], 
     dateFormatted 
 }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const mealTarget = parseInt(settings.meal_target) || 250;
 
     const { data, setData, post, processing, errors } = useForm({
@@ -165,6 +167,7 @@ export default function DistributionTargets({
                                         className="w-full text-xs p-2 border border-slate-200 rounded-lg font-bold" 
                                         placeholder="Contoh: Nasi Putih Organik / Kentang"
                                         required
+                                        disabled={userRole === 'distributor'}
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -176,6 +179,7 @@ export default function DistributionTargets({
                                         className="w-full text-xs p-2 border border-slate-200 rounded-lg font-bold" 
                                         placeholder="Contoh: Ayam Goreng Lengkuas"
                                         required
+                                        disabled={userRole === 'distributor'}
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -187,6 +191,7 @@ export default function DistributionTargets({
                                         className="w-full text-xs p-2 border border-slate-200 rounded-lg font-bold" 
                                         placeholder="Contoh: Tempe Mendoan / Tahu Semur"
                                         required
+                                        disabled={userRole === 'distributor'}
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -198,6 +203,7 @@ export default function DistributionTargets({
                                         className="w-full text-xs p-2 border border-slate-200 rounded-lg font-bold" 
                                         placeholder="Contoh: Sayur Sop Wortel Bakso"
                                         required
+                                        disabled={userRole === 'distributor'}
                                     />
                                 </div>
                                 <div className="space-y-1 sm:col-span-2">
@@ -209,6 +215,7 @@ export default function DistributionTargets({
                                         className="w-full text-xs p-2 border border-slate-200 rounded-lg font-bold" 
                                         placeholder="Contoh: Susu Kotak UHT & Buah Jeruk Manis"
                                         required
+                                        disabled={userRole === 'distributor'}
                                     />
                                 </div>
                             </div>
@@ -221,13 +228,15 @@ export default function DistributionTargets({
                                     <MapPin className="w-4 h-4 text-teal-600" />
                                     <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Titik Penerima & Alokasi Porsi</h3>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={addDistributionPoint}
-                                    className="bg-teal-50 hover:bg-teal-100 text-teal-700 text-[10px] font-bold px-2 py-1 rounded-md border border-teal-200 flex items-center gap-1 transition-all"
-                                >
-                                    <Plus className="w-3.5 h-3.5" /> Tambah Titik
-                                </button>
+                                {userRole !== 'distributor' && (
+                                    <button
+                                        type="button"
+                                        onClick={addDistributionPoint}
+                                        className="bg-teal-50 hover:bg-teal-100 text-teal-700 text-[10px] font-bold px-2 py-1 rounded-md border border-teal-200 flex items-center gap-1 transition-all"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" /> Tambah Titik
+                                    </button>
+                                )}
                             </div>
 
                             <div className="space-y-2.5">
@@ -242,9 +251,10 @@ export default function DistributionTargets({
                                                     type="text"
                                                     value={point.name}
                                                     onChange={(e) => handlePointChange(index, 'name', e.target.value)}
-                                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg font-bold"
+                                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg font-bold font-sans"
                                                     placeholder="Contoh: SDN 01 Sukajadi"
                                                     required
+                                                    disabled={userRole === 'distributor'}
                                                 />
                                             </div>
                                             <div className="w-full sm:w-28 space-y-0.5">
@@ -256,6 +266,7 @@ export default function DistributionTargets({
                                                     className="w-full text-xs p-1.5 border border-slate-200 rounded-lg font-bold tabular-nums"
                                                     min="0"
                                                     required
+                                                    disabled={userRole === 'distributor'}
                                                 />
                                             </div>
                                             <div className="w-full sm:w-36 space-y-0.5">
@@ -270,14 +281,16 @@ export default function DistributionTargets({
                                                     <option value="Delivered">Tiba di Lokasi</option>
                                                 </select>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeDistributionPoint(index)}
-                                                className="self-end sm:self-center p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors border border-rose-100"
-                                                title="Hapus lokasi"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </button>
+                                            {userRole !== 'distributor' && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeDistributionPoint(index)}
+                                                    className="self-end sm:self-center p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors border border-rose-100"
+                                                    title="Hapus lokasi"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            )}
                                         </div>
                                     ))
                                 )}

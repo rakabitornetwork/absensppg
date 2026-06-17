@@ -26,12 +26,31 @@ class DatabaseSeeder extends Seeder
         \App\Models\Shift::truncate();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
-        // 2. Create Admin User
+        // 2. Create Users with different roles
+        User::updateOrCreate(
+            ['email' => 'superadmin@sppg.com'],
+            [
+                'name' => 'IT Superadmin',
+                'password' => Hash::make('12345678'),
+                'role' => 'superadmin',
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'admin@sppg.com'],
             [
                 'name' => 'Admin SPPG MBG',
                 'password' => Hash::make('12345678'),
+                'role' => 'admin',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'distributor@sppg.com'],
+            [
+                'name' => 'Distributor SPPG',
+                'password' => Hash::make('12345678'),
+                'role' => 'distributor',
             ]
         );
 

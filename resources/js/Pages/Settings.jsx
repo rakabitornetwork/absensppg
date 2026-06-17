@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
     Save, 
@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 
 export default function Settings({ settings = {}, shifts = [] }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const [activeTab, setActiveTab] = useState('general'); // 'general' or 'shifts'
     const [showShiftForm, setShowShiftForm] = useState(false);
     const [shiftEditMode, setShiftEditMode] = useState(false);
@@ -419,14 +421,16 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                                             >
                                                                 <Edit2 className="w-3 h-3" />
                                                             </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleDeleteShift(s.id)}
-                                                                className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
-                                                                title="Hapus"
-                                                            >
-                                                                <Trash2 className="w-3 h-3" />
-                                                            </button>
+                                                            {userRole === 'superadmin' && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteShift(s.id)}
+                                                                    className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                                    title="Hapus"
+                                                                >
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>

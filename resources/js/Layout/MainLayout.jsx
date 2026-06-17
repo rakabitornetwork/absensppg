@@ -77,6 +77,14 @@ export default function MainLayout({ children, title }) {
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
     ];
 
+    const userRole = auth?.user?.role || 'admin';
+    const filteredNavigation = navigation.filter(item => {
+        if (userRole === 'distributor') {
+            return ['Dashboard', 'Target Distribusi', 'Realisasi Distribusi'].includes(item.name);
+        }
+        return true;
+    });
+
     const isActive = (href) => {
         if (href === '/dashboard') return url === '/dashboard';
         return url.startsWith(href);
@@ -123,7 +131,7 @@ export default function MainLayout({ children, title }) {
 
                     {/* Navigation Links */}
                     <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-9rem)]">
-                        {navigation.map((item) => {
+                        {filteredNavigation.map((item) => {
                             const Icon = item.icon;
                             const active = isActive(item.href);
                             return (

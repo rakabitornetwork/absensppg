@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
     Calendar, 
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 
 export default function Attendances({ records = [], selectedMonth, selectedYear }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const [month, setMonth] = useState(selectedMonth);
     const [year, setYear] = useState(selectedYear);
     const [showCorrectionForm, setShowCorrectionForm] = useState(false);
@@ -400,7 +402,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                                 >
                                     Simpan Rekor
                                 </button>
-                                {selectedAttendanceId && (
+                                {selectedAttendanceId && userRole === 'superadmin' && (
                                     <button
                                         type="button"
                                         onClick={handleDeleteAttendance}
