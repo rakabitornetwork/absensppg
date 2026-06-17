@@ -629,6 +629,34 @@ export default function Employees({ employees = [], shifts = [] }) {
             {/* ID Card Single Preview Modal */}
             {cardPreview && (
                 <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <style>{`
+                        @media print {
+                            body {
+                                visibility: hidden;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+                            #print-card-badge, #print-card-badge * {
+                                visibility: visible;
+                            }
+                            #print-card-badge {
+                                position: absolute;
+                                left: 50%;
+                                top: 50%;
+                                transform: translate(-50%, -50%);
+                                margin: 0;
+                                padding: 0;
+                                box-shadow: none !important;
+                                ring: none !important;
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                            }
+                            @page {
+                                size: auto;
+                                margin: 0mm;
+                            }
+                        }
+                    `}</style>
                     <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
@@ -643,7 +671,7 @@ export default function Employees({ employees = [], shifts = [] }) {
 
                         {/* ID Badge Body */}
                         <div className="p-6 bg-slate-50 flex flex-col items-center">
-                            <div className="h-[105mm] w-[74mm] relative overflow-hidden rounded-[22px] bg-slate-950 text-white shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10">
+                            <div id="print-card-badge" className="h-[105mm] w-[74mm] relative overflow-hidden rounded-[22px] bg-slate-950 text-white shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10">
                                 {/* Premium background layers */}
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(59,130,246,0.48),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(14,165,233,0.28),transparent_26%),linear-gradient(145deg,#061A40_0%,#0B2F6B_54%,#075985_100%)]" />
                                 <div className="absolute -top-14 -right-12 w-32 h-32 rounded-full border-[18px] border-white/5" />
@@ -731,7 +759,6 @@ export default function Employees({ employees = [], shifts = [] }) {
                         <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
                             <button
                                 onClick={() => {
-                                    setCardPreview(null);
                                     window.print();
                                 }}
                                 className="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
