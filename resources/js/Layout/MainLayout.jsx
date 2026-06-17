@@ -14,7 +14,8 @@ import {
     AlertCircle,
     X,
     Menu,
-    RefreshCw
+    RefreshCw,
+    Heart
 } from 'lucide-react';
 
 export default function MainLayout({ children, title }) {
@@ -203,8 +204,22 @@ export default function MainLayout({ children, title }) {
                 </header>
 
                 {/* Content */}
-                <main className="flex-1 p-5 overflow-y-auto">
-                    {children}
+                <main className="flex-1 p-5 overflow-y-auto flex flex-col justify-between">
+                    <div className="flex-1">
+                        {children}
+                    </div>
+                    <footer className="mt-8 pt-4 border-t border-blue-100/50 text-center text-xs text-slate-500/80 font-medium">
+                        <p className="flex items-center justify-center gap-1.5">
+                            <span>Copyright &copy; {new Date().getFullYear()}</span>
+                            <span className="text-slate-300">&bull;</span>
+                            <span className="flex items-center gap-1">
+                                Dibuat dengan 
+                                <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 inline-block animate-pulse" /> 
+                                oleh 
+                                <span className="font-bold text-slate-700">amon</span>
+                            </span>
+                        </p>
+                    </footer>
                 </main>
             </div>
 
