@@ -31,9 +31,11 @@ export default function DistributionTargets({
 
     const [totalAllocated, setTotalAllocated] = useState(0);
 
-    // Calculate total allocated quantity
+    // Calculate total allocated quantity (only when status is 'Delivered' / 'Tiba di Lokasi')
     useEffect(() => {
-        const total = data.distribution_points.reduce((sum, item) => sum + (parseInt(item.qty) || 0), 0);
+        const total = data.distribution_points
+            .filter(item => item.status === 'Delivered')
+            .reduce((sum, item) => sum + (parseInt(item.qty) || 0), 0);
         setTotalAllocated(total);
     }, [data.distribution_points]);
 

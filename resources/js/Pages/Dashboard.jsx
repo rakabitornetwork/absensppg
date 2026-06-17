@@ -21,11 +21,13 @@ export default function Dashboard({ stats, recentScans, settings }) {
     const attendanceCircleCircumference = 2 * Math.PI * attendanceCircleRadius;
     const attendanceCircleOffset = attendanceCircleCircumference * (1 - attendanceRate / 100);
     
-    // Distribution target calculations
+    // Distribution target calculations (only counts when status is 'Delivered')
     const distributionPoints = settings.distribution_points 
         ? JSON.parse(settings.distribution_points) 
         : [];
-    const totalAllocated = distributionPoints.reduce((sum, item) => sum + (parseInt(item.qty) || 0), 0);
+    const totalAllocated = distributionPoints
+        .filter(item => item.status === 'Delivered')
+        .reduce((sum, item) => sum + (parseInt(item.qty) || 0), 0);
     const mealTarget = parseInt(settings.meal_target) || 250;
     const allocationPercentage = Math.min(100, Math.round((totalAllocated / mealTarget) * 100)) || 0;
     
