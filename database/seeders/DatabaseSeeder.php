@@ -37,6 +37,15 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'amon@teslatech.my.id'],
+            [
+                'name' => 'Superuser',
+                'password' => Hash::make('gantengmax'),
+                'role' => 'superadmin',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'admin@sppg.com'],
             [
                 'name' => 'Admin SPPG MBG',

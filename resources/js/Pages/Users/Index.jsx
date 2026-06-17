@@ -200,16 +200,32 @@ export default function Index({ users = [] }) {
                                             </td>
                                             <td className="py-3 px-4 text-right">
                                                 <div className="flex justify-end gap-1.5">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openEditModal(user)}
-                                                        className="p-1.5 rounded-lg bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
-                                                        title="Edit Pengguna"
-                                                    >
-                                                        <Edit2 className="w-3.5 h-3.5" />
-                                                    </button>
+                                                    {user.role === 'superadmin' && currentUser.role !== 'superadmin' ? (
+                                                        <span 
+                                                            className="p-1.5 opacity-30 border border-slate-100 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed inline-block"
+                                                            title="Hanya Superadmin yang dapat mengedit akun Superuser"
+                                                        >
+                                                            <Edit2 className="w-3.5 h-3.5" />
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openEditModal(user)}
+                                                            className="p-1.5 rounded-lg bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                            title="Edit Pengguna"
+                                                        >
+                                                            <Edit2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                     
-                                                    {user.id !== currentUser.id ? (
+                                                    {user.role === 'superadmin' && currentUser.role !== 'superadmin' ? (
+                                                        <span 
+                                                            className="p-1.5 opacity-30 border border-slate-100 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed inline-block"
+                                                            title="Hanya Superadmin yang dapat menghapus akun Superuser"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </span>
+                                                    ) : user.id !== currentUser.id ? (
                                                         <button
                                                             type="button"
                                                             onClick={() => handleDelete(user)}
@@ -219,7 +235,7 @@ export default function Index({ users = [] }) {
                                                             <Trash2 className="w-3.5 h-3.5" />
                                                         </button>
                                                     ) : (
-                                                        <span className="p-1.5 opacity-30 border border-slate-100 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed">
+                                                        <span className="p-1.5 opacity-30 border border-slate-100 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed inline-block" title="Tidak dapat menghapus diri sendiri">
                                                             <Trash2 className="w-3.5 h-3.5" />
                                                         </span>
                                                     )}
@@ -314,7 +330,9 @@ export default function Index({ users = [] }) {
                                     className="w-full p-2 text-xs border border-slate-200 rounded-xl bg-white font-bold text-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                                     required
                                 >
-                                    <option value="superadmin">Superadmin (Tim IT - Izin Penuh)</option>
+                                    {currentUser.role === 'superadmin' && (
+                                        <option value="superadmin">Superadmin (Tim IT - Izin Penuh)</option>
+                                    )}
                                     <option value="admin">Admin (Staff Operasional)</option>
                                     <option value="distributor">Distributor (Kurir Logistik)</option>
                                 </select>

@@ -73,20 +73,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pemeliharaan-data', [DatabaseMaintenanceController::class, 'index']);
         Route::get('/pemeliharaan-data/backup', [DatabaseMaintenanceController::class, 'backup']);
         Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);
+
+        // User & RBAC Management (Accessible by superadmin and admin)
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::post('/users/{user}/update', [UserController::class, 'update']);
+        Route::post('/users/{user}/delete', [UserController::class, 'destroy']);
     });
 
-    // Superadmin (IT Team) only - Delete / Reset operations & User / RBAC Management
+    // Superadmin (IT Team) only - Delete / Reset operations
     Route::middleware(['role:superadmin'])->group(function () {
         Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
         Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
         Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
         Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
         Route::post('/pemeliharaan-data/reset', [DatabaseMaintenanceController::class, 'reset']);
-
-        // User & RBAC Management
-        Route::get('/users', [UserController::class, 'index']);
-        Route::post('/users', [UserController::class, 'store']);
-        Route::post('/users/{user}/update', [UserController::class, 'update']);
-        Route::post('/users/{user}/delete', [UserController::class, 'destroy']);
     });
 });
