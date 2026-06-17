@@ -282,6 +282,51 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Daily Operational Report Card */}
+                            <div className="bg-white border border-slate-100 rounded-xl p-5 shadow-sm space-y-4">
+                                <div className="border-b border-slate-50 pb-2 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-teal-600" />
+                                    <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Harian Dapur & Operasional</h3>
+                                </div>
+
+                                <div className="space-y-3 text-xs">
+                                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
+                                        <div>
+                                            <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-0.5">Shift Kerja Masak</span>
+                                            <span className="font-bold text-slate-800">Shift Pagi (Masak & Persiapan)</span>
+                                        </div>
+                                        <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">05:00 - 13:00</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
+                                        <div>
+                                            <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-0.5">Persiapan Masak Dimulai</span>
+                                            <span className="font-bold text-slate-800">Tepat Waktu (Sebelum 06:00)</span>
+                                        </div>
+                                        <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100">05:30 WIB</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
+                                        <div>
+                                            <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-0.5">Higienitas & Kebersihan</span>
+                                            <span className="font-bold text-slate-800">Sesuai Standar Mutu Gizi</span>
+                                        </div>
+                                        <span className="text-[9px] font-extrabold bg-teal-50 text-teal-700 px-2 py-0.5 rounded border border-teal-100">Higienis</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
+                                        <div>
+                                            <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-0.5">Suhu Penyajian Makanan</span>
+                                            <span className="font-bold text-slate-800">Terjaga Hangat</span>
+                                        </div>
+                                        <span className="text-[9px] font-extrabold bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-100">~65°C</span>
+                                    </div>
+                                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                        <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-1">Catatan Evaluasi Harian</span>
+                                        <p className="text-[10px] text-slate-600 leading-relaxed font-semibold">
+                                            Seluruh bahan segar dipersiapkan dengan baik. Distribusi dimulai tepat waktu agar gizi sarapan/siang tiba sebelum waktu istirahat sekolah.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
