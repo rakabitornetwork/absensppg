@@ -213,10 +213,53 @@ export default function Dashboard({ stats, recentScans, settings }) {
             {/* Main Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 
-                {/* Recent Scans (Left 2 columns) */}
-                <div className="lg:col-span-2 bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-                    <div>
+                {/* Recent Scans & Distribution Realization Widget (Left 2 columns) */}
+                <div className="lg:col-span-2 space-y-5">
+                    
+                    {/* Widget Singkat Realisasi Distribusi Harian */}
+                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
                         <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
+                            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Realisasi Distribusi Hari Ini</h3>
+                            <Link 
+                                href="/realisasi-distribusi" 
+                                className="text-[10px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors"
+                            >
+                                Laporan Lengkap
+                                <ArrowRight className="w-3 h-3" />
+                            </Link>
+                        </div>
+                        
+                        {distributionPoints.length === 0 ? (
+                            <p className="text-xs text-slate-400 font-bold py-2">Belum ada titik penerima yang dikonfigurasi.</p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                {distributionPoints.map((point) => (
+                                    <div key={point.id} className="bg-slate-50 border border-slate-100/70 p-2.5 rounded-lg flex items-center justify-between">
+                                        <div className="min-w-0">
+                                            <span className="block text-xs font-bold text-slate-800 truncate" title={point.name}>{point.name}</span>
+                                            <span className="block text-[8px] font-bold text-slate-400 uppercase mt-0.5">{point.qty} Porsi</span>
+                                        </div>
+                                        <div>
+                                            <span className={`inline-block text-[8px] font-black px-1.5 py-0.5 rounded ${
+                                                point.status === 'Delivered'
+                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                    : point.status === 'In Progress'
+                                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                    : 'bg-slate-100 text-slate-500 border border-slate-200'
+                                            }`}>
+                                                {point.status === 'Delivered' ? 'Tiba' : point.status === 'In Progress' ? 'Kirim' : 'Pending'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Recent Scans */}
+                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Riwayat Scan Terbaru</h3>
                             <Link 
                                 href="/scanner" 
@@ -280,6 +323,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                         )}
                     </div>
                 </div>
+            </div>
 
                 {/* SPPG Unit Details (Right Column) */}
                 <div className="space-y-4">

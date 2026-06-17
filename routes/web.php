@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\DistributionTargetController;
+use App\Http\Controllers\DistributionRealizationController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -61,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
     // Target Distribusi Harian
     Route::get('/target-distribusi', [DistributionTargetController::class, 'index']);
     Route::post('/target-distribusi', [DistributionTargetController::class, 'update']);
+
+    // Realisasi Distribusi Harian & Bulanan
+    Route::get('/realisasi-distribusi', [DistributionRealizationController::class, 'index']);
+    Route::post('/realisasi-distribusi/lock', [DistributionRealizationController::class, 'lockToday']);
 
     // Update Aplikasi
     Route::get('/update', [UpdateController::class, 'index']);

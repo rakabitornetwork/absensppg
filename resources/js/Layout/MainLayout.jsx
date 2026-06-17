@@ -16,7 +16,8 @@ import {
     Menu,
     RefreshCw,
     Heart,
-    CookingPot
+    CookingPot,
+    TrendingUp
 } from 'lucide-react';
 
 export default function MainLayout({ children, title }) {
@@ -68,6 +69,7 @@ export default function MainLayout({ children, title }) {
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Data Karyawan', href: '/employees', icon: Users },
         { name: 'Target Distribusi', href: '/target-distribusi', icon: CookingPot },
+        { name: 'Realisasi Distribusi', href: '/realisasi-distribusi', icon: TrendingUp },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
         { name: 'Database', href: '/pemeliharaan-data', icon: Database },
