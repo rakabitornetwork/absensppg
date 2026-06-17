@@ -311,7 +311,7 @@ export default function Dashboard({ stats, recentScans, settings }) {
                                 <span className="font-bold text-slate-800">{formatRupiah(settings.late_penalty_per_minute || 1000)} / menit</span>
                             </div>
                             <div className="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-[9px] text-slate-500 leading-normal">
-                                <strong>Ketentuan SPPG:</strong> Juru masak dan asisten masak disarankan hadir sebelum pukul 06:00 untuk memulai persiapan bahan makanan program sarapan & makan siang sekolah.
+                                <strong>Ketentuan SPPG:</strong> Juru masak dan asisten masak disarankan hadir sebelum pukul {settings.work_start_time || '06:00'} untuk memulai persiapan bahan makanan program sarapan & makan siang sekolah.
                             </div>
                         </div>
                     </div>
