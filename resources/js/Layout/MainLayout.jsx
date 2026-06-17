@@ -69,14 +69,14 @@ export default function MainLayout({ children, title }) {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Data Karyawan', href: '/employees', icon: Users },
-        { name: 'Target Distribusi', href: '/target-distribusi', icon: CookingPot },
-        { name: 'Realisasi Distribusi', href: '/realisasi-distribusi', icon: TrendingUp },
         { name: 'Rekap Presensi', href: '/attendances', icon: Calendar },
         { name: 'Penggajian', href: '/payrolls', icon: Banknote },
-        { name: 'Database', href: '/pemeliharaan-data', icon: Database },
+        { name: 'Target Distribusi', href: '/target-distribusi', icon: CookingPot },
+        { name: 'Realisasi Distribusi', href: '/realisasi-distribusi', icon: TrendingUp },
+        { name: 'Manajemen Pengguna', href: '/users', icon: ShieldCheck },
         { name: 'Pengaturan', href: '/settings', icon: Settings },
+        { name: 'Database', href: '/pemeliharaan-data', icon: Database },
         { name: 'Update Aplikasi', href: '/update', icon: RefreshCw },
-        { name: 'Manajemen user', href: '/users', icon: ShieldCheck },
     ];
 
     const userRole = auth?.user?.role || 'admin';
@@ -84,7 +84,7 @@ export default function MainLayout({ children, title }) {
         if (userRole === 'distributor') {
             return ['Dashboard', 'Target Distribusi', 'Realisasi Distribusi'].includes(item.name);
         }
-        if (item.name === 'Manajemen user' && userRole !== 'superadmin' && userRole !== 'admin') {
+        if (item.name === 'Manajemen Pengguna' && userRole !== 'superadmin' && userRole !== 'admin') {
             return false;
         }
         return true;
