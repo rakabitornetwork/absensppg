@@ -216,7 +216,14 @@ export default function MainLayout({ children, title }) {
                                 Dibuat dengan 
                                 <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 inline-block animate-pulse" /> 
                                 oleh 
-                                <span className="font-bold text-slate-700">amon</span>
+                                <a 
+                                    href="https://teslatech.my.id" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="font-bold text-slate-700 hover:text-blue-500 transition-colors underline decoration-slate-300 decoration-1 underline-offset-2 hover:decoration-blue-400"
+                                >
+                                    amon
+                                </a>
                             </span>
                         </p>
                     </footer>
