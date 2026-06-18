@@ -598,89 +598,89 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                 {/* SPPG Unit Details (Right Column) */}
                 <div className="space-y-4">
                     
-                    {/* Graphic Chart: Target vs Realisasi Distribusi */}
-                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-2.5 border-b border-slate-50 pb-1.5 flex items-center justify-between">
-                            <span>Realisasi Distribusi Harian</span>
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-extrabold ${allocationPercentage === 100 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
-                                {allocationPercentage}%
-                            </span>
-                        </h3>
-                        <div className="flex items-center gap-4 py-1">
-                            {/* SVG Radial Chart */}
-                            <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
-                                <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-                                    <circle
-                                        cx="40"
-                                        cy="40"
-                                        r={chartRadius}
-                                        fill="none"
-                                        stroke="#f1f5f9"
-                                        strokeWidth="6"
-                                    />
-                                    <circle
-                                        cx="40"
-                                        cy="40"
-                                        r={chartRadius}
-                                        fill="none"
-                                        stroke={allocationPercentage === 100 ? '#10b981' : '#3b82f6'}
-                                        strokeWidth="6"
-                                        strokeDasharray={chartCircumference}
-                                        strokeDashoffset={chartStrokeDashoffset}
-                                        strokeLinecap="round"
-                                        className="transition-all duration-500 ease-out"
-                                    />
-                                </svg>
-                                <div className="absolute text-center">
-                                    <span className="block text-xs font-black text-slate-800 leading-none">{totalAllocated}</span>
-                                    <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Porsi</span>
-                                </div>
-                            </div>
-
-                            {/* Metrics list */}
-                            <div className="flex-1 space-y-1.5">
-                                <div>
-                                    <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase">
-                                        <span>Target Harian</span>
-                                        <span className="text-slate-700 tabular-nums">{mealTarget} porsi</span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 h-1.5 rounded-full mt-0.5 overflow-hidden">
-                                        <div className="bg-slate-400 h-full rounded-full" style={{ width: '100%' }}></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase">
-                                        <span>Terdistribusi</span>
-                                        <span className={`${totalAllocated === mealTarget ? 'text-emerald-600' : 'text-blue-600'} tabular-nums`}>{totalAllocated} porsi</span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 h-1.5 rounded-full mt-0.5 overflow-hidden">
-                                        <div className={`h-full rounded-full ${totalAllocated === mealTarget ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${allocationPercentage}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Location Details (mini legend) */}
-                        {distributionPoints.length > 0 && (
-                            <div className="mt-3 pt-2.5 border-t border-slate-50 space-y-1.5">
-                                <span className="block text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Detail Titik Sekolah Penerima</span>
-                                <div className="max-h-24 overflow-y-auto pr-1 space-y-1">
-                                    {distributionPoints.map((point) => {
-                                        const pct = mealTarget > 0 ? Math.round((point.qty / mealTarget) * 100) : 0;
-                                        return (
-                                            <div key={point.id} className="flex items-center justify-between text-[10px] bg-slate-50 p-1.5 rounded border border-slate-100/50">
-                                                <span className="font-bold text-slate-700 truncate max-w-[130px]">{point.name}</span>
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="font-extrabold text-slate-800 tabular-nums">{point.qty} Porsi</span>
-                                                    <span className="text-[8px] text-slate-400 font-bold">({pct}%)</span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                     {/* Graphic Chart: Target vs Realisasi Distribusi - PREMIUM SOLID GRADIENT CARD */}
+                     <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white rounded-xl p-4 shadow-md shadow-slate-950/20">
+                         <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-2.5 border-b border-white/10 pb-1.5 flex items-center justify-between">
+                             <span>Realisasi Distribusi Harian</span>
+                             <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-extrabold ${allocationPercentage === 100 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}`}>
+                                 {allocationPercentage}%
+                             </span>
+                         </h3>
+                         <div className="flex items-center gap-4 py-1">
+                             {/* SVG Radial Chart */}
+                             <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                                 <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
+                                     <circle
+                                         cx="40"
+                                         cy="40"
+                                         r={chartRadius}
+                                         fill="none"
+                                         stroke="rgba(255, 255, 255, 0.1)"
+                                         strokeWidth="6"
+                                     />
+                                     <circle
+                                         cx="40"
+                                         cy="40"
+                                         r={chartRadius}
+                                         fill="none"
+                                         stroke={allocationPercentage === 100 ? '#10b981' : '#60a5fa'}
+                                         strokeWidth="6"
+                                         strokeDasharray={chartCircumference}
+                                         strokeDashoffset={chartStrokeDashoffset}
+                                         strokeLinecap="round"
+                                         className="transition-all duration-500 ease-out"
+                                     />
+                                 </svg>
+                                 <div className="absolute text-center">
+                                     <span className="block text-xs font-black text-white leading-none">{totalAllocated}</span>
+                                     <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Porsi</span>
+                                 </div>
+                             </div>
+ 
+                             {/* Metrics list */}
+                             <div className="flex-1 space-y-1.5">
+                                 <div>
+                                     <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase">
+                                         <span>Target Harian</span>
+                                         <span className="text-white tabular-nums">{mealTarget} porsi</span>
+                                     </div>
+                                     <div className="w-full bg-white/10 h-1.5 rounded-full mt-0.5 overflow-hidden">
+                                         <div className="bg-slate-500 h-full rounded-full" style={{ width: '100%' }}></div>
+                                     </div>
+                                 </div>
+                                 <div>
+                                     <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase">
+                                         <span>Terdistribusi</span>
+                                         <span className={`${totalAllocated === mealTarget ? 'text-emerald-400' : 'text-blue-400'} tabular-nums`}>{totalAllocated} porsi</span>
+                                     </div>
+                                     <div className="w-full bg-white/10 h-1.5 rounded-full mt-0.5 overflow-hidden">
+                                         <div className={`h-full rounded-full ${totalAllocated === mealTarget ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${allocationPercentage}%` }}></div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+ 
+                         {/* Location Details (mini legend) */}
+                         {distributionPoints.length > 0 && (
+                             <div className="mt-3 pt-2.5 border-t border-white/10 space-y-1.5">
+                                 <span className="block text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Detail Titik Sekolah Penerima</span>
+                                 <div className="max-h-24 overflow-y-auto pr-1 space-y-1">
+                                     {distributionPoints.map((point) => {
+                                         const pct = mealTarget > 0 ? Math.round((point.qty / mealTarget) * 100) : 0;
+                                         return (
+                                             <div key={point.id} className="flex items-center justify-between text-[10px] bg-white/5 p-1.5 rounded border border-white/10">
+                                                 <span className="font-bold text-slate-200 truncate max-w-[130px]">{point.name}</span>
+                                                 <div className="flex items-center gap-1.5">
+                                                     <span className="font-extrabold text-white tabular-nums">{point.qty} Porsi</span>
+                                                     <span className="text-[8px] text-slate-400 font-bold">({pct}%)</span>
+                                                 </div>
+                                             </div>
+                                         );
+                                     })}
+                                 </div>
+                             </div>
+                         )}
+                     </div>
                     
                     {/* Unit Info Card */}
                     <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
