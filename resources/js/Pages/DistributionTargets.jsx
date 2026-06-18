@@ -125,44 +125,44 @@ export default function DistributionTargets({
 
                 {/* Target Metric Banner */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex items-center justify-between">
+                    <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-sky-600 text-white rounded-xl p-4 shadow-md shadow-blue-700/10 hover:shadow-lg transition-all flex items-center justify-between">
                         <div>
-                            <span className="block text-[9px] text-slate-400 font-bold uppercase">Target Porsi Harian</span>
-                            <span className="text-xl font-black text-slate-800 tabular-nums">{mealTarget} <span className="text-xs font-semibold text-slate-500">Porsi</span></span>
+                            <span className="block text-[9px] text-blue-100/90 font-bold uppercase tracking-wider">Target Porsi Harian</span>
+                            <span className="text-xl font-black text-white tabular-nums">{mealTarget} <span className="text-xs font-semibold text-blue-100/80">Porsi</span></span>
                         </div>
-                        <div className="p-2.5 rounded-xl bg-teal-50 text-teal-600">
+                        <div className="p-2.5 rounded-xl bg-white/20 text-white">
                             <CookingPot className="w-5 h-5" />
                         </div>
                     </div>
                     
-                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex items-center justify-between">
+                    <div className="bg-gradient-to-br from-lime-600 via-green-600 to-emerald-700 text-white rounded-xl p-4 shadow-md shadow-green-600/10 hover:shadow-lg transition-all flex items-center justify-between">
                         <div>
-                            <span className="block text-[9px] text-slate-400 font-bold uppercase">Total Terdistribusikan</span>
-                            <span className="text-xl font-black text-slate-800 tabular-nums">{totalAllocated} <span className="text-xs font-semibold text-slate-500">Porsi</span></span>
+                            <span className="block text-[9px] text-lime-100/90 font-bold uppercase tracking-wider">Total Terdistribusikan</span>
+                            <span className="text-xl font-black text-white tabular-nums">{totalAllocated} <span className="text-xs font-semibold text-lime-100/80">Porsi</span></span>
                         </div>
-                        <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
+                        <div className="p-2.5 rounded-xl bg-white/20 text-white">
                             <MapPin className="w-5 h-5" />
                         </div>
                     </div>
 
-                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm flex items-center justify-between">
+                    <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-xl p-4 shadow-md shadow-amber-500/10 hover:shadow-lg transition-all flex items-center justify-between">
                         <div>
-                            <span className="block text-[9px] text-slate-400 font-bold uppercase">Status Alokasi Porsi</span>
+                            <span className="block text-[9px] text-amber-100/90 font-bold uppercase tracking-wider">Status Alokasi Porsi</span>
                             {totalAllocated === mealTarget ? (
-                                <span className="text-xs font-extrabold text-emerald-600 flex items-center gap-1 mt-1">
+                                <span className="text-xs font-extrabold text-emerald-200 flex items-center gap-1 mt-1">
                                     <CheckCircle className="w-3.5 h-3.5" /> Sesuai Target (100%)
                                 </span>
                             ) : totalAllocated < mealTarget ? (
-                                <span className="text-xs font-extrabold text-amber-600 flex items-center gap-1 mt-1">
+                                <span className="text-xs font-extrabold text-amber-200 flex items-center gap-1 mt-1">
                                     <AlertTriangle className="w-3.5 h-3.5" /> Kurang {mealTarget - totalAllocated} Porsi
                                 </span>
                             ) : (
-                                <span className="text-xs font-extrabold text-rose-600 flex items-center gap-1 mt-1">
+                                <span className="text-xs font-extrabold text-rose-200 flex items-center gap-1 mt-1">
                                     <AlertTriangle className="w-3.5 h-3.5" /> Kelebihan {totalAllocated - mealTarget} Porsi
                                 </span>
                             )}
                         </div>
-                        <div className={`p-2.5 rounded-xl ${totalAllocated === mealTarget ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                        <div className="p-2.5 rounded-xl bg-white/20 text-white">
                             <Utensils className="w-5 h-5" />
                         </div>
                     </div>
