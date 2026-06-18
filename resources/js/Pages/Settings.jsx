@@ -401,7 +401,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleEditShift(s)}
-                                                                className="p-1 rounded bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                                className="p-1 rounded bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 border border-amber-100 transition-colors"
                                                                 title="Edit"
                                                             >
                                                                 <Edit2 className="w-3 h-3" />
@@ -410,7 +410,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleDeleteShift(s.id)}
-                                                                    className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                                    className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors"
                                                                     title="Hapus"
                                                                 >
                                                                     <Trash2 className="w-3 h-3" />
