@@ -240,7 +240,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             // SVG dimensions
                             const w = 600;
                             const h = 200;
-                            const paddingLeft = 45;
+                            const paddingLeft = 30;
                             const paddingRight = 15;
                             const paddingTop = 15;
                             const paddingBottom = 30;
