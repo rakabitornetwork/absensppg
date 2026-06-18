@@ -126,13 +126,13 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                         <div className="lg:col-span-2 space-y-6">
                             
                             {/* Summary & Lock Action */}
-                            <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white rounded-xl p-5 shadow-md shadow-slate-950/20 space-y-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+                            <div className="bg-white border border-slate-100 rounded-xl p-5 shadow-sm space-y-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-3">
                                     <div className="flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-teal-400" />
-                                        <h3 className="text-xs font-extrabold text-white uppercase tracking-wider">Status Realisasi Hari Ini</h3>
+                                        <TrendingUp className="w-4 h-4 text-teal-600" />
+                                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Status Realisasi Hari Ini</h3>
                                     </div>
-                                    <span className="text-[10px] font-bold text-slate-400 tabular-nums">
+                                    <span className="text-[10px] font-bold text-slate-500 tabular-nums">
                                         Tanggal: {todayConfig.date}
                                     </span>
                                 </div>
@@ -141,13 +141,13 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     {/* Radial Progress Gauge */}
                                     <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
                                         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="8" />
+                                            <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
                                             <circle 
                                                 cx="50" 
                                                 cy="50" 
                                                 r="42" 
                                                 fill="none" 
-                                                stroke={allocationPercentage === 100 ? '#10b981' : '#60a5fa'} 
+                                                stroke={allocationPercentage === 100 ? '#10b981' : '#3b82f6'} 
                                                 strokeWidth="8" 
                                                 strokeDasharray={2 * Math.PI * 42}
                                                 strokeDashoffset={2 * Math.PI * 42 * (1 - allocationPercentage / 100)}
@@ -155,7 +155,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                             />
                                         </svg>
                                         <div className="absolute text-center">
-                                            <span className="block text-base font-black text-white tabular-nums">{allocationPercentage}%</span>
+                                            <span className="block text-base font-black text-slate-800 tabular-nums">{allocationPercentage}%</span>
                                             <span className="text-[7.5px] text-slate-400 font-bold uppercase tracking-wider">Tiba</span>
                                         </div>
                                     </div>
@@ -163,17 +163,17 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     {/* Target vs Realized stats */}
                                     <div className="flex-1 w-full space-y-3">
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-white/5 p-2.5 rounded-lg border border-white/10">
+                                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                                                 <span className="block text-[8px] font-bold text-slate-400 uppercase">Target Distribusi</span>
-                                                <span className="text-sm font-black text-white tabular-nums">{mealTarget} <span className="text-[9px] font-normal text-slate-400">Porsi</span></span>
+                                                <span className="text-sm font-black text-slate-700 tabular-nums">{mealTarget} <span className="text-[9px] font-normal text-slate-500">Porsi</span></span>
                                             </div>
-                                            <div className="bg-white/5 p-2.5 rounded-lg border border-white/10">
+                                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                                                 <span className="block text-[8px] font-bold text-slate-400 uppercase">Tiba di Lokasi</span>
-                                                <span className="text-sm font-black text-teal-400 tabular-nums">{totalDelivered} <span className="text-[9px] font-normal text-slate-400">Porsi</span></span>
+                                                <span className="text-sm font-black text-teal-600 tabular-nums">{totalDelivered} <span className="text-[9px] font-normal text-slate-500">Porsi</span></span>
                                             </div>
                                         </div>
 
-                                        <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                                             <div 
                                                 className={`h-full rounded-full transition-all duration-500 ${allocationPercentage === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
                                                 style={{ width: `${allocationPercentage}%` }} 
@@ -183,14 +183,14 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                 </div>
 
                                 {/* Lock action bar */}
-                                <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
+                                <div className="pt-3 border-t border-slate-50 flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-1.5">
                                         {todayConfig.is_locked ? (
-                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
+                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
                                                 <CheckCircle2 className="w-3.5 h-3.5" /> Laporan Dikunci
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
+                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
                                                 <AlertCircle className="w-3.5 h-3.5" /> Menunggu Kunci
                                             </span>
                                         )}
@@ -205,7 +205,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                         <button
                                             type="button"
                                             onClick={handleLockRealisasi}
-                                            className="bg-white hover:bg-slate-100 text-slate-900 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
+                                            className="bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
                                         >
                                             <Lock className="w-3 h-3" />
                                             Kunci Realisasi Hari Ini
