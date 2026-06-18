@@ -542,7 +542,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                             }
                                                             .brand-title {
                                                                 color: #0f766e;
-                                                                font-size: 22px;
+                                                                font-size: 16px;
                                                                 font-weight: 800;
                                                                 text-transform: uppercase;
                                                                 letter-spacing: 0.5px;
@@ -550,7 +550,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                             }
                                                             .brand-subtitle {
                                                                 color: #0d9488;
-                                                                font-size: 13px;
+                                                                font-size: 11px;
                                                                 font-weight: 700;
                                                                 margin: 0 0 6px 0;
                                                                 letter-spacing: 0.5px;
