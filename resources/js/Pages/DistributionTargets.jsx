@@ -34,6 +34,27 @@ export default function DistributionTargets({
 
     const [totalAllocated, setTotalAllocated] = useState(0);
 
+    // Dynamic Kitchen Rundown calculation based on settings.work_start_time
+    const workStart = settings.work_start_time || '06:00';
+    const [startH, startM] = workStart.split(':').map(Number);
+    const getRelativeTime = (offsetHours, offsetMinutes = 0) => {
+        const date = new Date();
+        date.setHours(startH + offsetHours);
+        date.setMinutes(startM + offsetMinutes);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
+
+    const prepStart = getRelativeTime(-1);
+    const prepEnd = getRelativeTime(0);
+    const cookStart = getRelativeTime(0);
+    const cookEnd = getRelativeTime(2);
+    const nutritionStart = getRelativeTime(2);
+    const nutritionEnd = getRelativeTime(2, 30);
+    const deliveryStart = getRelativeTime(2, 30);
+    const deliveryEnd = getRelativeTime(3, 30);
+
     // Calculate total allocated quantity (only when status is 'Delivered' / 'Tiba di Lokasi')
     useEffect(() => {
         const total = data.distribution_points
@@ -374,7 +395,7 @@ export default function DistributionTargets({
                                 <div className="relative">
                                     <span className="absolute -left-[22px] top-0.5 bg-teal-500 rounded-full w-3 h-3 ring-4 ring-white" />
                                     <div>
-                                        <span className="inline-block text-[9px] font-bold text-teal-600 tabular-nums">05:00 - 06:00 WIB</span>
+                                        <span className="inline-block text-[9px] font-bold text-teal-600 tabular-nums">{prepStart} - {prepEnd} WIB</span>
                                         <h4 className="text-[11px] font-extrabold text-slate-800">Persiapan Dapur</h4>
                                         <p className="text-[9px] text-slate-500 leading-tight">Sanitasi ruang dapur, pencucian bahan baku sayur, pemotongan daging ayam.</p>
                                     </div>
@@ -383,7 +404,7 @@ export default function DistributionTargets({
                                 <div className="relative">
                                     <span className="absolute -left-[22px] top-0.5 bg-sky-500 rounded-full w-3 h-3 ring-4 ring-white" />
                                     <div>
-                                        <span className="inline-block text-[9px] font-bold text-sky-600 tabular-nums">06:00 - 08:00 WIB</span>
+                                        <span className="inline-block text-[9px] font-bold text-sky-600 tabular-nums">{cookStart} - {cookEnd} WIB</span>
                                         <h4 className="text-[11px] font-extrabold text-slate-800">Proses Pengolahan Dapur</h4>
                                         <p className="text-[9px] text-slate-500 leading-tight">Memasak karbohidrat, penumisan sayur, penggorengan lauk utama.</p>
                                     </div>
@@ -392,7 +413,7 @@ export default function DistributionTargets({
                                 <div className="relative">
                                     <span className="absolute -left-[22px] top-0.5 bg-amber-500 rounded-full w-3 h-3 ring-4 ring-white" />
                                     <div>
-                                        <span className="inline-block text-[9px] font-bold text-amber-600 tabular-nums">08:00 - 08:30 WIB</span>
+                                        <span className="inline-block text-[9px] font-bold text-amber-600 tabular-nums">{nutritionStart} - {nutritionEnd} WIB</span>
                                         <h4 className="text-[11px] font-extrabold text-slate-800">Pengawasan Nilai Gizi</h4>
                                         <p className="text-[9px] text-slate-500 leading-tight">Inspeksi higienitas & kalori porsi makanan oleh Tenaga Gizi (Dietitian).</p>
                                     </div>
@@ -401,7 +422,7 @@ export default function DistributionTargets({
                                 <div className="relative">
                                     <span className="absolute -left-[22px] top-0.5 bg-indigo-500 rounded-full w-3 h-3 ring-4 ring-white" />
                                     <div>
-                                        <span className="inline-block text-[9px] font-bold text-indigo-600 tabular-nums">08:30 - 09:30 WIB</span>
+                                        <span className="inline-block text-[9px] font-bold text-indigo-600 tabular-nums">{deliveryStart} - {deliveryEnd} WIB</span>
                                         <h4 className="text-[11px] font-extrabold text-slate-800">Penyajian & Pengiriman</h4>
                                         <p className="text-[9px] text-slate-500 leading-tight">Pengepakan dalam kemasan boks higienis dan pendistribusian ke sekolah mitra.</p>
                                     </div>
