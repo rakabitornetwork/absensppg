@@ -315,7 +315,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx}>
                                                         <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
-                                                        <text x={x} y={h - paddingBottom + 14} className="text-[8px] font-bold fill-slate-400" textAnchor="middle">
+                                                        <text x={x} y={h - paddingBottom + 12} className="text-[7.5px] font-semibold fill-slate-400" textAnchor="middle">
                                                             {d.date}
                                                         </text>
                                                     </g>
