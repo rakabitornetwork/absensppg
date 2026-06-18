@@ -320,14 +320,16 @@ export default function DistributionTargets({
                                                 </select>
                                             </div>
                                             {userRole !== 'distributor' && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeDistributionPoint(index)}
-                                                    className="self-end sm:self-center p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors border border-rose-100"
-                                                    title="Hapus lokasi"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
+                                                <div className="flex flex-col justify-end h-full self-stretch sm:pt-3.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeDistributionPoint(index)}
+                                                        className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors border border-rose-100 h-[30px] flex items-center justify-center"
+                                                        title="Hapus lokasi"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     ))
