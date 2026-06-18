@@ -310,7 +310,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx} className="opacity-40">
                                                         <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#e2e8f0" strokeDasharray="3,3" strokeWidth="1" />
-                                                        <text x={paddingLeft - 8} y={y + 3} className="text-[8px] font-semibold fill-slate-400 text-right" textAnchor="end" fontSize="8">{valLabel}</text>
+                                                        <text x={paddingLeft - 8} y={y + 3} className="text-[9.5px] font-normal fill-slate-400 text-right" textAnchor="end" fontSize="9.5">{valLabel}</text>
                                                     </g>
                                                 );
                                             })}
@@ -331,7 +331,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx}>
                                                         <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
-                                                        <text x={x} y={h - paddingBottom + 12} className="text-[8px] font-semibold fill-slate-400" textAnchor="middle" fontSize="8">
+                                                        <text x={x} y={h - paddingBottom + 12} className="text-[9.5px] font-normal fill-slate-400" textAnchor="middle" fontSize="9.5">
                                                             {formatDateLabel(d.date)}
                                                         </text>
                                                     </g>
