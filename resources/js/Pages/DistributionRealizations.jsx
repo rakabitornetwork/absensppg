@@ -130,54 +130,93 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-3">
                                     <div className="flex items-center gap-2">
                                         <TrendingUp className="w-4 h-4 text-teal-600" />
-                                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Status Realisasi Hari Ini</h3>
+                                        <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Realisasi Distribusi Bulanan</h3>
                                     </div>
                                     <span className="text-[10px] font-bold text-slate-500 tabular-nums">
-                                        Tanggal: {todayConfig.date}
+                                        Rata-rata Sukses: {averageSuccessRate}%
                                     </span>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row items-center gap-6">
-                                    {/* Radial Progress Gauge */}
-                                    <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
-                                        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                                            <circle 
-                                                cx="50" 
-                                                cy="50" 
-                                                r="42" 
-                                                fill="none" 
-                                                stroke={allocationPercentage === 100 ? '#10b981' : '#3b82f6'} 
-                                                strokeWidth="8" 
-                                                strokeDasharray={2 * Math.PI * 42}
-                                                strokeDashoffset={2 * Math.PI * 42 * (1 - allocationPercentage / 100)}
-                                                strokeLinecap="round"
-                                            />
-                                        </svg>
-                                        <div className="absolute text-center">
-                                            <span className="block text-base font-black text-slate-800 tabular-nums">{allocationPercentage}%</span>
-                                            <span className="text-[7.5px] text-slate-400 font-bold uppercase tracking-wider">Tiba</span>
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                                    {/* Monthly chart graphic wrapper */}
+                                    <div className="md:col-span-8 w-full">
+                                        {points.length === 0 ? (
+                                            <p className="text-xs text-slate-400 text-center py-6 font-bold">Belum ada sejarah data distribusi.</p>
+                                        ) : (
+                                            <div className="w-full">
+                                                <svg className="w-full h-auto overflow-visible" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+                                                    {/* Grid Lines */}
+                                                    <line x1={padding} y1={padding} x2={chartWidth - padding} y2={padding} stroke="#f1f5f9" strokeDasharray="3" />
+                                                    <line x1={padding} y1={chartHeight / 2} x2={chartWidth - padding} y2={chartHeight / 2} stroke="#f1f5f9" strokeDasharray="3" />
+                                                    <line x1={padding} y1={chartHeight - padding} x2={chartWidth - padding} y2={chartHeight - padding} stroke="#e2e8f0" />
+                                                    
+                                                    {/* Area Fill */}
+                                                    <path d={areaD} fill="url(#widget-chart-gradient)" opacity="0.15" />
+                                                    
+                                                    {/* Trend Line (Blue) */}
+                                                    <path d={pathD} fill="none" stroke="#0ea5e9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                    
+                                                    {/* Target Line (Orange dotted to replicate multiple graph design) */}
+                                                    <path 
+                                                        d={points.map((p, idx) => {
+                                                            const targetY = chartHeight - padding - ((chartData[idx]?.total_target || 250) / maxVal) * (chartHeight - 2 * padding);
+                                                            return `${idx === 0 ? 'M' : 'L'} ${p.x} ${targetY}`;
+                                                        }).join(' ')} 
+                                                        fill="none" 
+                                                        stroke="#f97316" 
+                                                        strokeWidth="1.5" 
+                                                        strokeDasharray="4"
+                                                        strokeLinecap="round" 
+                                                        strokeLinejoin="round" 
+                                                    />
+                                                    
+                                                    {/* Gradient Def */}
+                                                    <defs>
+                                                        <linearGradient id="widget-chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                                                            <stop offset="0%" stopColor="#0ea5e9" />
+                                                            <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0" />
+                                                        </linearGradient>
+                                                    </defs>
+
+                                                    {/* Interaction Dots */}
+                                                    {points.map((p, idx) => (
+                                                        <circle
+                                                            key={idx}
+                                                            cx={p.x}
+                                                            cy={p.y}
+                                                            r="3.5"
+                                                            fill="#ffffff"
+                                                            stroke="#0ea5e9"
+                                                            strokeWidth="2"
+                                                            className="cursor-pointer hover:r-5 transition-all"
+                                                            title={`Tanggal: ${p.date}, Porsi: ${p.val}`}
+                                                        />
+                                                    ))}
+                                                </svg>
+                                                <div className="flex justify-between text-[8px] font-bold text-slate-400 uppercase tracking-wider px-2.5 mt-2.5">
+                                                    <span>{chartData[0]?.date || ''}</span>
+                                                    <span>{chartData[Math.floor(chartData.length / 2)]?.date || ''}</span>
+                                                    <span>{chartData[chartData.length - 1]?.date || ''}</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Target vs Realized stats */}
-                                    <div className="flex-1 w-full space-y-3">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                                                <span className="block text-[8px] font-bold text-slate-400 uppercase">Target Distribusi</span>
-                                                <span className="text-sm font-black text-slate-700 tabular-nums">{mealTarget} <span className="text-[9px] font-normal text-slate-500">Porsi</span></span>
+                                    <div className="md:col-span-4 w-full space-y-3">
+                                        <div className="space-y-2.5">
+                                            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                                <span className="block text-[8px] font-bold text-slate-400 uppercase">Total Target Sebulan</span>
+                                                <span className="text-base font-black text-slate-700 tabular-nums">
+                                                    {history.reduce((sum, item) => sum + (item.total_target || 0), 0)} <span className="text-[9px] font-normal text-slate-500">Porsi</span>
+                                                </span>
                                             </div>
-                                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                                                <span className="block text-[8px] font-bold text-slate-400 uppercase">Tiba di Lokasi</span>
-                                                <span className="text-sm font-black text-teal-600 tabular-nums">{totalDelivered} <span className="text-[9px] font-normal text-slate-500">Porsi</span></span>
+                                            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                                <span className="block text-[8px] font-bold text-slate-400 uppercase">Sukses Terkirim</span>
+                                                <span className="text-base font-black text-teal-600 tabular-nums">
+                                                    {totalDeliveredMonthly} <span className="text-[9px] font-normal text-slate-500">Porsi</span>
+                                                </span>
                                             </div>
-                                        </div>
-
-                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                            <div 
-                                                className={`h-full rounded-full transition-all duration-500 ${allocationPercentage === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
-                                                style={{ width: `${allocationPercentage}%` }} 
-                                            />
                                         </div>
                                     </div>
                                 </div>
