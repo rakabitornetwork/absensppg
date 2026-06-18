@@ -29,7 +29,6 @@ class SettingController extends Controller
             'work_start_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
             'late_grace_time' => ['required', 'string', 'regex:/^\d{2}:\d{2}$/'],
             'late_penalty_per_minute' => ['required', 'numeric', 'min:0'],
-            'meal_target' => ['required', 'numeric', 'min:0'],
             'app_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
             'app_title' => ['required', 'string', 'max:50'],
             'app_subtitle' => ['required', 'string', 'max:50'],

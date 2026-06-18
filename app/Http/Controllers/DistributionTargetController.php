@@ -74,10 +74,12 @@ class DistributionTargetController extends Controller
         $request->validate([
             'today_menu' => ['required', 'array'],
             'distribution_points' => ['required', 'array'],
+            'meal_target' => ['required', 'numeric', 'min:0'],
         ]);
 
         SppgSetting::setValue('today_menu', json_encode($request->today_menu));
         SppgSetting::setValue('distribution_points', json_encode($request->distribution_points));
+        SppgSetting::setValue('meal_target', (string) $request->meal_target);
 
         return redirect()->back()->with('success', 'Data distribusi harian berhasil diperbarui.');
     }

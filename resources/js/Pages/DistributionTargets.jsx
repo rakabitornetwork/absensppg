@@ -24,12 +24,13 @@ export default function DistributionTargets({
 }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
-    const mealTarget = parseInt(settings.meal_target) || 250;
-
     const { data, setData, post, processing, errors } = useForm({
         today_menu: todayMenu,
-        distribution_points: distributionPoints
+        distribution_points: distributionPoints,
+        meal_target: settings.meal_target || 250
     });
+
+    const mealTarget = parseInt(data.meal_target) || 0;
 
     const [totalAllocated, setTotalAllocated] = useState(0);
 
@@ -158,6 +159,22 @@ export default function DistributionTargets({
                             </div>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-1 sm:col-span-2 border-b border-slate-100 pb-3 mb-1">
+                                    <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                        <CookingPot className="w-3.5 h-3.5 text-teal-600" />
+                                        Target Makan Gratis (Porsi/Hari)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        value={data.meal_target} 
+                                        onChange={(e) => setData('meal_target', e.target.value)}
+                                        className="w-full sm:w-1/3 text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums font-bold" 
+                                        min="0"
+                                        required
+                                        disabled={userRole === 'distributor'}
+                                    />
+                                    {errors.meal_target && <p className="text-[10px] text-rose-600 mt-1">{errors.meal_target}</p>}
+                                </div>
                                 <div className="space-y-1">
                                     <label className="block text-[10px] font-bold text-slate-700 uppercase">Karbohidrat Utama</label>
                                     <input 
