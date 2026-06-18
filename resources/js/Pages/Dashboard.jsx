@@ -344,6 +344,15 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                 labelIndices.push(distributionHistory.length - 1);
                             }
 
+                            const tooltipPct = hoveredIdx !== null && ptsTarget[hoveredIdx] 
+                                ? (ptsTarget[hoveredIdx].x - paddingLeft) / (w - paddingLeft - paddingRight || 1)
+                                : 0.5;
+                            const tooltipTranslateX = tooltipPct < 0.25 
+                                ? '10px' 
+                                : tooltipPct > 0.75 
+                                    ? 'calc(-100% - 10px)' 
+                                    : '-50%';
+
                             return (
                                 <div className="space-y-5 relative">
                                     {/* SVG Container */}
@@ -465,7 +474,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 style={{
                                                     left: `${((ptsTarget[hoveredIdx].x - paddingLeft) / (w - paddingLeft - paddingRight)) * 100}%`,
                                                     top: '15px',
-                                                    transform: 'translateX(-50%)',
+                                                    transform: `translateX(${tooltipTranslateX})`,
                                                 }}
                                             >
                                                 <div className="font-extrabold text-slate-900 border-b border-slate-100 pb-1 mb-1 text-[9px] uppercase tracking-wider">
