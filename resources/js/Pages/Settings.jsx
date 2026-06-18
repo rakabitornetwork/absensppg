@@ -182,7 +182,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         {/* App Title & Subtitle Grid */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
                                     <Building className="w-3.5 h-3.5 text-slate-400" />
                                     Judul Aplikasi (Sidebar)
                                 </label>
@@ -198,7 +198,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 {errors.app_title && <p className="text-[10px] text-rose-600 mt-1">{errors.app_title}</p>}
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
                                     <Building className="w-3.5 h-3.5 text-slate-400" />
                                     Sub-judul Aplikasi (Sidebar)
                                 </label>
@@ -218,7 +218,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         {/* Default Shifts grid */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
                                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                                     Jam Masuk Kerja (Default)
                                 </label>
@@ -233,7 +233,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 {errors.work_start_time && <p className="text-[10px] text-rose-600 mt-1">{errors.work_start_time}</p>}
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
                                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                                     Batas Toleransi (Default)
                                 </label>
@@ -250,20 +250,23 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         </div>
 
                         {/* Financial penalty */}
-                        <div className="max-w-sm">
-                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                                Denda Terlambat (per Menit)
-                            </label>
-                            <input
-                                type="number"
-                                value={data.late_penalty_per_minute}
-                                onChange={(e) => setData('late_penalty_per_minute', e.target.value)}
-                                className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums font-bold"
-                                min="0"
-                                required
-                            />
-                            {errors.late_penalty_per_minute && <p className="text-[10px] text-rose-600 mt-1">{errors.late_penalty_per_minute}</p>}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                    <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                                    Denda Terlambat (per Menit)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={data.late_penalty_per_minute}
+                                    onChange={(e) => setData('late_penalty_per_minute', e.target.value)}
+                                    className="w-full text-xs p-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums font-bold"
+                                    min="0"
+                                    required
+                                />
+                                {errors.late_penalty_per_minute && <p className="text-[10px] text-rose-600 mt-1">{errors.late_penalty_per_minute}</p>}
+                            </div>
+                            <div />
                         </div>
 
                         {/* Contact Info Section */}
