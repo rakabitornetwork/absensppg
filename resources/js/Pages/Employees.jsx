@@ -100,7 +100,7 @@ export default function Employees({ employees = [], shifts = [] }) {
         email: '',
         phone: '',
         base_salary: 0,
-        daily_allowance: 0,
+        weekly_allowance: 0,
         status: 'Active',
         photo: null,
         photo_path: '',
@@ -128,7 +128,7 @@ export default function Employees({ employees = [], shifts = [] }) {
             email: '',
             phone: '',
             base_salary: 0,
-            daily_allowance: 0,
+            weekly_allowance: 0,
             status: 'Active',
             photo: null,
             photo_path: '',
@@ -148,7 +148,7 @@ export default function Employees({ employees = [], shifts = [] }) {
             email: emp.email || '',
             phone: emp.phone || '',
             base_salary: emp.base_salary,
-            daily_allowance: emp.daily_allowance,
+            weekly_allowance: emp.weekly_allowance,
             status: emp.status,
             photo: null,
             photo_path: emp.photo_path || '',
@@ -355,7 +355,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     <th className="w-[170px] py-2.5 px-3">Posisi / Kontak</th>
                                     <th className="w-[145px] py-2.5 px-3">Shift Kerja</th>
                                     <th className="w-[125px] py-2.5 px-3 text-right">Gaji Pokok</th>
-                                    <th className="w-[125px] py-2.5 px-3 text-right">Uang Harian</th>
+                                    <th className="w-[125px] py-2.5 px-3 text-right">Uang Mingguan</th>
                                     <th className="w-[78px] py-2.5 px-3 text-center">Status</th>
                                     <th className="w-[110px] py-2.5 pl-3 text-right">Aksi</th>
                                 </tr>
@@ -400,7 +400,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                 {formatRupiah(emp.base_salary)}
                                             </td>
                                             <td className="py-3 px-3 text-right font-extrabold text-slate-800 tabular-nums align-middle whitespace-nowrap">
-                                                {formatRupiah(emp.daily_allowance)}
+                                                {formatRupiah(emp.weekly_allowance)}
                                             </td>
                                             <td className="py-2.5 px-3 text-center align-middle">
                                                 <span className={`inline-block w-2 h-2 rounded-full ${emp.status === 'Active' ? 'bg-green-500' : 'bg-slate-300'}`} title={emp.status} />
@@ -610,13 +610,13 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Uang Harian (Transport/Makan)</label>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Uang Mingguan (Transport/Makan)</label>
                                     <input
                                         type="text"
-                                        value={formatInputNumber(data.daily_allowance)}
-                                        onChange={(e) => setData('daily_allowance', cleanNumber(e.target.value))}
+                                        value={formatInputNumber(data.weekly_allowance)}
+                                        onChange={(e) => setData('weekly_allowance', cleanNumber(e.target.value))}
                                         className="w-full text-xs p-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 tabular-nums"
-                                        placeholder="Contoh: 50.000"
+                                        placeholder="Contoh: 250.000"
                                     />
                                 </div>
                             </div>

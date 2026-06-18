@@ -17,7 +17,7 @@ class Payroll extends Model
         'days_present',
         'days_late',
         'base_salary',
-        'daily_allowances_total',
+        'weekly_allowances_total',
         'bonuses',
         'deductions',
         'net_salary',

@@ -18,7 +18,7 @@ class Employee extends Model
         'email',
         'phone',
         'base_salary',
-        'daily_allowance',
+        'weekly_allowance',
         'status',
         'qr_token',
         'photo_path',

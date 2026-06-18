@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'budi.santoso@sppg.com',
                 'phone' => '081234567890',
                 'base_salary' => 6500000,
-                'daily_allowance' => 35000,
+                'weekly_allowance' => 350000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-BUDI-001',
                 'shift_id' => $shiftStandar->id,
@@ -119,7 +119,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'siti.rahma@sppg.com',
                 'phone' => '081234567891',
                 'base_salary' => 4800000,
-                'daily_allowance' => 30000,
+                'weekly_allowance' => 300000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-SITI-002',
                 'shift_id' => $shiftStandar->id,
@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'agus.wijaya@sppg.com',
                 'phone' => '081234567892',
                 'base_salary' => 4000000,
-                'daily_allowance' => 25000,
+                'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-AGUS-003',
                 'shift_id' => $shiftPagi->id,
@@ -143,7 +143,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'lina.marlina@sppg.com',
                 'phone' => '081234567893',
                 'base_salary' => 3200000,
-                'daily_allowance' => 25000,
+                'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-LINA-004',
                 'shift_id' => $shiftPagi->id,
@@ -155,7 +155,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'eko.prasetyo@sppg.com',
                 'phone' => '081234567894',
                 'base_salary' => 3500000,
-                'daily_allowance' => 35000,
+                'weekly_allowance' => 350000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-EKO-005',
                 'shift_id' => $shiftSiang->id,
@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'dewi.lestari@sppg.com',
                 'phone' => '081234567895',
                 'base_salary' => 3800000,
-                'daily_allowance' => 25000,
+                'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-DEWI-006',
                 'shift_id' => $shiftStandar->id,
@@ -295,7 +295,18 @@ class DatabaseSeeder extends Seeder
             $daysLate = $lateDaysCount[$emp->id];
 
             $baseSalary = $emp->base_salary;
-            $allowanceTotal = $daysPresent * $emp->daily_allowance;
+            
+            // Calculate weeks present in May 2026
+            $attendances = Attendance::where('employee_id', $emp->id)
+                ->whereMonth('date', 5)
+                ->whereYear('date', 2026)
+                ->get();
+            $weeksPresent = $attendances->whereIn('status', ['Present', 'Late'])
+                ->map(fn($att) => \Carbon\Carbon::parse($att->date)->weekOfYear)
+                ->unique()
+                ->count();
+                
+            $allowanceTotal = $weeksPresent * $emp->weekly_allowance;
             
             // Penalty: Rp 1.000 per minute late, or another policy
             // Let's check from all May attendances
@@ -325,7 +336,7 @@ class DatabaseSeeder extends Seeder
                     'days_present' => $daysPresent,
                     'days_late' => $daysLate,
                     'base_salary' => $baseSalary,
-                    'daily_allowances_total' => $allowanceTotal,
+                    'weekly_allowances_total' => $allowanceTotal,
                     'bonuses' => $bonus,
                     'deductions' => $deductions,
                     'net_salary' => $netSalary,

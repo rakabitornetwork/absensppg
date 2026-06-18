@@ -110,9 +110,9 @@ export default function Payslip({ payroll, settings, kepalaSatuan }) {
                             </div>
                             <div className="flex justify-between font-semibold">
                                 <span className="text-slate-600">
-                                    2. Tunjangan Harian Kehadiran ({payroll.days_present} Hari * {formatRupiah(payroll.employee.daily_allowance)})
+                                    2. Tunjangan Mingguan Kehadiran ({payroll.employee.weekly_allowance > 0 ? Math.round(payroll.weekly_allowances_total / payroll.employee.weekly_allowance) : 0} Minggu * {formatRupiah(payroll.employee.weekly_allowance)})
                                 </span>
-                                <span className="font-bold text-slate-800 tabular-nums">{formatRupiah(payroll.daily_allowances_total)}</span>
+                                <span className="font-bold text-slate-800 tabular-nums">{formatRupiah(payroll.weekly_allowances_total)}</span>
                             </div>
                             {payroll.bonuses > 0 && (
                                 <div className="flex justify-between font-semibold">

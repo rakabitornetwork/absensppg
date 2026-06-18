@@ -58,7 +58,13 @@ class PayrollController extends Controller
 
             // Calculations
             $baseSalary = $emp->base_salary;
-            $allowanceTotal = $daysPresent * $emp->daily_allowance;
+            $weeksPresent = $attendances->whereIn('status', ['Present', 'Late'])
+                ->map(function ($att) {
+                    return Carbon::parse($att->date)->weekOfYear;
+                })
+                ->unique()
+                ->count();
+            $allowanceTotal = $weeksPresent * $emp->weekly_allowance;
 
             // Late Penalty
             $lateDeduction = $totalLateMinutes * $latePenalty;
@@ -96,7 +102,7 @@ class PayrollController extends Controller
                     'days_present' => $daysPresent,
                     'days_late' => $daysLate,
                     'base_salary' => $baseSalary,
-                    'daily_allowances_total' => $allowanceTotal,
+                    'weekly_allowances_total' => $allowanceTotal,
                     'bonuses' => $bonus,
                     'deductions' => $totalDeduction,
                     'net_salary' => $netSalary,
@@ -116,7 +122,7 @@ class PayrollController extends Controller
             'status' => ['required', 'string', 'in:Draft,Approved,Paid'],
         ]);
 
-        $netSalary = $payroll->base_salary + $payroll->daily_allowances_total + $validated['bonuses'] - $validated['deductions'];
+        $netSalary = $payroll->base_salary + $payroll->weekly_allowances_total + $validated['bonuses'] - $validated['deductions'];
         if ($netSalary < 0) {
             $netSalary = 0;
         }

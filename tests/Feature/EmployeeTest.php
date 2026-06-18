@@ -35,7 +35,7 @@ class EmployeeTest extends TestCase
             'email' => 'karyawan.a@sppg.com',
             'phone' => '081234567890',
             'base_salary' => 6500000,
-            'daily_allowance' => 35000,
+            'weekly_allowance' => 35000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-A',
         ]);
@@ -47,7 +47,7 @@ class EmployeeTest extends TestCase
             'email' => 'karyawan.b@sppg.com',
             'phone' => '081234567891',
             'base_salary' => 4800000,
-            'daily_allowance' => 30000,
+            'weekly_allowance' => 30000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-B',
         ]);
@@ -59,7 +59,7 @@ class EmployeeTest extends TestCase
             'email' => 'karyawan.c@sppg.com',
             'phone' => '081234567892',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-C',
         ]);
@@ -96,7 +96,7 @@ class EmployeeTest extends TestCase
                 'email' => 'karyawan.d@sppg.com',
                 'phone' => '081234567893',
                 'base_salary' => 4000000,
-                'daily_allowance' => 25000,
+                'weekly_allowance' => 25000,
                 'status' => 'Active',
                 'photo' => $file,
             ]);
@@ -130,7 +130,7 @@ class EmployeeTest extends TestCase
             'email' => 'karyawan.e@sppg.com',
             'phone' => '081234567894',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-E',
         ]);
@@ -163,7 +163,7 @@ class EmployeeTest extends TestCase
             'email' => 'karyawan.f@sppg.com',
             'phone' => '081234567895',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-F',
         ]);

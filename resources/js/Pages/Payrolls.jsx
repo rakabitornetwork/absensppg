@@ -160,7 +160,7 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                 <th className="w-[210px] py-2.5 pr-5">Karyawan (NIP)</th>
                                 <th className="w-[92px] py-2.5 px-3 text-center">Kehadiran</th>
                                 <th className="w-[130px] py-2.5 px-3 text-right">Gaji Pokok</th>
-                                <th className="w-[130px] py-2.5 px-3 text-right">Tunj. Harian</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right">Tunj. Mingguan</th>
                                 <th className="w-[110px] py-2.5 px-3 text-right text-teal-700">Bonus</th>
                                 <th className="w-[130px] py-2.5 px-3 text-right text-rose-700">Potongan</th>
                                 <th className="w-[145px] py-2.5 px-3 text-right">Gaji Bersih</th>
@@ -196,7 +196,7 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                             )}
                                         </td>
                                         <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.base_salary)}</td>
-                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.daily_allowances_total)}</td>
+                                        <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.weekly_allowances_total)}</td>
                                         <td className="py-3 px-3 text-right font-bold tabular-nums text-teal-600 align-middle whitespace-nowrap">+{formatRupiah(p.bonuses)}</td>
                                         <td className="py-3 px-3 text-right font-bold tabular-nums text-rose-600 align-middle whitespace-nowrap">-{formatRupiah(p.deductions)}</td>
                                         <td className="py-3 px-3 text-right font-extrabold tabular-nums text-slate-950 bg-slate-50/30 align-middle whitespace-nowrap">{formatRupiah(p.net_salary)}</td>

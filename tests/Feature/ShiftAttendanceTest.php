@@ -31,6 +31,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         // 1. Create Shift
@@ -73,6 +74,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         // Create a custom shift
@@ -91,7 +93,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'budi.shift@sppg.com',
             'phone' => '081234567895',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-BUDI-SHIFT',
             'shift_id' => $shift->id,
@@ -141,6 +143,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $shift = Shift::create([
@@ -157,7 +160,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'malam@sppg.com',
             'phone' => '081234567866',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-MALAM',
             'shift_id' => $shift->id,
@@ -191,6 +194,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $shift = Shift::create([
@@ -207,7 +211,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'pulang.malam@sppg.com',
             'phone' => '081234567865',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-PULANG-MALAM',
             'shift_id' => $shift->id,
@@ -245,6 +249,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $shift = Shift::create([
@@ -261,7 +266,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'pulang.awal@sppg.com',
             'phone' => '081234567864',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-PULANG-AWAL',
             'shift_id' => $shift->id,
@@ -300,6 +305,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $shift = Shift::create([
@@ -316,7 +322,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'pulang.awal.malam@sppg.com',
             'phone' => '081234567863',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-PULANG-AWAL-MALAM',
             'shift_id' => $shift->id,
@@ -354,6 +360,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $employee = Employee::create([
@@ -363,7 +370,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'hapus@sppg.com',
             'phone' => '081234567896',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-HAPUS',
         ]);
@@ -391,6 +398,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $employee = Employee::create([
@@ -400,7 +408,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'mode@sppg.com',
             'phone' => '081234567897',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-MODE',
         ]);
@@ -448,6 +456,7 @@ class ShiftAttendanceTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         Employee::create([
@@ -457,7 +466,7 @@ class ShiftAttendanceTest extends TestCase
             'email' => 'pulang.dulu@sppg.com',
             'phone' => '081234567876',
             'base_salary' => 4000000,
-            'daily_allowance' => 25000,
+            'weekly_allowance' => 25000,
             'status' => 'Active',
             'qr_token' => 'TOKEN-PULANG-DULU',
         ]);
