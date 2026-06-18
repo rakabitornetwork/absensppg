@@ -58,13 +58,16 @@ class PayrollController extends Controller
 
             // Calculations
             $baseSalary = $emp->base_salary;
-            $weeksPresent = $attendances->whereIn('status', ['Present', 'Late'])
-                ->map(function ($att) {
+            $allowanceTotal = 0;
+            $attendancesByWeek = $attendances->whereIn('status', ['Present', 'Late'])
+                ->groupBy(function ($att) {
                     return Carbon::parse($att->date)->weekOfYear;
-                })
-                ->unique()
-                ->count();
-            $allowanceTotal = $weeksPresent * $emp->weekly_allowance;
+                });
+            foreach ($attendancesByWeek as $weekAttendances) {
+                $daysInWeek = $weekAttendances->count();
+                $allowanceTotal += min($daysInWeek, 5) * ($emp->weekly_allowance / 5);
+            }
+            $allowanceTotal = (int) round($allowanceTotal);
 
             // Late Penalty
             $lateDeduction = $totalLateMinutes * $latePenalty;

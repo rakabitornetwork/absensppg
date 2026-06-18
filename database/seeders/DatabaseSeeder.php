@@ -301,12 +301,15 @@ class DatabaseSeeder extends Seeder
                 ->whereMonth('date', 5)
                 ->whereYear('date', 2026)
                 ->get();
-            $weeksPresent = $attendances->whereIn('status', ['Present', 'Late'])
-                ->map(fn($att) => \Carbon\Carbon::parse($att->date)->weekOfYear)
-                ->unique()
-                ->count();
+            $allowanceTotal = 0;
+            $attendancesByWeek = $attendances->whereIn('status', ['Present', 'Late'])
+                ->groupBy(fn($att) => \Carbon\Carbon::parse($att->date)->weekOfYear);
                 
-            $allowanceTotal = $weeksPresent * $emp->weekly_allowance;
+            foreach ($attendancesByWeek as $weekAttendances) {
+                $daysInWeek = $weekAttendances->count();
+                $allowanceTotal += min($daysInWeek, 5) * ($emp->weekly_allowance / 5);
+            }
+            $allowanceTotal = (int) round($allowanceTotal);
             
             // Penalty: Rp 1.000 per minute late, or another policy
             // Let's check from all May attendances
