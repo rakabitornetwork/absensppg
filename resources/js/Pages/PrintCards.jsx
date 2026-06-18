@@ -108,8 +108,8 @@ export default function PrintCards({ employees = [] }) {
                                 {/* Detail Strip */}
                                 <div className="mt-3 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
                                     <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[5.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
-                                        <span className="text-[7px] font-black text-white tabular-nums truncate">{emp.nip}</span>
+                                        <span className="text-[8.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
+                                        <span className="text-[10.5px] font-black text-white tabular-nums truncate">{emp.nip}</span>
                                     </div>
                                 </div>
 
