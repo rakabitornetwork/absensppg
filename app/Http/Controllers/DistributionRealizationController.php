@@ -65,6 +65,7 @@ class DistributionRealizationController extends Controller
             ],
             'history' => $history,
             'shifts' => Shift::all(),
+            'systemSettings' => $settings,
         ]);
     }
 

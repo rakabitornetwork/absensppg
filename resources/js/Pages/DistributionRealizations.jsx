@@ -18,7 +18,7 @@ import {
     Trash2
 } from 'lucide-react';
 
-export default function DistributionRealizations({ todayConfig = {}, history = [], shifts = [] }) {
+export default function DistributionRealizations({ todayConfig = {}, history = [], shifts = [], systemSettings = {} }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
     const [activeTab, setActiveTab] = useState('daily'); // 'daily' or 'monthly'
@@ -495,17 +495,21 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     </button>
                                     <button 
                                         onClick={() => {
+                                            const appName = systemSettings.app_name || 'SPPG Sukajadi';
                                             const printContent = `
                                                 <html>
                                                     <head>
-                                                        <title>Histori Laporan Log Distribusi SPPG</title>
+                                                        <title>Histori Laporan Log Distribusi - ${appName}</title>
                                                         <link rel="preconnect" href="https://fonts.googleapis.com">
                                                         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                                                         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
                                                         <style>
                                                             @media print {
                                                                 body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                                                                @page { margin: 20mm; }
+                                                                @page { 
+                                                                    size: A4; 
+                                                                    margin: 20mm 15mm 20mm 15mm; 
+                                                                }
                                                             }
                                                             body { 
                                                                 font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -604,7 +608,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                     <body>
                                                         <div class="header-container">
                                                             <div>
-                                                                <h1 class="brand-title">SPPG Sukajadi</h1>
+                                                                <h1 class="brand-title">${appName}</h1>
                                                                 <p class="brand-subtitle">Histori Laporan Log Realisasi Distribusi Gizi</p>
                                                             </div>
                                                             <div class="document-meta">
