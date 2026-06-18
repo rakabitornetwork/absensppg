@@ -15,7 +15,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/scanner');
     }
 
     public function test_authenticated_user_accessing_login_redirects_to_home(): void
@@ -28,6 +28,6 @@ class ExampleTest extends TestCase
 
         $response = $this->actingAs($user)->get('/login');
 
-        $response->assertRedirect('/');
+        $response->assertRedirect('/dashboard');
     }
 }
