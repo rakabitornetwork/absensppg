@@ -84,7 +84,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
             clock_in: dayRecord?.clock_in || '',
             clock_out: dayRecord?.clock_out || '',
             status: dayRecord?.status || 'Present',
-            notes: '',
+            notes: dayRecord?.notes || '',
         });
         
         setSelectedRecord({

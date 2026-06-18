@@ -38,6 +38,7 @@ class AttendanceController extends Controller
                     'clock_in' => $att->clock_in ? Carbon::parse($att->clock_in)->format('H:i') : null,
                     'clock_out' => $att->clock_out ? Carbon::parse($att->clock_out)->format('H:i') : null,
                     'late_minutes' => $att->late_minutes,
+                    'notes' => $att->notes,
                 ];
             }
 
