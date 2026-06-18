@@ -180,9 +180,9 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         </div>
 
                         {/* App Title & Subtitle Grid */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 sm:min-h-[28px]">
                                     <Building className="w-3.5 h-3.5 text-slate-400" />
                                     Judul Aplikasi (Sidebar)
                                 </label>
@@ -198,7 +198,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 {errors.app_title && <p className="text-[10px] text-rose-600 mt-1">{errors.app_title}</p>}
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 sm:min-h-[28px]">
                                     <Building className="w-3.5 h-3.5 text-slate-400" />
                                     Sub-judul Aplikasi (Sidebar)
                                 </label>
@@ -216,9 +216,9 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         </div>
 
                         {/* Default Shifts grid */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 sm:min-h-[28px]">
                                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                                     Jam Masuk Kerja (Default)
                                 </label>
@@ -233,7 +233,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 {errors.work_start_time && <p className="text-[10px] text-rose-600 mt-1">{errors.work_start_time}</p>}
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 sm:min-h-[28px]">
                                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                                     Batas Toleransi (Default)
                                 </label>
@@ -250,9 +250,9 @@ export default function Settings({ settings = {}, shifts = [] }) {
                         </div>
 
                         {/* Financial penalty */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 min-h-[28px]">
+                                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1 sm:min-h-[28px]">
                                     <DollarSign className="w-3.5 h-3.5 text-slate-400" />
                                     Denda Terlambat (per Menit)
                                 </label>
@@ -266,7 +266,7 @@ export default function Settings({ settings = {}, shifts = [] }) {
                                 />
                                 {errors.late_penalty_per_minute && <p className="text-[10px] text-rose-600 mt-1">{errors.late_penalty_per_minute}</p>}
                             </div>
-                            <div />
+                            <div className="hidden sm:block" />
                         </div>
 
                         {/* Contact Info Section */}
