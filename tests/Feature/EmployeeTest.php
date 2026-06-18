@@ -25,6 +25,7 @@ class EmployeeTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'superadmin',
         ]);
 
         $employee1 = Employee::create([
@@ -81,6 +82,7 @@ class EmployeeTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
+            'role' => 'admin',
         ]);
 
         \Illuminate\Support\Facades\Storage::fake('public');
@@ -110,5 +112,71 @@ class EmployeeTest extends TestCase
         if (file_exists($localPath)) {
             @unlink($localPath);
         }
+    }
+
+    public function test_admin_can_update_custom_role(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-105',
+            'name' => 'Karyawan E',
+            'role' => 'Asisten Lapangan',
+            'email' => 'karyawan.e@sppg.com',
+            'phone' => '081234567894',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'SPPG-TOKEN-E',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post('/employees/roles/update', [
+                'old_role' => 'Asisten Lapangan',
+                'new_role' => 'Asisten Lapangan Baru',
+            ]);
+
+        $response->assertRedirect();
+        
+        $employee->refresh();
+        $this->assertEquals('Asisten Lapangan Baru', $employee->role);
+    }
+
+    public function test_admin_can_delete_custom_role(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-106',
+            'name' => 'Karyawan F',
+            'role' => 'Team Persiapan',
+            'email' => 'karyawan.f@sppg.com',
+            'phone' => '081234567895',
+            'base_salary' => 4000000,
+            'daily_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'SPPG-TOKEN-F',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post('/employees/roles/delete', [
+                'role' => 'Team Persiapan',
+            ]);
+
+        $response->assertRedirect();
+        
+        $employee->refresh();
+        // Should be reassigned to the default 'Juru Masak'
+        $this->assertEquals('Juru Masak', $employee->role);
     }
 }

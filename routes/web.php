@@ -45,6 +45,8 @@ Route::middleware(['auth'])->group(function () {
         // Karyawan CRUD (Write/Edit)
         Route::get('/employees', [EmployeeController::class, 'index']);
         Route::post('/employees', [EmployeeController::class, 'store']);
+        Route::post('/employees/roles/update', [EmployeeController::class, 'updateRole']);
+        Route::post('/employees/roles/delete', [EmployeeController::class, 'destroyRole']);
         Route::post('/employees/{employee}/update', [EmployeeController::class, 'update']);
         Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 

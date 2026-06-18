@@ -137,4 +137,30 @@ class EmployeeController extends Controller
             'employees' => $employees,
         ]);
     }
+
+    public function updateRole(Request $request)
+    {
+        $validated = $request->validate([
+            'old_role' => ['required', 'string'],
+            'new_role' => ['required', 'string', 'max:255'],
+        ]);
+
+        Employee::where('role', $validated['old_role'])
+            ->update(['role' => $validated['new_role']]);
+
+        return redirect()->back()->with('success', 'Nama posisi/jabatan berhasil diperbarui.');
+    }
+
+    public function destroyRole(Request $request)
+    {
+        $validated = $request->validate([
+            'role' => ['required', 'string'],
+        ]);
+
+        // Reassign employees with this role to 'Juru Masak'
+        Employee::where('role', $validated['role'])
+            ->update(['role' => 'Juru Masak']);
+
+        return redirect()->back()->with('success', 'Posisi/jabatan berhasil dihapus.');
+    }
 }

@@ -12,7 +12,8 @@ import {
     X, 
     Eye, 
     HelpCircle,
-    UserCircle2
+    UserCircle2,
+    Settings
 } from 'lucide-react';
 
 export default function Employees({ employees = [], shifts = [] }) {
@@ -32,6 +33,10 @@ export default function Employees({ employees = [], shifts = [] }) {
     const [cardPreview, setCardPreview] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [isCustomRole, setIsCustomRole] = useState(false);
+    const [showManageRolesModal, setShowManageRolesModal] = useState(false);
+    const [editingRole, setEditingRole] = useState(null);
+    const [newRoleName, setNewRoleName] = useState('');
+    const [deletingRole, setDeletingRole] = useState(null);
 
     const rolesList = [
         'Kepala Satuan',
@@ -165,6 +170,35 @@ export default function Employees({ employees = [], shifts = [] }) {
         }
     };
 
+    const handleSaveRoleRename = (oldRole) => {
+        if (!newRoleName.trim()) return;
+        router.post('/employees/roles/update', {
+            old_role: oldRole,
+            new_role: newRoleName.trim()
+        }, {
+            onSuccess: () => {
+                setEditingRole(null);
+                setNewRoleName('');
+                if (selectedRole === oldRole) {
+                    setSelectedRole(newRoleName.trim());
+                }
+            }
+        });
+    };
+
+    const handleConfirmDeleteRole = (role) => {
+        router.post('/employees/roles/delete', {
+            role: role
+        }, {
+            onSuccess: () => {
+                setDeletingRole(null);
+                if (selectedRole === role) {
+                    setSelectedRole('All');
+                }
+            }
+        });
+    };
+
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             const newIds = [...selectedIds];
@@ -277,16 +311,26 @@ export default function Employees({ employees = [], shifts = [] }) {
                 </div>
                 <div className="flex flex-col min-[420px]:flex-row min-[420px]:items-center gap-1.5 min-[420px]:gap-2 md:w-auto">
                     <span className="text-[10px] font-bold text-slate-500 uppercase shrink-0">Filter Posisi:</span>
-                    <select
-                        value={selectedRole}
-                        onChange={(e) => setSelectedRole(e.target.value)}
-                        className="w-full min-[420px]:w-auto text-xs border border-slate-200 rounded-lg p-2 sm:p-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
-                    >
-                        <option value="All">Semua Posisi</option>
-                        {rolesList.map(role => (
-                            <option key={role} value={role}>{role}</option>
-                        ))}
-                    </select>
+                    <div className="flex gap-1.5 w-full min-[420px]:w-auto">
+                        <select
+                            value={selectedRole}
+                            onChange={(e) => setSelectedRole(e.target.value)}
+                            className="flex-1 min-[420px]:w-auto text-xs border border-slate-200 rounded-lg p-2 sm:p-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
+                        >
+                            <option value="All">Semua Posisi</option>
+                            {allRoles.map(role => (
+                                <option key={role} value={role}>{role}</option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={() => setShowManageRolesModal(true)}
+                            className="bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold px-2.5 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 active:translate-y-[1px] shrink-0"
+                            title="Kelola Posisi / Jabatan"
+                            type="button"
+                        >
+                            <Settings className="w-3.5 h-3.5 text-slate-500" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -768,6 +812,142 @@ export default function Employees({ employees = [], shifts = [] }) {
                                 <Printer className="w-3.5 h-3.5" />
                                 Cetak Sekarang
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Kelola Posisi */}
+            {showManageRolesModal && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
+                            <span className="text-xs font-extrabold text-slate-900 uppercase">Kelola Posisi / Jabatan</span>
+                            <button
+                                onClick={() => {
+                                    setShowManageRolesModal(false);
+                                    setEditingRole(null);
+                                    setDeletingRole(null);
+                                }}
+                                className="text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-50"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-4 max-h-[350px] overflow-y-auto space-y-3">
+                            <p className="text-[10px] text-slate-500 font-medium leading-normal">
+                                Posisi bawaan sistem tidak dapat diubah/dihapus demi kestabilan data. Posisi kustom dapat diganti namanya atau dihapus (karyawan dipindahkan ke Juru Masak).
+                            </p>
+                            
+                            <div className="space-y-2">
+                                {allRoles.map((role) => {
+                                    const isSystemRole = rolesList.includes(role);
+                                    const employeeCount = employees.filter(emp => emp.role === role).length;
+                                    const isEditing = editingRole === role;
+
+                                    return (
+                                        <div key={role} className="flex items-center justify-between p-2 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                            {isEditing ? (
+                                                <div className="flex-1 flex gap-2 items-center">
+                                                    <input
+                                                        type="text"
+                                                        value={newRoleName}
+                                                        onChange={(e) => setNewRoleName(e.target.value)}
+                                                        className="flex-1 text-xs p-1 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                                                        placeholder="Nama posisi baru"
+                                                        required
+                                                    />
+                                                    <button
+                                                        onClick={() => handleSaveRoleRename(role)}
+                                                        className="text-[10px] font-bold text-teal-600 hover:text-teal-700 px-2.5 py-1 border border-teal-200 bg-white rounded-lg hover:bg-teal-50 transition-colors"
+                                                    >
+                                                        Simpan
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingRole(null)}
+                                                        className="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2.5 py-1 border border-slate-200 bg-white rounded-lg hover:bg-slate-50 transition-colors"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="text-xs font-bold text-slate-800">{role}</span>
+                                                            {isSystemRole ? (
+                                                                <span className="text-[8px] font-extrabold text-blue-700 bg-blue-50 border border-blue-100 px-1 py-0.2 rounded uppercase">Sistem</span>
+                                                            ) : (
+                                                                <span className="text-[8px] font-extrabold text-teal-700 bg-teal-50 border border-teal-100 px-1 py-0.2 rounded uppercase">Kustom</span>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-[9px] text-slate-400 font-semibold">{employeeCount} Karyawan</span>
+                                                    </div>
+
+                                                    {!isSystemRole && (
+                                                        <div className="flex items-center gap-1.5">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingRole(role);
+                                                                    setNewRoleName(role);
+                                                                }}
+                                                                className="p-1 rounded bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 border border-amber-100 transition-colors"
+                                                                title="Ubah Nama"
+                                                            >
+                                                                <Edit2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setDeletingRole(role)}
+                                                                className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors"
+                                                                title="Hapus Posisi"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Konfirmasi Hapus Posisi */}
+            {deletingRole && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="p-5 space-y-4">
+                            <div className="text-center space-y-2">
+                                <h4 className="text-sm font-extrabold text-slate-900">Hapus Posisi / Jabatan?</h4>
+                                <p className="text-xs text-slate-500">
+                                    Apakah Anda yakin ingin menghapus posisi <strong className="text-slate-800">"{deletingRole}"</strong>?
+                                </p>
+                                <p className="text-[10px] text-amber-600 bg-amber-50 border border-amber-100 p-2 rounded-lg font-semibold leading-normal">
+                                    Sebanyak {employees.filter(emp => emp.role === deletingRole).length} karyawan dengan posisi ini akan dialihkan ke posisi default <strong className="text-amber-800">"Juru Masak"</strong>.
+                                </p>
+                            </div>
+
+                            <div className="flex justify-end gap-2 text-xs font-bold">
+                                <button
+                                    onClick={() => setDeletingRole(null)}
+                                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-500 cursor-pointer transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    onClick={() => handleConfirmDeleteRole(deletingRole)}
+                                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer transition-all"
+                                >
+                                    Ya, Hapus
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
