@@ -365,14 +365,14 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                 <div className="flex justify-end gap-1.5">
                                                     <button
                                                         onClick={() => setCardPreview(emp)}
-                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-teal-600 hover:bg-teal-50 border border-slate-100 transition-colors"
+                                                        className="p-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-100 transition-colors"
                                                         title="Lihat ID Card"
                                                     >
                                                         <QrCode className="w-3.5 h-3.5" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditClick(emp)}
-                                                        className="p-1 rounded bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                        className="p-1 rounded bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 border border-amber-100 transition-colors"
                                                         title="Edit"
                                                     >
                                                         <Edit2 className="w-3.5 h-3.5" />
@@ -380,7 +380,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                     {userRole === 'superadmin' && (
                                                         <button
                                                             onClick={() => handleDelete(emp.id)}
-                                                            className="p-1 rounded bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                            className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors"
                                                             title="Hapus"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
