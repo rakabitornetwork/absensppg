@@ -358,8 +358,8 @@ export default function Employees({ employees = [], shifts = [] }) {
                                             <td className="py-3 px-3 text-right font-extrabold text-slate-800 tabular-nums align-middle whitespace-nowrap">
                                                 {formatRupiah(emp.daily_allowance)}
                                             </td>
-                                            <td className="py-3 px-3 text-center align-middle">
-                                                <span className={`inline-block w-2 h-2 rounded-full ${emp.status === 'Active' ? 'bg-teal-500' : 'bg-slate-300'}`} title={emp.status} />
+                                            <td className="py-2.5 px-3 text-center align-middle">
+                                                <span className={`inline-block w-2 h-2 rounded-full ${emp.status === 'Active' ? 'bg-green-500' : 'bg-slate-300'}`} title={emp.status} />
                                             </td>
                                             <td className="py-3 pl-3 text-right align-middle">
                                                 <div className="flex justify-end gap-1.5">
