@@ -680,7 +680,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-sky-400 to-blue-200" />
                                 <div className="absolute inset-x-3 bottom-3 h-28 rounded-[24px] bg-white/[0.06] blur-sm" />
 
-                                <div className="relative z-10 h-full p-4 flex flex-col">
+                                <div className="relative z-10 h-full p-3 flex flex-col justify-between">
                                     {/* Brand Header */}
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0">
@@ -698,7 +698,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     </div>
 
                                     {/* Employee Photo */}
-                                    <div className="flex flex-col items-center mt-4">
+                                    <div className="flex flex-col items-center mt-2">
                                         <div className="relative">
                                             <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-blue-200 via-sky-200 to-white opacity-95" />
                                             <div className="relative w-[22mm] h-[22mm] rounded-full bg-slate-100 flex items-center justify-center border-[3px] border-slate-950 overflow-hidden shadow-xl">
@@ -710,16 +710,16 @@ export default function Employees({ employees = [], shifts = [] }) {
                                             </div>
                                         </div>
 
-                                        <div className="text-center mt-3 w-full">
+                                        <div className="text-center mt-1.5 w-full">
                                             <h5 className="text-[13px] font-black text-white leading-tight truncate px-1">{cardPreview.name}</h5>
-                                            <span className="inline-flex max-w-full mt-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-950 border border-blue-200 text-[7px] font-black uppercase tracking-[0.12em] truncate">
+                                            <span className="inline-flex max-w-full mt-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-950 border border-blue-200 text-[7px] font-black uppercase tracking-[0.12em] truncate">
                                                 {cardPreview.role}
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Detail Strip */}
-                                    <div className="mt-3 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
+                                    <div className="mt-2 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
                                         <div className="flex items-center justify-between gap-2">
                                             <span className="text-[10.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
                                             <span className="text-[10.5px] font-black text-white tabular-nums truncate">{cardPreview.nip}</span>
@@ -727,15 +727,15 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     </div>
 
                                     {/* QR Code SVG */}
-                                    <div className="mt-3 flex flex-col items-center">
-                                        <div className="bg-white p-2.5 rounded-2xl shadow-xl border border-white">
+                                    <div className="mt-2 flex flex-col items-center">
+                                        <div className="bg-white p-2 rounded-2xl shadow-xl border border-white">
                                             <QRCodeSVG 
                                                 value={cardPreview.qr_token} 
-                                                size={92} 
+                                                size={80} 
                                                 level="H"
                                             />
                                         </div>
-                                        <p className="mt-1 mb-2 text-[5.8px] text-blue-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
+                                        <p className="mt-1 mb-1 text-[5.8px] text-blue-50/90 font-black uppercase tracking-[0.2em]">Scan Presensi QR</p>
                                     </div>
 
                                     {/* Office Info */}
