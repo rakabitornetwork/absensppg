@@ -200,7 +200,7 @@ export default function Index({ users = [] }) {
                                             </td>
                                             <td className="py-3 px-4 text-right">
                                                 <div className="flex justify-end gap-1.5">
-                                                    {user.role === 'superadmin' && currentUser.role !== 'superadmin' ? (
+                                                                                    {user.role === 'superadmin' && currentUser.role !== 'superadmin' ? (
                                                         <span 
                                                             className="p-1.5 opacity-30 border border-slate-100 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed inline-block"
                                                             title="Hanya Superadmin yang dapat mengedit akun Superuser"
@@ -211,7 +211,7 @@ export default function Index({ users = [] }) {
                                                         <button
                                                             type="button"
                                                             onClick={() => openEditModal(user)}
-                                                            className="p-1.5 rounded-lg bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                            className="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 border border-amber-100 transition-colors"
                                                             title="Edit Pengguna"
                                                         >
                                                             <Edit2 className="w-3.5 h-3.5" />
@@ -229,7 +229,7 @@ export default function Index({ users = [] }) {
                                                         <button
                                                             type="button"
                                                             onClick={() => handleDelete(user)}
-                                                            className="p-1.5 rounded-lg bg-slate-50 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-100 transition-colors"
+                                                            className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors"
                                                             title="Hapus Pengguna"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
