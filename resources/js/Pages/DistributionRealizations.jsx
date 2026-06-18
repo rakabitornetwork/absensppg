@@ -463,10 +463,95 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                             <div className="flex items-center justify-between border-b border-slate-50 pb-2">
                                 <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Histori Laporan Log Distribusi</h3>
                                 <div className="flex items-center gap-2">
-                                    <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors" title="Export Excel">
+                                    <button 
+                                        onClick={() => {
+                                            if (history.length === 0) return alert('Tidak ada data untuk diexport');
+                                            const csvHeaders = ['Tanggal', 'Karbohidrat', 'Lauk Utama', 'Lauk Nabati', 'Sayur', 'Minuman', 'Target Porsi', 'Terkirim', 'Rasio Keberhasilan'];
+                                            const csvRows = history.map(item => [
+                                                item.date,
+                                                item.menu_data?.carbohydrate || '',
+                                                item.menu_data?.protein_hewan || '',
+                                                item.menu_data?.protein_nabati || '',
+                                                item.menu_data?.vegetable || '',
+                                                item.menu_data?.beverage || '',
+                                                item.total_target,
+                                                item.total_delivered,
+                                                `${item.total_target > 0 ? Math.round((item.total_delivered / item.total_target) * 100) : 0}%`
+                                            ]);
+                                            const csvContent = "\uFEFF" + [csvHeaders, ...csvRows].map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",")).join("\n");
+                                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                            const url = URL.createObjectURL(blob);
+                                            const link = document.createElement("a");
+                                            link.setAttribute("href", url);
+                                            link.setAttribute("download", `Histori_Log_Distribusi_${new Date().toISOString().slice(0,10)}.csv`);
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                        }}
+                                        className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors" 
+                                        title="Export Excel"
+                                    >
                                         <FileSpreadsheet className="w-3.5 h-3.5" />
                                     </button>
-                                    <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors" title="Print PDF">
+                                    <button 
+                                        onClick={() => {
+                                            const printContent = `
+                                                <html>
+                                                    <head>
+                                                        <title>Histori Laporan Log Distribusi</title>
+                                                        <style>
+                                                            body { font-family: sans-serif; padding: 20px; color: #334155; }
+                                                            h2 { text-align: center; margin-bottom: 20px; }
+                                                            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                                                            th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 12px; }
+                                                            th { background-color: #f8fafc; font-weight: bold; }
+                                                            .text-center { text-align: center; }
+                                                            .text-right { text-align: right; }
+                                                            .success-pill { background-color: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+                                                            .warning-pill { background-color: #fffbeb; color: #b45309; border: 1px solid #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+                                                        </style>
+                                                    </head>
+                                                    <body>
+                                                        <h2>Histori Laporan Log Distribusi SPPG</h2>
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Tanggal</th>
+                                                                    <th>Menu Gizi (Karbohidrat / Lauk Utama / Nabati / Sayur / Minuman)</th>
+                                                                    <th class="text-center">Target</th>
+                                                                    <th class="text-center">Terkirim</th>
+                                                                    <th class="text-center">Rasio</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                ${history.map(item => {
+                                                                    const pct = item.total_target > 0 ? Math.round((item.total_delivered / item.total_target) * 100) : 0;
+                                                                    const pillClass = pct === 100 ? 'success-pill' : 'warning-pill';
+                                                                    return `
+                                                                        <tr>
+                                                                            <td><b>${item.date}</b></td>
+                                                                            <td>
+                                                                                ${item.menu_data?.carbohydrate || 'Nasi'} + ${item.menu_data?.protein_hewan || 'Lauk'} + ${item.menu_data?.protein_nabati || '-'} + ${item.menu_data?.vegetable || '-'} + ${item.menu_data?.beverage || '-'}
+                                                                            </td>
+                                                                            <td class="text-center">${item.total_target}</td>
+                                                                            <td class="text-center" style="color: #0d9488; font-weight: bold;">${item.total_delivered}</td>
+                                                                            <td class="text-center"><span class="${pillClass}">${pct}%</span></td>
+                                                                        </tr>
+                                                                    `;
+                                                                }).join('')}
+                                                            </tbody>
+                                                        </table>
+                                                    </body>
+                                                </html>
+                                            `;
+                                            const win = window.open('', '_blank');
+                                            win.document.write(printContent);
+                                            win.document.close();
+                                            win.print();
+                                        }}
+                                        className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors" 
+                                        title="Print PDF"
+                                    >
                                         <Printer className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
