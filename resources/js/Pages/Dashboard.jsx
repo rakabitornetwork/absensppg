@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard({ stats, recentScans, settings, distributionHistory = [] }) {
+    const [hoveredIdx, setHoveredIdx] = useState(null);
     const attendanceRate = Math.max(0, Math.min(100, Number(stats.attendance_rate) || 0));
     const attendanceCircleRadius = 15;
     const attendanceCircleCircumference = 2 * Math.PI * attendanceCircleRadius;
@@ -216,32 +217,33 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                 {/* Recent Scans & Distribution Realization Widget (Left 2 columns) */}
                 <div className="lg:col-span-2 space-y-5">
                     
-                    {/* Widget Laporan Realisasi Distribusi Bulanan (Trend Chart) */}
-                    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-2">
+                    {/* Widget Laporan Realisasi Distribusi Bulanan (Trend Chart) - PREMIUM AREA CHART */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm relative overflow-visible">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-50 pb-3">
                             <div>
-                                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Realisasi Distribusi Bulanan</h3>
-                                <p className="text-[9px] text-slate-400 font-medium mt-0.5">Tren alokasi & keberhasilan pengiriman gizi 30 hari terakhir</p>
+                                <span className="text-[9px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded uppercase tracking-wider">Tren Bulanan</span>
+                                <h3 className="text-sm font-extrabold text-slate-900 mt-1">Laporan Realisasi Distribusi Bulanan</h3>
+                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">Tren alokasi & keberhasilan pengiriman gizi 30 hari terakhir</p>
                             </div>
                             <Link 
                                 href="/realisasi-distribusi" 
-                                className="text-[10px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors"
+                                className="text-[10px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors bg-slate-50 hover:bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-100"
                             >
                                 Laporan Lengkap
-                                <ArrowRight className="w-3 h-3" />
+                                <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>
                         
                         {distributionHistory.length === 0 ? (
-                            <p className="text-xs text-slate-400 font-bold py-6 text-center">Belum ada data histori log distribusi gizi.</p>
+                            <p className="text-xs text-slate-400 font-bold py-8 text-center">Belum ada data histori log distribusi gizi.</p>
                         ) : (() => {
                             // SVG dimensions
-                            const w = 550;
-                            const h = 180;
+                            const w = 600;
+                            const h = 200;
                             const paddingLeft = 45;
                             const paddingRight = 15;
                             const paddingTop = 15;
-                            const paddingBottom = 25;
+                            const paddingBottom = 30;
 
                             // Scale factors
                             const maxVal = Math.max(300, ...distributionHistory.map(d => Math.max(d.total_target || 0, d.total_delivered || 0)));
@@ -255,6 +257,21 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                         const day = parseInt(parts[2], 10);
                                         const monthIdx = parseInt(parts[1], 10) - 1;
                                         return `${day} ${months[monthIdx]}`;
+                                    }
+                                    return dateStr;
+                                } catch (e) {
+                                    return dateStr;
+                                }
+                            };
+
+                            const formatFullDate = (dateStr) => {
+                                try {
+                                    const parts = dateStr.split('-');
+                                    if (parts.length === 3) {
+                                        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                                        const day = parseInt(parts[2], 10);
+                                        const monthIdx = parseInt(parts[1], 10) - 1;
+                                        return `${day} ${months[monthIdx]} ${parts[0]}`;
                                     }
                                     return dateStr;
                                 } catch (e) {
@@ -284,10 +301,38 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                 ptsRatio.push({ x, y: yRatio });
                             });
 
-                            const makePath = (pts) => pts.length > 0 ? `M ${pts[0].x} ${pts[0].y} ` + pts.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ') : '';
-                            const pathTarget = makePath(ptsTarget);
-                            const pathDelivered = makePath(ptsDelivered);
-                            const pathRatio = makePath(ptsRatio);
+                            // Smooth Bezier Curve Path Generator
+                            const makeBezierPath = (pts) => {
+                                if (pts.length === 0) return '';
+                                if (pts.length === 1) return `M ${pts[0].x} ${pts[0].y}`;
+                                let d = `M ${pts[0].x} ${pts[0].y}`;
+                                for (let i = 0; i < pts.length - 1; i++) {
+                                    const p0 = pts[i];
+                                    const p1 = pts[i + 1];
+                                    const cpX1 = p0.x + (p1.x - p0.x) / 3;
+                                    const cpY1 = p0.y;
+                                    const cpX2 = p0.x + 2 * (p1.x - p0.x) / 3;
+                                    const cpY2 = p1.y;
+                                    d += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+                                }
+                                return d;
+                            };
+
+                            const makeAreaPath = (pts) => {
+                                if (pts.length === 0) return '';
+                                const first = pts[0];
+                                const last = pts[pts.length - 1];
+                                let d = makeBezierPath(pts);
+                                d += ` L ${last.x} ${h - paddingBottom} L ${first.x} ${h - paddingBottom} Z`;
+                                return d;
+                            };
+
+                            const pathTarget = makeBezierPath(ptsTarget);
+                            const pathDelivered = makeBezierPath(ptsDelivered);
+                            const pathRatio = makeBezierPath(ptsRatio);
+
+                            const areaTarget = makeAreaPath(ptsTarget);
+                            const areaDelivered = makeAreaPath(ptsDelivered);
 
                             // Select a few labels for X axis
                             const labelIndices = [];
@@ -300,29 +345,52 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             }
 
                             return (
-                                <div className="space-y-4">
+                                <div className="space-y-5 relative">
+                                    {/* SVG Container */}
                                     <div className="relative">
                                         <svg className="w-full h-auto" viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible' }}>
+                                            <defs>
+                                                {/* Areas Gradients */}
+                                                <linearGradient id="deliveredAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
+                                                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                                                </linearGradient>
+                                                <linearGradient id="targetAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1" />
+                                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                                                </linearGradient>
+                                                {/* Dropshadow for lines */}
+                                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                                    <feGaussianBlur stdDeviation="2" result="blur" />
+                                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                                </filter>
+                                            </defs>
+
                                             {/* Y-Axis Gridlines */}
                                             {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
                                                 const y = h - paddingBottom - ratio * (h - paddingTop - paddingBottom);
                                                 const valLabel = Math.round(ratio * maxVal);
                                                 return (
-                                                    <g key={idx} className="opacity-40">
-                                                        <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#e2e8f0" strokeDasharray="3,3" strokeWidth="1" />
-                                                        <text x={paddingLeft - 8} y={y + 3} className="font-sans text-[8.5px] font-normal fill-slate-400 text-right" textAnchor="end" fontSize="8.5">{valLabel}</text>
+                                                    <g key={idx}>
+                                                        <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#f1f5f9" strokeDasharray="4,4" strokeWidth="1" />
+                                                        <text x={paddingLeft - 10} y={y + 3} className="font-sans text-[9px] font-medium fill-slate-400 text-right" textAnchor="end">{valLabel}</text>
                                                     </g>
                                                 );
                                             })}
 
-                                            {/* Target Curve (Dark Slate Navy) */}
-                                            <path d={pathTarget} fill="none" stroke="#1e293b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            
-                                            {/* Terkirim Curve (Teal) */}
-                                            <path d={pathDelivered} fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            {/* Filled Area paths */}
+                                            <path d={areaTarget} fill="url(#targetAreaGrad)" />
+                                            <path d={areaDelivered} fill="url(#deliveredAreaGrad)" />
 
-                                            {/* Rasio Keberhasilan Curve (Orange) */}
-                                            <path d={pathRatio} fill="none" stroke="#ea580c" strokeWidth="2" strokeDasharray="3,2" strokeLinecap="round" strokeLinejoin="round" />
+                                            {/* Curves */}
+                                            {/* Target Curve */}
+                                            <path d={pathTarget} fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            
+                                            {/* Delivered Curve */}
+                                            <path d={pathDelivered} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" />
+
+                                            {/* Ratio Curve */}
+                                            <path d={pathRatio} fill="none" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4,3" strokeLinecap="round" strokeLinejoin="round" />
 
                                             {/* X-Axis Labels */}
                                             {labelIndices.map(idx => {
@@ -330,28 +398,117 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 const x = paddingLeft + (idx * (w - paddingLeft - paddingRight)) / (distributionHistory.length - 1 || 1);
                                                 return (
                                                     <g key={idx}>
-                                                        <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
-                                                        <text x={x} y={h - paddingBottom + 12} className="font-sans text-[8.5px] font-normal fill-slate-400" textAnchor="middle" fontSize="8.5">
+                                                        <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 5} stroke="#e2e8f0" strokeWidth="1" />
+                                                        <text x={x} y={h - paddingBottom + 15} className="font-sans text-[9px] font-medium fill-slate-400" textAnchor="middle">
                                                             {formatDateLabel(d.date)}
                                                         </text>
                                                     </g>
                                                 );
                                             })}
+
+                                            {/* Hover Vertical Guide Line & Interactive Markers */}
+                                            {hoveredIdx !== null && ptsTarget[hoveredIdx] && (
+                                                <g>
+                                                    {/* Vertical indicator line */}
+                                                    <line 
+                                                        x1={ptsTarget[hoveredIdx].x} 
+                                                        y1={paddingTop} 
+                                                        x2={ptsTarget[hoveredIdx].x} 
+                                                        y2={h - paddingBottom} 
+                                                        stroke="#cbd5e1" 
+                                                        strokeDasharray="3,3" 
+                                                        strokeWidth="1.5" 
+                                                    />
+
+                                                    {/* Target dot marker */}
+                                                    <circle cx={ptsTarget[hoveredIdx].x} cy={ptsTarget[hoveredIdx].y} r="5" fill="#ffffff" stroke="#3b82f6" strokeWidth="2" />
+                                                    <circle cx={ptsTarget[hoveredIdx].x} cy={ptsTarget[hoveredIdx].y} r="2" fill="#3b82f6" />
+
+                                                    {/* Delivered dot marker */}
+                                                    <circle cx={ptsDelivered[hoveredIdx].x} cy={ptsDelivered[hoveredIdx].y} r="6" fill="#ffffff" stroke="#10b981" strokeWidth="2.5" />
+                                                    <circle cx={ptsDelivered[hoveredIdx].x} cy={ptsDelivered[hoveredIdx].y} r="2.5" fill="#10b981" />
+                                                </g>
+                                            )}
+
+                                            {/* Invisible Hover Rect to capture mouse interaction */}
+                                            <rect
+                                                x={paddingLeft}
+                                                y={paddingTop}
+                                                width={w - paddingLeft - paddingRight}
+                                                height={h - paddingTop - paddingBottom}
+                                                fill="transparent"
+                                                style={{ cursor: 'crosshair' }}
+                                                onMouseMove={(e) => {
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    const mouseX = e.clientX - rect.left;
+                                                    const svgX = (mouseX / rect.width) * (w - paddingLeft - paddingRight) + paddingLeft;
+                                                    
+                                                    let closestIdx = 0;
+                                                    let minDiff = Infinity;
+                                                    ptsTarget.forEach((pt, idx) => {
+                                                        const diff = Math.abs(pt.x - svgX);
+                                                        if (diff < minDiff) {
+                                                            minDiff = diff;
+                                                            closestIdx = idx;
+                                                        }
+                                                    });
+                                                    setHoveredIdx(closestIdx);
+                                                }}
+                                                onMouseLeave={() => setHoveredIdx(null)}
+                                            />
                                         </svg>
+
+                                        {/* Floating Glassmorphic Tooltip Card */}
+                                        {hoveredIdx !== null && distributionHistory[hoveredIdx] && (
+                                            <div 
+                                                className="absolute pointer-events-none bg-white/90 backdrop-blur-md text-slate-800 border border-slate-100 rounded-xl p-3 shadow-xl text-[10px] space-y-1.5 z-30 transition-all duration-150 w-44"
+                                                style={{
+                                                    left: `${((ptsTarget[hoveredIdx].x - paddingLeft) / (w - paddingLeft - paddingRight)) * 100}%`,
+                                                    top: '15px',
+                                                    transform: 'translateX(-50%)',
+                                                }}
+                                            >
+                                                <div className="font-extrabold text-slate-900 border-b border-slate-100 pb-1 mb-1 text-[9px] uppercase tracking-wider">
+                                                    {formatFullDate(distributionHistory[hoveredIdx].date)}
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-slate-400 font-bold flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Target:
+                                                    </span>
+                                                    <span className="font-extrabold text-slate-800 tabular-nums">{distributionHistory[hoveredIdx].total_target || 0} porsi</span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-teal-600 font-bold flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Terkirim:
+                                                    </span>
+                                                    <span className="font-extrabold text-teal-600 tabular-nums">{distributionHistory[hoveredIdx].total_delivered || 0} porsi</span>
+                                                </div>
+                                                <div className="flex items-center justify-between border-t border-slate-50 pt-1.5 mt-1.5">
+                                                    <span className="text-orange-600 font-bold flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500" /> Rasio Sukses:
+                                                    </span>
+                                                    <span className="font-black text-orange-600 tabular-nums">
+                                                        {distributionHistory[hoveredIdx].total_target > 0 
+                                                            ? Math.round((distributionHistory[hoveredIdx].total_delivered / distributionHistory[hoveredIdx].total_target) * 100) 
+                                                            : 0}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Chart Legend */}
-                                    <div className="flex flex-wrap items-center justify-center gap-5 pt-1 text-[9px] font-extrabold text-slate-500 border-t border-slate-50">
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="w-4 h-1 bg-[#1e293b] rounded inline-block" />
+                                    {/* Chart Legend / Metadata */}
+                                    <div className="flex flex-wrap items-center justify-center gap-6 pt-3 text-[10px] font-bold text-slate-500 border-t border-slate-100">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-3.5 h-1.5 bg-blue-500 rounded-full inline-block" />
                                             <span>Target Porsi</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="w-4 h-1 bg-[#0d9488] rounded inline-block" />
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-3.5 h-1.5 bg-emerald-500 rounded-full inline-block" />
                                             <span>Porsi Terkirim</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="w-4 h-0.5 border-t-2 border-dashed border-[#ea580c] inline-block" />
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-3.5 h-0.5 border-t-2 border-dashed border-orange-500 inline-block" />
                                             <span>Rasio Keberhasilan</span>
                                         </div>
                                     </div>
