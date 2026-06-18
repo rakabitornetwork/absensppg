@@ -441,9 +441,8 @@ export default function Employees({ employees = [], shifts = [] }) {
                 </div>
 
             {/* Modal Form Karyawan (Tambah/Edit) */}
-            {showForm && (
-                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-8">
+            <div className={`fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto transition-all duration-300 ${showForm ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`bg-white border border-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all duration-300 transform my-8 ${showForm ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
                         <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
                                 {editMode ? 'Edit Karyawan' : 'Tambah Karyawan'}
@@ -672,7 +671,6 @@ export default function Employees({ employees = [], shifts = [] }) {
                         </form>
                     </div>
                 </div>
-            )}
             </div>
 
             {/* ID Card Single Preview Modal */}
