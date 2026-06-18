@@ -495,7 +495,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     </button>
                                     <button 
                                         onClick={() => {
-                                            const appName = systemSettings.app_name || 'SPPG Sukajadi';
+                                            const appName = systemSettings.office_name || 'SPPG SUKAJADI';
                                             const printContent = `
                                                 <html>
                                                     <head>
@@ -513,7 +513,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                             }
                                                             body { 
                                                                 font-family: 'Plus Jakarta Sans', sans-serif; 
-                                                                padding: 0; 
+                                                                padding: 24px; 
                                                                 margin: 0; 
                                                                 color: #1e293b; 
                                                                 background-color: #ffffff;
