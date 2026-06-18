@@ -248,7 +248,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             // Scale factors
                             const maxVal = Math.max(300, ...distributionHistory.map(d => Math.max(d.total_target || 0, d.total_delivered || 0)));
                             
-                            // Helper to format date like "18 Jun"
+                            // Helper to format date like "18 Jun 2026"
                             const formatDateLabel = (dateStr) => {
                                 try {
                                     const parts = dateStr.split('-');
@@ -256,7 +256,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
                                         const day = parseInt(parts[2], 10);
                                         const monthIdx = parseInt(parts[1], 10) - 1;
-                                        return `${day} ${months[monthIdx]}`;
+                                        return `${day} ${months[monthIdx]} ${parts[0]}`;
                                     }
                                     return dateStr;
                                 } catch (e) {
