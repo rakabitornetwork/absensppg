@@ -102,14 +102,14 @@ class DatabaseSeeder extends Seeder
         $employeesData = [
             [
                 'nip' => 'SPPG-MBG-001',
-                'name' => 'Budi Santoso',
+                'name' => 'Achmad Nurohman, AMd',
                 'role' => 'Kepala Satuan',
-                'email' => 'budi.santoso@sppg.com',
+                'email' => 'achmad.nurohman@sppg.com',
                 'phone' => '081234567890',
                 'base_salary' => 6500000,
                 'weekly_allowance' => 350000,
                 'status' => 'Active',
-                'qr_token' => 'SPPG-TOKEN-BUDI-001',
+                'qr_token' => 'SPPG-TOKEN-ACHMAD-001',
                 'shift_id' => $shiftStandar->id,
             ],
             [
