@@ -16,11 +16,17 @@ import {
     FileSpreadsheet
 } from 'lucide-react';
 
-export default function DistributionRealizations({ todayConfig = {}, history = [] }) {
+export default function DistributionRealizations({ todayConfig = {}, history = [], shifts = [] }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
     const [activeTab, setActiveTab] = useState('daily'); // 'daily' or 'monthly'
     const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+
+    // Find the shift for cooking, usually "Shift Pagi" or contains "Pagi" or "Masak"
+    const cookingShift = shifts.find(s => 
+        s.name.toLowerCase().includes('pagi') || 
+        s.name.toLowerCase().includes('masak')
+    ) || shifts[0] || { name: 'Shift Pagi', start_time: '05:00', end_time: '13:00' };
 
     const mealTarget = todayConfig.meal_target || 250;
     const totalDelivered = todayConfig.total_delivered || 0;
@@ -294,9 +300,11 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
                                         <div>
                                             <span className="block text-[8px] font-extrabold text-slate-400 uppercase mb-0.5">Shift Kerja Masak</span>
-                                            <span className="font-bold text-slate-800">Shift Pagi (Masak & Persiapan)</span>
+                                            <span className="font-bold text-slate-800">{cookingShift.name}</span>
                                         </div>
-                                        <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">05:00 - 13:00</span>
+                                        <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">
+                                            {cookingShift.start_time.substring(0, 5)} - {cookingShift.end_time.substring(0, 5)}
+                                        </span>
                                     </div>
                                     <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 flex justify-between items-center">
                                         <div>

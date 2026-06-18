@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Distribution;
 use App\Models\SppgSetting;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -63,6 +64,7 @@ class DistributionRealizationController extends Controller
                 'locked_record' => $todayRecord
             ],
             'history' => $history,
+            'shifts' => Shift::all(),
         ]);
     }
 
