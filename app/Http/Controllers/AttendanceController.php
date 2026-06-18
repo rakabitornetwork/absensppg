@@ -56,10 +56,13 @@ class AttendanceController extends Controller
             ];
         });
 
+        $settings = SppgSetting::pluck('value', 'key')->toArray();
+
         return Inertia::render('Attendances', [
             'records' => $records,
             'selectedMonth' => $month,
             'selectedYear' => $year,
+            'systemSettings' => $settings,
         ]);
     }
 

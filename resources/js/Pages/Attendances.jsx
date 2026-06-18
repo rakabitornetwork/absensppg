@@ -10,10 +10,11 @@ import {
     Edit, 
     X,
     Filter,
-    Plus
+    Plus,
+    Printer
 } from 'lucide-react';
 
-export default function Attendances({ records = [], selectedMonth, selectedYear }) {
+export default function Attendances({ records = [], selectedMonth, selectedYear, systemSettings = {} }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
     const [month, setMonth] = useState(selectedMonth);
@@ -144,13 +145,195 @@ export default function Attendances({ records = [], selectedMonth, selectedYear 
                     <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Presensi Bulanan</h2>
                     <p className="text-[10px] text-slate-500 font-medium">Rekapitulasi scan kehadiran staff SPPG Sukajadi</p>
                 </div>
-                <button
-                    onClick={handleNewManualClick}
-                    className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px]"
-                >
-                    <Plus className="w-3.5 h-3.5" />
-                    Input Manual
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => {
+                            const appName = systemSettings.office_name || 'SPPG SUKAJADI';
+                            const logoUrl = systemSettings.app_logo ? window.location.origin + systemSettings.app_logo : '';
+                            const officeAddress = systemSettings.office_address || '';
+                            const officeEmail = systemSettings.office_email || '';
+                            const officeWhatsapp = systemSettings.office_whatsapp || '';
+                            const monthName = monthsList[month - 1];
+
+                            const printContent = `
+                                <html>
+                                    <head>
+                                        <title>Rekap Presensi Karyawan - ${monthName} ${year}</title>
+                                        <link rel="preconnect" href="https://fonts.googleapis.com">
+                                        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                                        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+                                        <style>
+                                            @media print {
+                                                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                                                @page { 
+                                                    size: A4 landscape; 
+                                                    margin: 15mm 15mm 15mm 15mm; 
+                                                }
+                                            }
+                                            body { 
+                                                font-family: 'Plus Jakarta Sans', sans-serif; 
+                                                padding: 20px; 
+                                                margin: 0; 
+                                                color: #1e293b; 
+                                                background-color: #ffffff;
+                                                line-height: 1.4;
+                                            }
+                                            .header-container {
+                                                border-bottom: 3px double #0f766e;
+                                                padding-bottom: 15px;
+                                                margin-bottom: 25px;
+                                                display: flex;
+                                                align-items: center;
+                                                gap: 20px;
+                                            }
+                                            .logo-img {
+                                                width: 60px;
+                                                height: 60px;
+                                                object-fit: contain;
+                                                flex-shrink: 0;
+                                            }
+                                            .header-details {
+                                                flex-grow: 1;
+                                            }
+                                            .brand-title {
+                                                color: #0f766e;
+                                                font-size: 16px;
+                                                font-weight: 800;
+                                                text-transform: uppercase;
+                                                letter-spacing: 0.5px;
+                                                margin: 0 0 2px 0;
+                                            }
+                                            .brand-subtitle {
+                                                color: #0d9488;
+                                                font-size: 11px;
+                                                font-weight: 700;
+                                                margin: 0 0 4px 0;
+                                                letter-spacing: 0.5px;
+                                            }
+                                            .office-meta {
+                                                color: #64748b;
+                                                font-size: 9px;
+                                                font-weight: 500;
+                                                line-height: 1.3;
+                                            }
+                                            .document-meta {
+                                                text-align: right;
+                                                font-size: 9px;
+                                                color: #64748b;
+                                                font-weight: 500;
+                                                margin-left: auto;
+                                                border-left: 1px solid #e2e8f0;
+                                                padding-left: 15px;
+                                                height: 50px;
+                                                display: flex;
+                                                flex-direction: column;
+                                                justify-content: center;
+                                            }
+                                            table { 
+                                                width: 100%; 
+                                                border-collapse: collapse; 
+                                                margin-top: 10px; 
+                                            }
+                                            th, td { 
+                                                padding: 8px 6px; 
+                                                text-align: center; 
+                                                font-size: 9px; 
+                                                border: 1px solid #e2e8f0;
+                                            }
+                                            th { 
+                                                background-color: #f8fafc; 
+                                                color: #475569;
+                                                font-weight: 700; 
+                                                text-transform: uppercase;
+                                            }
+                                            .text-left { text-align: left; }
+                                            .font-bold { font-weight: bold; }
+                                            .status-h { background-color: #22c55e !important; color: white !important; font-weight: bold; }
+                                            .status-t { background-color: #f59e0b !important; color: white !important; font-weight: bold; }
+                                            .status-a { background-color: #ef4444 !important; color: white !important; font-weight: bold; }
+                                            .status-i { background-color: #3b82f6 !important; color: white !important; font-weight: bold; }
+                                            .summary-h { color: #15803d; font-weight: bold; }
+                                            .summary-t { color: #b45309; font-weight: bold; }
+                                            .summary-a { color: #b91c1c; font-weight: bold; }
+                                            .summary-i { color: #1d4ed8; font-weight: bold; }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="header-container">
+                                            ${logoUrl ? `<img src="${logoUrl}" class="logo-img" alt="Logo" />` : ''}
+                                            <div class="header-details">
+                                                <h1 class="brand-title">${appName}</h1>
+                                                <p class="brand-subtitle">Laporan Rekapitulasi Presensi Karyawan - Periode ${monthName} ${year}</p>
+                                                <div class="office-meta">
+                                                    ${officeAddress ? `<span>📍 ${officeAddress}</span>` : ''}
+                                                    ${officeEmail || officeWhatsapp ? '<br/>' : ''}
+                                                    ${officeEmail ? `<span>📧 ${officeEmail}</span>` : ''}
+                                                    ${officeEmail && officeWhatsapp ? '<span> | </span>' : ''}
+                                                    ${officeWhatsapp ? `<span>💬 WhatsApp: ${officeWhatsapp}</span>` : ''}
+                                                </div>
+                                            </div>
+                                            <div class="document-meta">
+                                                <b>REKAP PRESENSI</b>
+                                                <span>Dicetak: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                            </div>
+                                        </div>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-left" style="width: 15%">Nama Karyawan</th>
+                                                    <th class="text-left" style="width: 10%">Jabatan (Role)</th>
+                                                    ${daysArray.map(d => `<th style="width: 2%">${d}</th>`).join('')}
+                                                    <th style="width: 2.5%; color: #15803d;">H</th>
+                                                    <th style="width: 2.5%; color: #b45309;">T</th>
+                                                    <th style="width: 2.5%; color: #b91c1c;">A</th>
+                                                    <th style="width: 2.5%; color: #1d4ed8;">I</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${records.map(rec => {
+                                                    return `
+                                                        <tr>
+                                                            <td class="text-left font-bold">${rec.name}</td>
+                                                            <td class="text-left">${rec.role}</td>
+                                                            ${daysArray.map(d => {
+                                                                const dayRecord = rec.days[d];
+                                                                if (!dayRecord) return '<td>-</td>';
+                                                                if (dayRecord.status === 'Present') return '<td class="status-h">H</td>';
+                                                                if (dayRecord.status === 'Late') return '<td class="status-t">T</td>';
+                                                                if (dayRecord.status === 'Absent') return '<td class="status-a">A</td>';
+                                                                if (dayRecord.status === 'Leave') return '<td class="status-i">I</td>';
+                                                                return '<td>-</td>';
+                                                            }).join('')}
+                                                            <td class="summary-h">${rec.summary?.present || 0}</td>
+                                                            <td class="summary-t">${rec.summary?.late || 0}</td>
+                                                            <td class="summary-a">${rec.summary?.absent || 0}</td>
+                                                            <td class="summary-i">${rec.summary?.leave || 0}</td>
+                                                        </tr>
+                                                    `;
+                                                }).join('')}
+                                            </tbody>
+                                        </table>
+                                    </body>
+                                </html>
+                            `;
+                            const win = window.open('', '_blank');
+                            win.document.write(printContent);
+                            win.document.close();
+                            win.print();
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
+                    >
+                        <Printer className="w-3.5 h-3.5" />
+                        Cetak Rekap
+                    </button>
+                    <button
+                        onClick={handleNewManualClick}
+                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px]"
+                    >
+                        <Plus className="w-3.5 h-3.5" />
+                        Input Manual
+                    </button>
+                </div>
             </div>
 
             {/* Selector bar */}
