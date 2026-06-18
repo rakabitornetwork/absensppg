@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/realisasi-distribusi', [DistributionRealizationController::class, 'index']);
     Route::post('/realisasi-distribusi/lock', [DistributionRealizationController::class, 'lockToday']);
+    Route::post('/realisasi-distribusi/unlock', [DistributionRealizationController::class, 'unlockToday']);
 
     // Admin & Superadmin only
     Route::middleware(['role:superadmin,admin'])->group(function () {

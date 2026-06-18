@@ -121,4 +121,24 @@ class DistributionRealizationController extends Controller
 
         return redirect()->back()->with('success', 'Data realisasi distribusi hari ini berhasil dikunci/disimpan ke laporan.');
     }
+
+    public function unlockToday(Request $request)
+    {
+        // Enforce superadmin only
+        if ($request->user()->role !== 'superadmin') {
+            abort(403, 'Hanya Superuser yang dapat membuka kunci atau menghapus laporan.');
+        }
+
+        $todayStr = Carbon::today()->toDateString();
+        $record = Distribution::where('date', $todayStr)->first();
+        if ($record) {
+            $record->delete();
+        }
+
+        if ($request->has('redirect_to_target')) {
+            return redirect('/target-distribusi')->with('success', 'Laporan dibuka kunci. Silakan edit target distribusi di sini.');
+        }
+
+        return redirect()->back()->with('success', 'Laporan hari ini berhasil dibuka kunci.');
+    }
 }

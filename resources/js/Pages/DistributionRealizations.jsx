@@ -13,7 +13,9 @@ import {
     Award,
     AlertCircle,
     Printer,
-    FileSpreadsheet
+    FileSpreadsheet,
+    Unlock,
+    Trash2
 } from 'lucide-react';
 
 export default function DistributionRealizations({ todayConfig = {}, history = [], shifts = [] }) {
@@ -65,6 +67,15 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
     const handleLockRealisasi = () => {
         if (confirm('Kunci realisasi distribusi hari ini? Data tidak akan bisa diedit setelah dikunci.')) {
             router.post('/realisasi-distribusi/lock');
+        }
+    };
+
+    const handleUnlockRealisasi = (redirectToTarget = false) => {
+        const msg = redirectToTarget 
+            ? 'Buka kunci laporan dan edit target distribusi hari ini?' 
+            : 'Apakah Anda yakin ingin menghapus / membuka kunci laporan hari ini?';
+        if (confirm(msg)) {
+            router.post('/realisasi-distribusi/unlock', redirectToTarget ? { redirect_to_target: 1 } : {});
         }
     };
 
@@ -199,6 +210,27 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                             <Lock className="w-3 h-3" />
                                             Kunci Realisasi Hari Ini
                                         </button>
+                                    )}
+
+                                    {todayConfig.is_locked && userRole === 'superadmin' && (
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUnlockRealisasi(true)}
+                                                className="bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+                                            >
+                                                <Unlock className="w-3 h-3" />
+                                                Edit Laporan
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUnlockRealisasi(false)}
+                                                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                Hapus Laporan
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
