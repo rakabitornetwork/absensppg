@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/payrolls/generate', [PayrollController::class, 'generate']);
         Route::post('/payrolls/{payroll}/update', [PayrollController::class, 'update']);
         Route::get('/payrolls/{payroll}/payslip', [PayrollController::class, 'payslip']);
+        Route::post('/payrolls/{payroll}/delete', [PayrollController::class, 'destroy']);
 
         // Pengaturan
         Route::get('/settings', [SettingController::class, 'index']);

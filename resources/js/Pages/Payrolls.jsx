@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Head, useForm, Link, router } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
     Banknote, 
@@ -10,14 +9,24 @@ import {
     Printer, 
     X, 
     CheckCircle, 
-    AlertCircle 
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
+import { Head, useForm, Link, router, usePage } from '@inertiajs/react';
 
 export default function Payrolls({ payrolls = [], selectedMonth, selectedYear }) {
+    const { props } = usePage();
+    const userRole = props.auth?.user?.role || 'admin';
     const [month, setMonth] = useState(selectedMonth);
     const [year, setYear] = useState(selectedYear);
     const [editPayroll, setEditPayroll] = useState(null);
     const [isCalculating, setIsCalculating] = useState(false);
+
+    const handleDelete = (id) => {
+        if (confirm('Apakah Anda yakin ingin menghapus data penggajian karyawan ini?')) {
+            router.post(`/payrolls/${id}/delete`);
+        }
+    };
 
     const { data, setData, post, reset, errors } = useForm({
         bonuses: 0,
@@ -208,18 +217,27 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                             <div className="flex justify-end gap-1.5">
                                                 <button
                                                     onClick={() => handleEditClick(p)}
-                                                    className="p-1 rounded bg-slate-50 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-100 transition-colors"
+                                                    className="p-1 rounded bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 border border-amber-100 transition-colors"
                                                     title="Sesuaikan Gaji"
                                                 >
                                                     <Edit className="w-3.5 h-3.5" />
                                                 </button>
                                                 <Link
                                                     href={`/payrolls/${p.id}/payslip`}
-                                                    className="p-1 rounded bg-slate-50 text-slate-500 hover:text-teal-600 hover:bg-teal-50 border border-slate-100 transition-colors"
+                                                    className="p-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-100 transition-colors"
                                                     title="Lihat Slip Gaji"
                                                 >
                                                     <Eye className="w-3.5 h-3.5" />
                                                 </Link>
+                                                {userRole === 'superadmin' && (
+                                                    <button
+                                                        onClick={() => handleDelete(p.id)}
+                                                        className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors cursor-pointer"
+                                                        title="Hapus Gaji"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

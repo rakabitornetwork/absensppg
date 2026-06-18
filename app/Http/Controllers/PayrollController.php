@@ -147,4 +147,15 @@ class PayrollController extends Controller
             'kepalaSatuan' => $kepalaSatuan,
         ]);
     }
+
+    public function destroy(Request $request, Payroll $payroll)
+    {
+        if ($request->user()->role !== 'superadmin') {
+            abort(403, 'Hanya Superuser yang dapat menghapus data penggajian.');
+        }
+
+        $payroll->delete();
+
+        return redirect()->back()->with('success', 'Data gaji karyawan berhasil dihapus.');
+    }
 }
