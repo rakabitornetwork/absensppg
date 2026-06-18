@@ -496,6 +496,10 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                     <button 
                                         onClick={() => {
                                             const appName = systemSettings.office_name || 'SPPG SUKAJADI';
+                                            const logoUrl = systemSettings.app_logo ? window.location.origin + systemSettings.app_logo : '';
+                                            const officeAddress = systemSettings.office_address || '';
+                                            const officeEmail = systemSettings.office_email || '';
+                                            const officeWhatsapp = systemSettings.office_whatsapp || '';
                                             const printContent = `
                                                 <html>
                                                     <head>
@@ -520,35 +524,55 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                                 line-height: 1.5;
                                                             }
                                                             .header-container {
-                                                                border-bottom: 2px solid #0f766e;
+                                                                border-bottom: 3px double #0f766e;
                                                                 padding-bottom: 20px;
                                                                 margin-bottom: 30px;
                                                                 display: flex;
-                                                                justify-content: justify;
                                                                 align-items: center;
+                                                                gap: 20px;
+                                                            }
+                                                            .logo-img {
+                                                                width: 70px;
+                                                                height: 70px;
+                                                                object-fit: contain;
+                                                                flex-shrink: 0;
+                                                            }
+                                                            .header-details {
+                                                                flex-grow: 1;
                                                             }
                                                             .brand-title {
                                                                 color: #0f766e;
-                                                                font-size: 20px;
+                                                                font-size: 22px;
                                                                 font-weight: 800;
                                                                 text-transform: uppercase;
-                                                                letter-spacing: 1px;
-                                                                margin: 0 0 4px 0;
+                                                                letter-spacing: 0.5px;
+                                                                margin: 0 0 2px 0;
                                                             }
                                                             .brand-subtitle {
-                                                                color: #64748b;
-                                                                font-size: 11px;
-                                                                font-weight: 600;
-                                                                margin: 0;
-                                                                text-transform: uppercase;
+                                                                color: #0d9488;
+                                                                font-size: 13px;
+                                                                font-weight: 700;
+                                                                margin: 0 0 6px 0;
                                                                 letter-spacing: 0.5px;
+                                                            }
+                                                            .office-meta {
+                                                                color: #64748b;
+                                                                font-size: 9.5px;
+                                                                font-weight: 500;
+                                                                line-height: 1.4;
                                                             }
                                                             .document-meta {
                                                                 text-align: right;
-                                                                font-size: 10px;
+                                                                font-size: 9.5px;
                                                                 color: #64748b;
                                                                 font-weight: 500;
                                                                 margin-left: auto;
+                                                                border-left: 1px solid #e2e8f0;
+                                                                padding-left: 15px;
+                                                                height: 60px;
+                                                                display: flex;
+                                                                flex-direction: column;
+                                                                justify-content: center;
                                                             }
                                                             table { 
                                                                 width: 100%; 
@@ -607,12 +631,21 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                     </head>
                                                     <body>
                                                         <div class="header-container">
-                                                            <div>
+                                                            ${logoUrl ? `<img src="${logoUrl}" class="logo-img" alt="Logo" />` : ''}
+                                                            <div class="header-details">
                                                                 <h1 class="brand-title">${appName}</h1>
                                                                 <p class="brand-subtitle">Histori Laporan Log Realisasi Distribusi Gizi</p>
+                                                                <div class="office-meta">
+                                                                    ${officeAddress ? `<span>📍 ${officeAddress}</span>` : ''}
+                                                                    ${officeEmail || officeWhatsapp ? '<br/>' : ''}
+                                                                    ${officeEmail ? `<span>📧 ${officeEmail}</span>` : ''}
+                                                                    ${officeEmail && officeWhatsapp ? '<span> | </span>' : ''}
+                                                                    ${officeWhatsapp ? `<span>💬 WhatsApp: ${officeWhatsapp}</span>` : ''}
+                                                                </div>
                                                             </div>
                                                             <div class="document-meta">
-                                                                Waktu Cetak: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                                <b>LAPORAN RESMI</b>
+                                                                <span>Dicetak: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                                                             </div>
                                                         </div>
                                                         <table>
