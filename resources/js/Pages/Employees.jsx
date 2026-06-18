@@ -334,11 +334,11 @@ export default function Employees({ employees = [], shifts = [] }) {
                 </div>
             </div>
 
-            {/* Main Area (Table + Optional Form Side-by-Side) */}
+            {/* Main Area */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-5 items-start">
                 
-                {/* Table (Takes 8 cols if form is open, 12 if closed) */}
-                <div className={`bg-white border border-slate-100 rounded-xl p-3 sm:p-4 shadow-sm ${showForm ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
+                {/* Table (Always takes full 12 cols now that form is a modal) */}
+                <div className="bg-white border border-slate-100 rounded-xl p-3 sm:p-4 shadow-sm lg:col-span-12">
                     <div className="overflow-x-auto pb-1 -mx-1 px-1">
                         <table className="w-full min-w-[920px] text-left text-xs table-fixed">
                             <thead>
@@ -440,10 +440,11 @@ export default function Employees({ employees = [], shifts = [] }) {
                     </div>
                 </div>
 
-                {/* Form Drawer (Takes 4 cols if open) */}
-                {showForm && (
-                    <div className="lg:col-span-4 bg-white border border-slate-100 rounded-xl p-4 shadow-sm space-y-4 animate-in slide-in-from-right-4 duration-200">
-                        <div className="flex items-center justify-between border-b border-slate-50 pb-2">
+            {/* Modal Form Karyawan (Tambah/Edit) */}
+            {showForm && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-8">
+                        <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
                             <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
                                 {editMode ? 'Edit Karyawan' : 'Tambah Karyawan'}
                             </h3>
@@ -455,7 +456,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-3">
+                        <form onSubmit={handleSubmit} className="p-4 space-y-3 max-h-[calc(100vh-160px)] overflow-y-auto">
                             <div>
                                 <label className="block text-[10px] font-bold text-slate-600 mb-1">NIP (Nomor Induk Pegawai)</label>
                                 <input
@@ -670,7 +671,8 @@ export default function Employees({ employees = [], shifts = [] }) {
                             </button>
                         </form>
                     </div>
-                )}
+                </div>
+            )}
             </div>
 
             {/* ID Card Single Preview Modal */}
