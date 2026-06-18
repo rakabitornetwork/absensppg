@@ -498,29 +498,127 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                             const printContent = `
                                                 <html>
                                                     <head>
-                                                        <title>Histori Laporan Log Distribusi</title>
+                                                        <title>Histori Laporan Log Distribusi SPPG</title>
+                                                        <link rel="preconnect" href="https://fonts.googleapis.com">
+                                                        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                                                        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
                                                         <style>
-                                                            body { font-family: sans-serif; padding: 20px; color: #334155; }
-                                                            h2 { text-align: center; margin-bottom: 20px; }
-                                                            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                                                            th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 12px; }
-                                                            th { background-color: #f8fafc; font-weight: bold; }
+                                                            @media print {
+                                                                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                                                                @page { margin: 20mm; }
+                                                            }
+                                                            body { 
+                                                                font-family: 'Plus Jakarta Sans', sans-serif; 
+                                                                padding: 0; 
+                                                                margin: 0; 
+                                                                color: #1e293b; 
+                                                                background-color: #ffffff;
+                                                                line-height: 1.5;
+                                                            }
+                                                            .header-container {
+                                                                border-bottom: 2px solid #0f766e;
+                                                                padding-bottom: 20px;
+                                                                margin-bottom: 30px;
+                                                                display: flex;
+                                                                justify-content: justify;
+                                                                align-items: center;
+                                                            }
+                                                            .brand-title {
+                                                                color: #0f766e;
+                                                                font-size: 20px;
+                                                                font-weight: 800;
+                                                                text-transform: uppercase;
+                                                                letter-spacing: 1px;
+                                                                margin: 0 0 4px 0;
+                                                            }
+                                                            .brand-subtitle {
+                                                                color: #64748b;
+                                                                font-size: 11px;
+                                                                font-weight: 600;
+                                                                margin: 0;
+                                                                text-transform: uppercase;
+                                                                letter-spacing: 0.5px;
+                                                            }
+                                                            .document-meta {
+                                                                text-align: right;
+                                                                font-size: 10px;
+                                                                color: #64748b;
+                                                                font-weight: 500;
+                                                                margin-left: auto;
+                                                            }
+                                                            table { 
+                                                                width: 100%; 
+                                                                border-collapse: collapse; 
+                                                                margin-top: 10px; 
+                                                            }
+                                                            th, td { 
+                                                                padding: 12px 14px; 
+                                                                text-align: left; 
+                                                                font-size: 11px; 
+                                                                border-bottom: 1px solid #f1f5f9;
+                                                            }
+                                                            th { 
+                                                                background-color: #f8fafc; 
+                                                                color: #475569;
+                                                                font-weight: 700; 
+                                                                text-transform: uppercase;
+                                                                letter-spacing: 0.5px;
+                                                                border-bottom: 2px solid #e2e8f0;
+                                                            }
+                                                            tr:nth-child(even) td {
+                                                                background-color: #fafafa;
+                                                            }
                                                             .text-center { text-align: center; }
-                                                            .text-right { text-align: right; }
-                                                            .success-pill { background-color: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-                                                            .warning-pill { background-color: #fffbeb; color: #b45309; border: 1px solid #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+                                                            .font-mono { font-family: monospace; font-size: 11px; font-weight: 600; }
+                                                            .success-pill { 
+                                                                background-color: #ecfdf5 !important; 
+                                                                color: #047857 !important; 
+                                                                border: 1px solid #a7f3d0; 
+                                                                padding: 3px 8px; 
+                                                                border-radius: 6px; 
+                                                                font-weight: 700; 
+                                                                font-size: 10px;
+                                                                display: inline-block;
+                                                            }
+                                                            .warning-pill { 
+                                                                background-color: #fffbeb !important; 
+                                                                color: #b45309 !important; 
+                                                                border: 1px solid #fde68a; 
+                                                                padding: 3px 8px; 
+                                                                border-radius: 6px; 
+                                                                font-weight: 700; 
+                                                                font-size: 10px;
+                                                                display: inline-block;
+                                                            }
+                                                            .menu-item {
+                                                                font-weight: 600;
+                                                                color: #334155;
+                                                            }
+                                                            .menu-sub {
+                                                                font-size: 9.5px;
+                                                                color: #64748b;
+                                                                margin-top: 2px;
+                                                            }
                                                         </style>
                                                     </head>
                                                     <body>
-                                                        <h2>Histori Laporan Log Distribusi SPPG</h2>
+                                                        <div class="header-container">
+                                                            <div>
+                                                                <h1 class="brand-title">SPPG Sukajadi</h1>
+                                                                <p class="brand-subtitle">Histori Laporan Log Realisasi Distribusi Gizi</p>
+                                                            </div>
+                                                            <div class="document-meta">
+                                                                Waktu Cetak: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                            </div>
+                                                        </div>
                                                         <table>
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Tanggal</th>
-                                                                    <th>Menu Gizi (Karbohidrat / Lauk Utama / Nabati / Sayur / Minuman)</th>
-                                                                    <th class="text-center">Target</th>
-                                                                    <th class="text-center">Terkirim</th>
-                                                                    <th class="text-center">Rasio</th>
+                                                                    <th style="width: 15%">Tanggal</th>
+                                                                    <th style="width: 55%">Menu Gizi</th>
+                                                                    <th class="text-center" style="width: 10%">Target</th>
+                                                                    <th class="text-center" style="width: 10%">Terkirim</th>
+                                                                    <th class="text-center" style="width: 10%">Rasio</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -529,12 +627,13 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                                                     const pillClass = pct === 100 ? 'success-pill' : 'warning-pill';
                                                                     return `
                                                                         <tr>
-                                                                            <td><b>${item.date}</b></td>
+                                                                            <td><b class="font-mono">${item.date}</b></td>
                                                                             <td>
-                                                                                ${item.menu_data?.carbohydrate || 'Nasi'} + ${item.menu_data?.protein_hewan || 'Lauk'} + ${item.menu_data?.protein_nabati || '-'} + ${item.menu_data?.vegetable || '-'} + ${item.menu_data?.beverage || '-'}
+                                                                                <div class="menu-item">🍚 ${item.menu_data?.carbohydrate || 'Nasi'} & 🍗 ${item.menu_data?.protein_hewan || 'Lauk Utama'}</div>
+                                                                                <div class="menu-sub">Lauk Nabati: ${item.menu_data?.protein_nabati || '-'} | Sayur: ${item.menu_data?.vegetable || '-'} | Minuman: ${item.menu_data?.beverage || '-'}</div>
                                                                             </td>
-                                                                            <td class="text-center">${item.total_target}</td>
-                                                                            <td class="text-center" style="color: #0d9488; font-weight: bold;">${item.total_delivered}</td>
+                                                                            <td class="text-center font-mono">${item.total_target}</td>
+                                                                            <td class="text-center font-mono" style="color: #0f766e; font-weight: 700;">${item.total_delivered}</td>
                                                                             <td class="text-center"><span class="${pillClass}">${pct}%</span></td>
                                                                         </tr>
                                                                     `;
