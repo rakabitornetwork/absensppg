@@ -15,7 +15,7 @@ import {
     MapPin
 } from 'lucide-react';
 
-export default function Dashboard({ stats, recentScans, settings }) {
+export default function Dashboard({ stats, recentScans, settings, distributionHistory = [] }) {
     const attendanceRate = Math.max(0, Math.min(100, Number(stats.attendance_rate) || 0));
     const attendanceCircleRadius = 15;
     const attendanceCircleCircumference = 2 * Math.PI * attendanceCircleRadius;
@@ -216,10 +216,13 @@ export default function Dashboard({ stats, recentScans, settings }) {
                 {/* Recent Scans & Distribution Realization Widget (Left 2 columns) */}
                 <div className="lg:col-span-2 space-y-5">
                     
-                    {/* Widget Singkat Realisasi Distribusi Harian */}
+                    {/* Widget Laporan Realisasi Distribusi Bulanan (Trend Chart) */}
                     <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
-                            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Realisasi Distribusi Hari Ini</h3>
+                        <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-2">
+                            <div>
+                                <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Laporan Realisasi Distribusi Bulanan</h3>
+                                <p className="text-[9px] text-slate-400 font-medium mt-0.5">Tren alokasi & keberhasilan pengiriman gizi 30 hari terakhir</p>
+                            </div>
                             <Link 
                                 href="/realisasi-distribusi" 
                                 className="text-[10px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors"
@@ -229,64 +232,116 @@ export default function Dashboard({ stats, recentScans, settings }) {
                             </Link>
                         </div>
                         
-                        {distributionPoints.length === 0 ? (
-                            <p className="text-xs text-slate-400 font-bold py-2">Belum ada titik penerima yang dikonfigurasi.</p>
-                        ) : (
-                            <div className="flex flex-col md:flex-row gap-5">
-                                {/* SVG Horizontal Bar Chart */}
-                                <div className="w-full md:w-[45%] bg-slate-50/50 p-3 rounded-xl border border-slate-100/70 flex flex-col justify-center">
-                                    <span className="block text-[8px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">Visualisasi Porsi per Sekolah</span>
-                                    <svg className="w-full h-auto" viewBox="0 0 320 115" style={{ overflow: 'visible' }}>
-                                        {distributionPoints.map((point, idx) => {
-                                            const maxQty = Math.max(100, ...distributionPoints.map(p => p.qty));
-                                            const barWidth = Math.max(10, Math.round((point.qty / maxQty) * 160));
-                                            const yOffset = idx * 24 + 10;
-                                            const barColor = point.status === 'Delivered' ? '#10b981' : point.status === 'In Progress' ? '#3b82f6' : '#94a3b8';
-                                            
-                                            return (
-                                                <g key={point.id}>
-                                                    {/* School Name */}
-                                                    <text x="0" y={yOffset + 5} className="text-[9px] font-bold fill-slate-700" textAnchor="start">
-                                                        {point.name.length > 15 ? point.name.substring(0, 13) + '..' : point.name}
-                                                    </text>
-                                                    {/* Bar Background */}
-                                                    <rect x="95" y={yOffset - 3} width="160" height="8" rx="4" fill="#f1f5f9" />
-                                                    {/* Colored Bar */}
-                                                    <rect x="95" y={yOffset - 3} width={barWidth} height="8" rx="4" fill={barColor} className="transition-all duration-500 ease-out" />
-                                                    {/* Quantity Text */}
-                                                    <text x={95 + barWidth + 6} y={yOffset + 5} className="text-[9.5px] font-black fill-slate-800 tabular-nums">
-                                                        {point.qty}
-                                                    </text>
-                                                </g>
-                                            );
-                                        })}
-                                    </svg>
-                                </div>
+                        {distributionHistory.length === 0 ? (
+                            <p className="text-xs text-slate-400 font-bold py-6 text-center">Belum ada data histori log distribusi gizi.</p>
+                        ) : (() => {
+                            // SVG dimensions
+                            const w = 550;
+                            const h = 180;
+                            const paddingLeft = 30;
+                            const paddingRight = 15;
+                            const paddingTop = 15;
+                            const paddingBottom = 25;
+
+                            // Scale factors
+                            const maxVal = Math.max(300, ...distributionHistory.map(d => Math.max(d.total_target || 0, d.total_delivered || 0)));
+                            
+                            // Generate point paths
+                            const ptsTarget = [];
+                            const ptsDelivered = [];
+                            const ptsRatio = [];
+
+                            distributionHistory.forEach((d, idx) => {
+                                const x = paddingLeft + (idx * (w - paddingLeft - paddingRight)) / (distributionHistory.length - 1 || 1);
                                 
-                                {/* Info Cards List */}
-                                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    {distributionPoints.map((point) => (
-                                        <div key={point.id} className="bg-slate-50 border border-slate-100/70 p-2.5 rounded-lg flex items-center justify-between">
-                                            <div className="min-w-0">
-                                                <span className="block text-xs font-bold text-slate-800 truncate" title={point.name}>{point.name}</span>
-                                                <span className="block text-[8px] font-bold text-slate-400 uppercase mt-0.5">{point.qty} Porsi</span>
-                                            </div>
-                                            <div>
-                                                <span className={`inline-block text-[8px] font-black px-1.5 py-0.5 rounded ${
-                                                    point.status === 'Delivered'
-                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                        : point.status === 'In Progress'
-                                                        ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                                        : 'bg-slate-100 text-slate-500 border border-slate-200'
-                                                }`}>
-                                                    {point.status === 'Delivered' ? 'Tiba' : point.status === 'In Progress' ? 'Kirim' : 'Pending'}
-                                                </span>
-                                            </div>
+                                // Y for target line
+                                const yTarget = h - paddingBottom - ((d.total_target || 0) / maxVal) * (h - paddingTop - paddingBottom);
+                                ptsTarget.push({ x, y: yTarget });
+
+                                // Y for delivered line
+                                const yDelivered = h - paddingBottom - ((d.total_delivered || 0) / maxVal) * (h - paddingTop - paddingBottom);
+                                ptsDelivered.push({ x, y: yDelivered });
+
+                                // Y for ratio line (0-100% scaled to height)
+                                const ratio = d.total_target > 0 ? (d.total_delivered / d.total_target) : 0;
+                                const yRatio = h - paddingBottom - ratio * (h - paddingTop - paddingBottom);
+                                ptsRatio.push({ x, y: yRatio });
+                            });
+
+                            const makePath = (pts) => pts.length > 0 ? `M ${pts[0].x} ${pts[0].y} ` + pts.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ') : '';
+                            const pathTarget = makePath(ptsTarget);
+                            const pathDelivered = makePath(ptsDelivered);
+                            const pathRatio = makePath(ptsRatio);
+
+                            // Select a few labels for X axis
+                            const labelIndices = [];
+                            if (distributionHistory.length > 0) {
+                                labelIndices.push(0);
+                                if (distributionHistory.length > 2) {
+                                    labelIndices.push(Math.floor(distributionHistory.length / 2));
+                                }
+                                labelIndices.push(distributionHistory.length - 1);
+                            }
+
+                            return (
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <svg className="w-full h-auto" viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible' }}>
+                                            {/* Y-Axis Gridlines */}
+                                            {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+                                                const y = h - paddingBottom - ratio * (h - paddingTop - paddingBottom);
+                                                const valLabel = Math.round(ratio * maxVal);
+                                                return (
+                                                    <g key={idx} className="opacity-40">
+                                                        <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#e2e8f0" strokeDasharray="3,3" strokeWidth="1" />
+                                                        <text x={paddingLeft - 6} y={y + 3} className="text-[8px] font-bold fill-slate-400 text-right" textAnchor="end">{valLabel}</text>
+                                                    </g>
+                                                );
+                                            })}
+
+                                            {/* Target Curve (Dark Slate Navy) */}
+                                            <path d={pathTarget} fill="none" stroke="#1e293b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            
+                                            {/* Terkirim Curve (Teal) */}
+                                            <path d={pathDelivered} fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+                                            {/* Rasio Keberhasilan Curve (Orange) */}
+                                            <path d={pathRatio} fill="none" stroke="#ea580c" strokeWidth="2" strokeDasharray="3,2" strokeLinecap="round" strokeLinejoin="round" />
+
+                                            {/* X-Axis Labels */}
+                                            {labelIndices.map(idx => {
+                                                const d = distributionHistory[idx];
+                                                const x = paddingLeft + (idx * (w - paddingLeft - paddingRight)) / (distributionHistory.length - 1 || 1);
+                                                return (
+                                                    <g key={idx}>
+                                                        <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
+                                                        <text x={x} y={h - paddingBottom + 14} className="text-[8px] font-bold fill-slate-400" textAnchor="middle">
+                                                            {d.date}
+                                                        </text>
+                                                    </g>
+                                                );
+                                            })}
+                                        </svg>
+                                    </div>
+
+                                    {/* Chart Legend */}
+                                    <div className="flex flex-wrap items-center justify-center gap-5 pt-1 text-[9px] font-extrabold text-slate-500 border-t border-slate-50">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="w-4 h-1 bg-[#1e293b] rounded inline-block" />
+                                            <span>Target Porsi</span>
                                         </div>
-                                    ))}
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="w-4 h-1 bg-[#0d9488] rounded inline-block" />
+                                            <span>Porsi Terkirim</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="w-4 h-0.5 border-t-2 border-dashed border-[#ea580c] inline-block" />
+                                            <span>Rasio Keberhasilan</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
 
                     {/* Recent Scans */}

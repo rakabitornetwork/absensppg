@@ -77,6 +77,11 @@ class DashboardController extends Controller
             $mealPrepStatus = 'Cooking'; // Preparing without dietitian approval
         }
 
+        // Fetch past 30 days distribution history for chart rendering
+        $distributionHistory = \App\Models\Distribution::orderBy('date', 'asc')
+            ->take(30)
+            ->get();
+
         return Inertia::render('Dashboard', [
             'stats' => [
                 'date' => Carbon::parse($statDate)->format('d F Y'),
@@ -91,6 +96,7 @@ class DashboardController extends Controller
             ],
             'recentScans' => $recentScans,
             'settings' => $settings,
+            'distributionHistory' => $distributionHistory,
         ]);
     }
 }
