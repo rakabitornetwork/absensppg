@@ -75,11 +75,11 @@ export default function PrintCards({ employees = [] }) {
                                         <h2 className="text-[9px] font-black leading-tight uppercase text-white mt-1 max-w-[150px]">{officeName}</h2>
                                         <p className="text-[6px] text-blue-100/85 font-bold uppercase tracking-[0.18em] mt-0.5">SPPG MBG</p>
                                     </div>
-                                    <div className="w-8 h-8 rounded-xl bg-transparent flex items-center justify-center shrink-0 overflow-hidden">
+                                    <div className="w-11 h-11 rounded-xl bg-transparent flex items-center justify-center shrink-0 overflow-hidden">
                                         {appLogo ? (
                                             <img src={appLogo} className="w-full h-full object-contain p-1" alt="Logo SPPG" />
                                         ) : (
-                                            <span className="text-[10px] font-black tracking-tight text-blue-900">ID</span>
+                                            <span className="text-[12px] font-black tracking-tight text-blue-900">ID</span>
                                         )}
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@ export default function PrintCards({ employees = [] }) {
                                 {/* Detail Strip */}
                                 <div className="mt-3 rounded-2xl bg-white/[0.08] border border-white/10 p-2.5 space-y-1.5">
                                     <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[8.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
+                                        <span className="text-[10.5px] font-black tracking-[0.18em] uppercase text-slate-300">NIP</span>
                                         <span className="text-[10.5px] font-black text-white tabular-nums truncate">{emp.nip}</span>
                                     </div>
                                 </div>
