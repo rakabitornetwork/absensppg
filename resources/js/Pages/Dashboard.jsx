@@ -238,7 +238,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             // SVG dimensions
                             const w = 550;
                             const h = 180;
-                            const paddingLeft = 30;
+                            const paddingLeft = 45;
                             const paddingRight = 15;
                             const paddingTop = 15;
                             const paddingBottom = 25;
@@ -246,6 +246,22 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             // Scale factors
                             const maxVal = Math.max(300, ...distributionHistory.map(d => Math.max(d.total_target || 0, d.total_delivered || 0)));
                             
+                            // Helper to format date like "18 Jun"
+                            const formatDateLabel = (dateStr) => {
+                                try {
+                                    const parts = dateStr.split('-');
+                                    if (parts.length === 3) {
+                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+                                        const day = parseInt(parts[2], 10);
+                                        const monthIdx = parseInt(parts[1], 10) - 1;
+                                        return `${day} ${months[monthIdx]}`;
+                                    }
+                                    return dateStr;
+                                } catch (e) {
+                                    return dateStr;
+                                }
+                            };
+
                             // Generate point paths
                             const ptsTarget = [];
                             const ptsDelivered = [];
@@ -294,7 +310,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx} className="opacity-40">
                                                         <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#e2e8f0" strokeDasharray="3,3" strokeWidth="1" />
-                                                        <text x={paddingLeft - 6} y={y + 3} className="text-[9px] font-semibold fill-slate-400 text-right" textAnchor="end" fontSize="9">{valLabel}</text>
+                                                        <text x={paddingLeft - 8} y={y + 3} className="text-[8px] font-semibold fill-slate-400 text-right" textAnchor="end" fontSize="8">{valLabel}</text>
                                                     </g>
                                                 );
                                             })}
@@ -315,8 +331,8 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx}>
                                                         <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
-                                                        <text x={x} y={h - paddingBottom + 12} className="text-[9px] font-semibold fill-slate-400" textAnchor="middle" fontSize="9">
-                                                            {d.date}
+                                                        <text x={x} y={h - paddingBottom + 12} className="text-[8px] font-semibold fill-slate-400" textAnchor="middle" fontSize="8">
+                                                            {formatDateLabel(d.date)}
                                                         </text>
                                                     </g>
                                                 );
