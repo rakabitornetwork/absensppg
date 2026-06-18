@@ -294,7 +294,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx} className="opacity-40">
                                                         <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#e2e8f0" strokeDasharray="3,3" strokeWidth="1" />
-                                                        <text x={paddingLeft - 6} y={y + 3} className="text-[8px] font-bold fill-slate-400 text-right" textAnchor="end">{valLabel}</text>
+                                                        <text x={paddingLeft - 6} y={y + 3} className="text-[9px] font-medium fill-slate-500 text-right" textAnchor="end">{valLabel}</text>
                                                     </g>
                                                 );
                                             })}
@@ -315,7 +315,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 return (
                                                     <g key={idx}>
                                                         <line x1={x} y1={h - paddingBottom} x2={x} y2={h - paddingBottom + 4} stroke="#cbd5e1" strokeWidth="1" />
-                                                        <text x={x} y={h - paddingBottom + 12} className="text-[7.5px] font-semibold fill-slate-400" textAnchor="middle">
+                                                        <text x={x} y={h - paddingBottom + 14} className="text-[9px] font-medium fill-slate-500" textAnchor="middle">
                                                             {d.date}
                                                         </text>
                                                     </g>
