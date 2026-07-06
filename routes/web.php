@@ -48,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/employees/roles/update', [EmployeeController::class, 'updateRole']);
         Route::post('/employees/roles/delete', [EmployeeController::class, 'destroyRole']);
         Route::post('/employees/{employee}/update', [EmployeeController::class, 'update']);
+        Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
+        Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
         Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 
         // Absensi (Write/Edit)
@@ -87,8 +89,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Superadmin (IT Team) only - Delete / Reset operations
     Route::middleware(['role:superadmin'])->group(function () {
-        Route::post('/employees/{employee}/delete', [EmployeeController::class, 'destroy']);
-        Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
         Route::post('/attendances/{attendance}/delete', [AttendanceController::class, 'destroy']);
         Route::post('/settings/shifts/{shift}/delete', [SettingController::class, 'destroyShift']);
         Route::post('/pemeliharaan-data/reset', [DatabaseMaintenanceController::class, 'reset']);

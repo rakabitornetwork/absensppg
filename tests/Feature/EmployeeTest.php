@@ -25,7 +25,7 @@ class EmployeeTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@sppg.com',
             'password' => bcrypt('password'),
-            'role' => 'superadmin',
+            'role' => 'admin',
         ]);
 
         $employee1 = Employee::create([
@@ -74,6 +74,75 @@ class EmployeeTest extends TestCase
         $this->assertDatabaseMissing('employees', ['id' => $employee1->id]);
         $this->assertDatabaseMissing('employees', ['id' => $employee2->id]);
         $this->assertDatabaseHas('employees', ['id' => $employee3->id]);
+    }
+
+    public function test_admin_can_delete_employee(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-108',
+            'name' => 'Karyawan H',
+            'role' => 'Juru Masak',
+            'email' => 'karyawan.h@sppg.com',
+            'phone' => '081234567897',
+            'base_salary' => 4000000,
+            'weekly_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'SPPG-TOKEN-H',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post("/employees/{$employee->id}/delete");
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('employees', ['id' => $employee->id]);
+    }
+
+    public function test_admin_can_update_employee(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-109',
+            'name' => 'Karyawan I',
+            'role' => 'Juru Masak',
+            'email' => 'karyawan.i@sppg.com',
+            'phone' => '081234567898',
+            'base_salary' => 4000000,
+            'weekly_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'SPPG-TOKEN-I',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post("/employees/{$employee->id}/update", [
+                'nip' => 'SPPG-MBG-109',
+                'name' => 'Karyawan I Diperbarui',
+                'role' => 'Tenaga Gizi',
+                'email' => 'karyawan.i@sppg.com',
+                'phone' => '081999999999',
+                'base_salary' => 5000000,
+                'weekly_allowance' => 30000,
+                'status' => 'Active',
+            ]);
+
+        $response->assertRedirect();
+
+        $employee->refresh();
+        $this->assertEquals('Karyawan I Diperbarui', $employee->name);
+        $this->assertEquals('Tenaga Gizi', $employee->role);
+        $this->assertEquals(5000000, $employee->base_salary);
     }
 
     public function test_admin_can_upload_employee_photo(): void

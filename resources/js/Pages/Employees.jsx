@@ -19,6 +19,7 @@ import {
 export default function Employees({ employees = [], shifts = [] }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
+    const canManageEmployees = userRole === 'superadmin' || userRole === 'admin';
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
     const appLogo = props.appLogo || '';
     const officeAddress = props.officeAddress || '';
@@ -421,7 +422,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                                     >
                                                         <Edit2 className="w-3.5 h-3.5" />
                                                     </button>
-                                                    {userRole === 'superadmin' && (
+                                                    {canManageEmployees && (
                                                         <button
                                                             onClick={() => handleDelete(emp.id)}
                                                             className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors"
@@ -972,15 +973,15 @@ export default function Employees({ employees = [], shifts = [] }) {
                         >
                             Batal
                         </button>
-                        {userRole === 'superadmin' && (
-                                                            <button
-                                                                onClick={handleBulkDelete}
-                                                                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                                Hapus Massal
-                                                            </button>
-                                                        )}
+                        {canManageEmployees && (
+                            <button
+                                onClick={handleBulkDelete}
+                                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Hapus Massal
+                            </button>
+                        )}
                                                     </div>
                 </div>
             )}
