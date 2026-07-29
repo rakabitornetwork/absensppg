@@ -65,7 +65,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
         : '';
 
     const handleLockRealisasi = () => {
-        if (confirm('Kunci realisasi distribusi hari ini? Data tidak akan bisa diedit setelah dikunci.')) {
+        if (confirm('Kunci realisasi distribusi hari ini? Laporan akan disimpan, lalu status pengiriman di Target Distribusi di-reset ke Pending.')) {
             router.post('/realisasi-distribusi/lock');
         }
     };

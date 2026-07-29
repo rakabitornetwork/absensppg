@@ -47,6 +47,14 @@ class DistributionRealizationController extends Controller
         $todayRecord = Distribution::where('date', $todayStr)->first();
         $isLocked = $todayRecord ? true : false;
 
+        // When locked, show the saved snapshot (live settings may already be reset)
+        if ($isLocked && $todayRecord) {
+            $todayMenu = $todayRecord->menu_data ?? $todayMenu;
+            $distributionPoints = $todayRecord->points_data ?? $distributionPoints;
+            $mealTarget = (int) ($todayRecord->total_target ?? $mealTarget);
+            $totalDeliveredToday = (int) ($todayRecord->total_delivered ?? $totalDeliveredToday);
+        }
+
         // 3. Fetch past 30 days history for monthly calendar and trend graphs
         $history = Distribution::orderBy('date', 'desc')
             ->take(30)
@@ -92,20 +100,25 @@ class DistributionRealizationController extends Controller
 
         $mealTarget = isset($settings['meal_target']) ? (int) $settings['meal_target'] : 250;
         
-        // Calculate total delivered
+        // Calculate total delivered and prepare snapshot points
         $totalDelivered = 0;
         $allDelivered = true;
+        $snapshotPoints = [];
         
-        foreach ($distributionPoints as &$point) {
+        foreach ($distributionPoints as $point) {
+            $snapshotPoint = $point;
+
             if (isset($point['status']) && $point['status'] === 'Delivered') {
                 $totalDelivered += (int) ($point['qty'] ?? 0);
                 if (!isset($point['delivered_at']) || $point['delivered_at'] === '-') {
-                    $point['delivered_at'] = Carbon::now()->format('H:i');
+                    $snapshotPoint['delivered_at'] = Carbon::now()->format('H:i');
                 }
             } else {
                 $allDelivered = false;
-                $point['delivered_at'] = '-';
+                $snapshotPoint['delivered_at'] = '-';
             }
+
+            $snapshotPoints[] = $snapshotPoint;
         }
 
         // Lock/Save into distributions database
@@ -113,14 +126,23 @@ class DistributionRealizationController extends Controller
             ['date' => $todayStr],
             [
                 'menu_data' => $todayMenu,
-                'points_data' => $distributionPoints,
+                'points_data' => $snapshotPoints,
                 'total_target' => $mealTarget,
                 'total_delivered' => $totalDelivered,
                 'status' => $allDelivered ? 'Completed' : 'Ready'
             ]
         );
 
-        return redirect()->back()->with('success', 'Data realisasi distribusi hari ini berhasil dikunci/disimpan ke laporan.');
+        // Reset live delivery status for next cycle (keep names & qty)
+        $resetPoints = array_map(function ($point) {
+            $point['status'] = 'Pending';
+            $point['delivered_at'] = '-';
+            return $point;
+        }, $distributionPoints);
+
+        SppgSetting::setValue('distribution_points', json_encode(array_values($resetPoints)));
+
+        return redirect()->back()->with('success', 'Data realisasi berhasil dikunci. Status pengiriman di Target Distribusi di-reset ke Pending.');
     }
 
     public function unlockToday(Request $request)
