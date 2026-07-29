@@ -240,13 +240,14 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             // SVG dimensions
                             const w = 600;
                             const h = 200;
-                            const paddingLeft = 30;
-                            const paddingRight = 15;
-                            const paddingTop = 15;
+                            const paddingLeft = 34;
+                            const paddingRight = 34;
+                            const paddingTop = 20;
                             const paddingBottom = 30;
 
-                            // Scale factors
+                            // Scale factors (left axis = porsi)
                             const maxVal = Math.max(300, ...distributionHistory.map(d => Math.max(d.total_target || 0, d.total_delivered || 0)));
+                            const chartInnerH = h - paddingTop - paddingBottom;
                             
                             // Helper to format date like "18 Jun 2026"
                             const formatDateLabel = (dateStr) => {
@@ -287,18 +288,19 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             distributionHistory.forEach((d, idx) => {
                                 const x = paddingLeft + (idx * (w - paddingLeft - paddingRight)) / (distributionHistory.length - 1 || 1);
                                 
-                                // Y for target line
-                                const yTarget = h - paddingBottom - ((d.total_target || 0) / maxVal) * (h - paddingTop - paddingBottom);
+                                // Y for target line (left axis: porsi)
+                                const yTarget = h - paddingBottom - ((d.total_target || 0) / maxVal) * chartInnerH;
                                 ptsTarget.push({ x, y: yTarget });
 
-                                // Y for delivered line
-                                const yDelivered = h - paddingBottom - ((d.total_delivered || 0) / maxVal) * (h - paddingTop - paddingBottom);
+                                // Y for delivered line (left axis: porsi)
+                                const yDelivered = h - paddingBottom - ((d.total_delivered || 0) / maxVal) * chartInnerH;
                                 ptsDelivered.push({ x, y: yDelivered });
 
-                                // Y for ratio line (0-100% scaled to height)
-                                const ratio = d.total_target > 0 ? (d.total_delivered / d.total_target) : 0;
-                                const yRatio = h - paddingBottom - ratio * (h - paddingTop - paddingBottom);
-                                ptsRatio.push({ x, y: yRatio });
+                                // Y for ratio line (right axis: 0–100%, capped so over-delivery tidak overflow)
+                                const rawRatio = d.total_target > 0 ? (d.total_delivered / d.total_target) : 0;
+                                const cappedRatio = Math.min(1, Math.max(0, rawRatio));
+                                const yRatio = h - paddingBottom - cappedRatio * chartInnerH;
+                                ptsRatio.push({ x, y: yRatio, ratioPct: Math.round(rawRatio * 100) });
                             });
 
                             // Smooth Bezier Curve Path Generator
@@ -356,8 +358,8 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                             return (
                                 <div className="space-y-5 relative">
                                     {/* SVG Container */}
-                                    <div className="relative">
-                                        <svg className="w-full h-auto" viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible' }}>
+                                    <div className="relative overflow-hidden">
+                                        <svg className="w-full h-auto" viewBox={`0 0 ${w} ${h}`}>
                                             <defs>
                                                 {/* Areas Gradients */}
                                                 <linearGradient id="deliveredAreaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -375,14 +377,16 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                 </filter>
                                             </defs>
 
-                                            {/* Y-Axis Gridlines */}
+                                            {/* Y-Axis Gridlines (left = porsi, right = rasio %) */}
                                             {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
-                                                const y = h - paddingBottom - ratio * (h - paddingTop - paddingBottom);
+                                                const y = h - paddingBottom - ratio * chartInnerH;
                                                 const valLabel = Math.round(ratio * maxVal);
+                                                const pctLabel = `${Math.round(ratio * 100)}%`;
                                                 return (
                                                     <g key={idx}>
                                                         <line x1={paddingLeft} y1={y} x2={w - paddingRight} y2={y} stroke="#f1f5f9" strokeDasharray="4,4" strokeWidth="1" />
-                                                        <text x={paddingLeft - 10} y={y + 3} className="font-sans text-[6.5px] font-medium fill-slate-400 text-right" textAnchor="end" fontSize="6.5">{valLabel}</text>
+                                                        <text x={paddingLeft - 8} y={y + 3} className="font-sans text-[6.5px] font-medium fill-slate-400 text-right" textAnchor="end" fontSize="6.5">{valLabel}</text>
+                                                        <text x={w - paddingRight + 8} y={y + 3} className="font-sans text-[6.5px] font-medium fill-orange-400" textAnchor="start" fontSize="6.5">{pctLabel}</text>
                                                     </g>
                                                 );
                                             })}
@@ -398,7 +402,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                             {/* Delivered Curve */}
                                             <path d={pathDelivered} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" />
 
-                                            {/* Ratio Curve */}
+                                            {/* Ratio Curve (skala kanan 0–100%) */}
                                             <path d={pathRatio} fill="none" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4,3" strokeLinecap="round" strokeLinejoin="round" />
 
                                             {/* X-Axis Labels */}
@@ -436,6 +440,10 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                     {/* Delivered dot marker */}
                                                     <circle cx={ptsDelivered[hoveredIdx].x} cy={ptsDelivered[hoveredIdx].y} r="6" fill="#ffffff" stroke="#10b981" strokeWidth="2.5" />
                                                     <circle cx={ptsDelivered[hoveredIdx].x} cy={ptsDelivered[hoveredIdx].y} r="2.5" fill="#10b981" />
+
+                                                    {/* Ratio dot marker */}
+                                                    <circle cx={ptsRatio[hoveredIdx].x} cy={ptsRatio[hoveredIdx].y} r="4.5" fill="#ffffff" stroke="#f97316" strokeWidth="2" />
+                                                    <circle cx={ptsRatio[hoveredIdx].x} cy={ptsRatio[hoveredIdx].y} r="1.5" fill="#f97316" />
                                                 </g>
                                             )}
 
@@ -497,9 +505,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                                         <span className="w-1.5 h-1.5 rounded-full bg-orange-500" /> Rasio Sukses:
                                                     </span>
                                                     <span className="font-black text-orange-600 tabular-nums">
-                                                        {distributionHistory[hoveredIdx].total_target > 0 
-                                                            ? Math.round((distributionHistory[hoveredIdx].total_delivered / distributionHistory[hoveredIdx].total_target) * 100) 
-                                                            : 0}%
+                                                        {ptsRatio[hoveredIdx]?.ratioPct ?? 0}%
                                                     </span>
                                                 </div>
                                             </div>
@@ -518,7 +524,7 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="w-3.5 h-0.5 border-t-2 border-dashed border-orange-500 inline-block" />
-                                            <span>Rasio Keberhasilan</span>
+                                            <span>Rasio Keberhasilan (sumbu kanan %)</span>
                                         </div>
                                     </div>
                                 </div>
