@@ -201,7 +201,7 @@ export default function DistributionRealizations({ todayConfig = {}, history = [
                                         </p>
                                     </div>
 
-                                    {!todayConfig.is_locked && (userRole === 'superadmin' || userRole === 'admin') && (
+                                    {!todayConfig.is_locked && (userRole === 'superadmin' || userRole === 'admin' || userRole === 'operator') && (
                                         <button
                                             type="button"
                                             onClick={handleLockRealisasi}

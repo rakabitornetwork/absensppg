@@ -19,7 +19,7 @@ import {
 export default function Employees({ employees = [], shifts = [] }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
-    const canManageEmployees = userRole === 'superadmin' || userRole === 'admin';
+    const canManageEmployees = userRole === 'superadmin' || userRole === 'admin' || userRole === 'operator';
     const officeName = props.officeName || 'SPPG Sukajadi Mandiri';
     const appLogo = props.appLogo || '';
     const officeAddress = props.officeAddress || '';

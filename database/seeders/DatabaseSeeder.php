@@ -55,6 +55,15 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'operator@sppg.com'],
+            [
+                'name' => 'Operator SPPG',
+                'password' => Hash::make('12345678'),
+                'role' => 'operator',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'distributor@sppg.com'],
             [
                 'name' => 'Distributor SPPG',

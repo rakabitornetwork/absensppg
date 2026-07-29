@@ -135,6 +135,7 @@ export default function Index({ users = [] }) {
                             <option value="All">Semua Hak Akses</option>
                             <option value="superadmin">Superadmin (IT)</option>
                             <option value="admin">Admin (Staff)</option>
+                            <option value="operator">Operator</option>
                             <option value="distributor">Distributor</option>
                         </select>
                     </div>
@@ -190,11 +191,14 @@ export default function Index({ users = [] }) {
                                                         ? 'bg-rose-50 text-rose-700 border-rose-100' 
                                                         : user.role === 'admin' 
                                                         ? 'bg-sky-50 text-sky-700 border-sky-100'
+                                                        : user.role === 'operator'
+                                                        ? 'bg-teal-50 text-teal-700 border-teal-100'
                                                         : 'bg-purple-50 text-purple-700 border-purple-100'
                                                 }`}>
                                                     <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                                                     {user.role === 'superadmin' && 'SUPERADMIN (IT)'}
                                                     {user.role === 'admin' && 'ADMIN (STAFF)'}
+                                                    {user.role === 'operator' && 'OPERATOR'}
                                                     {user.role === 'distributor' && 'DISTRIBUTOR'}
                                                 </span>
                                             </td>
@@ -334,6 +338,7 @@ export default function Index({ users = [] }) {
                                         <option value="superadmin">Superadmin (Tim IT - Izin Penuh)</option>
                                     )}
                                     <option value="admin">Admin (Staff Operasional)</option>
+                                    <option value="operator">Operator (Seperti Admin, Rekap Presensi hanya lihat)</option>
                                     <option value="distributor">Distributor (Kurir Logistik)</option>
                                 </select>
                                 {errors.role && <span className="text-[10px] text-rose-500 font-bold block mt-0.5">{errors.role}</span>}

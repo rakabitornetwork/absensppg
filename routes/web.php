@@ -40,8 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/realisasi-distribusi/lock', [DistributionRealizationController::class, 'lockToday']);
     Route::post('/realisasi-distribusi/unlock', [DistributionRealizationController::class, 'unlockToday']);
 
-    // Admin & Superadmin only
-    Route::middleware(['role:superadmin,admin'])->group(function () {
+    // Admin, Operator & Superadmin — akses operasional (operator tidak bisa tulis rekap)
+    Route::middleware(['role:superadmin,admin,operator'])->group(function () {
         // Karyawan CRUD (Write/Edit)
         Route::get('/employees', [EmployeeController::class, 'index']);
         Route::post('/employees', [EmployeeController::class, 'store']);
@@ -52,9 +52,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/employees/bulk-delete', [EmployeeController::class, 'bulkDestroy']);
         Route::get('/employees/print-cards', [EmployeeController::class, 'printCards']);
 
-        // Absensi (Write/Edit)
+        // Absensi — lihat rekap (operator: read-only)
         Route::get('/attendances', [AttendanceController::class, 'index']);
-        Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
 
         // Payroll
         Route::get('/payrolls', [PayrollController::class, 'index']);
@@ -80,11 +79,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pemeliharaan-data/backup', [DatabaseMaintenanceController::class, 'backup']);
         Route::post('/pemeliharaan-data/restore', [DatabaseMaintenanceController::class, 'restore']);
 
-        // User & RBAC Management (Accessible by superadmin and admin)
+        // User & RBAC Management
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);
         Route::post('/users/{user}/update', [UserController::class, 'update']);
         Route::post('/users/{user}/delete', [UserController::class, 'destroy']);
+    });
+
+    // Absensi — tambah/ubah rekap (admin & superadmin saja)
+    Route::middleware(['role:superadmin,admin'])->group(function () {
+        Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
     });
 
     // Superadmin (IT Team) only - Delete / Reset operations

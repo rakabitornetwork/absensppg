@@ -84,7 +84,7 @@ export default function MainLayout({ children, title }) {
         if (userRole === 'distributor') {
             return ['Dashboard', 'Target Distribusi', 'Realisasi Distribusi'].includes(item.name);
         }
-        if (item.name === 'Manajemen Pengguna' && userRole !== 'superadmin' && userRole !== 'admin') {
+        if (item.name === 'Manajemen Pengguna' && userRole !== 'superadmin' && userRole !== 'admin' && userRole !== 'operator') {
             return false;
         }
         return true;

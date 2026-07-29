@@ -17,6 +17,7 @@ import {
 export default function Attendances({ records = [], selectedMonth, selectedYear, systemSettings = {} }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
+    const canEditAttendance = userRole === 'superadmin' || userRole === 'admin';
     const [month, setMonth] = useState(selectedMonth);
     const [year, setYear] = useState(selectedYear);
     const [showCorrectionForm, setShowCorrectionForm] = useState(false);
@@ -326,13 +327,15 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                         <Printer className="w-3.5 h-3.5" />
                         Cetak Rekap
                     </button>
-                    <button
-                        onClick={handleNewManualClick}
-                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px]"
-                    >
-                        <Plus className="w-3.5 h-3.5" />
-                        Input Manual
-                    </button>
+                    {canEditAttendance && (
+                        <button
+                            onClick={handleNewManualClick}
+                            className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px]"
+                        >
+                            <Plus className="w-3.5 h-3.5" />
+                            Input Manual
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -430,21 +433,22 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                                             {/* Days cells */}
                                             {daysArray.map((d) => {
                                                 const dayRecord = rec.days[d];
-                                                let cellClass = "text-slate-300 bg-slate-50/30 hover:bg-slate-100 cursor-pointer";
+                                                const editCursor = canEditAttendance ? 'cursor-pointer' : 'cursor-default';
+                                                let cellClass = `text-slate-300 bg-slate-50/30 ${canEditAttendance ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-default'}`;
                                                 let text = "-";
 
                                                 if (dayRecord) {
                                                     if (dayRecord.status === 'Present') {
-                                                        cellClass = "bg-green-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
+                                                        cellClass = `bg-green-500 text-white font-bold ${editCursor} rounded ${canEditAttendance ? 'hover:scale-110 transition-transform' : ''}`;
                                                         text = "H";
                                                     } else if (dayRecord.status === 'Late') {
-                                                        cellClass = "bg-amber-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
+                                                        cellClass = `bg-amber-500 text-white font-bold ${editCursor} rounded ${canEditAttendance ? 'hover:scale-110 transition-transform' : ''}`;
                                                         text = "T";
                                                     } else if (dayRecord.status === 'Absent') {
-                                                        cellClass = "bg-rose-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
+                                                        cellClass = `bg-rose-500 text-white font-bold ${editCursor} rounded ${canEditAttendance ? 'hover:scale-110 transition-transform' : ''}`;
                                                         text = "A";
                                                     } else if (dayRecord.status === 'Leave') {
-                                                        cellClass = "bg-blue-500 text-white font-bold cursor-pointer rounded hover:scale-110 transition-transform";
+                                                        cellClass = `bg-blue-500 text-white font-bold ${editCursor} rounded ${canEditAttendance ? 'hover:scale-110 transition-transform' : ''}`;
                                                         text = "I";
                                                     }
                                                 }
@@ -452,9 +456,9 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                                                 return (
                                                     <td 
                                                         key={d} 
-                                                        onClick={() => handleOpenCorrection(rec.employee_id, d)}
+                                                        onClick={() => canEditAttendance && handleOpenCorrection(rec.employee_id, d)}
                                                         className={`p-1 border border-slate-100 ${cellClass}`}
-                                                        title={dayRecord ? `${rec.name} (${d}/${month}): ${dayRecord.status}${dayRecord.status === 'Late' ? ` (${formatMinutesDuration(dayRecord.late_minutes)})` : ''} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}` : `Klik untuk input presensi tgl ${d}`}
+                                                        title={dayRecord ? `${rec.name} (${d}/${month}): ${dayRecord.status}${dayRecord.status === 'Late' ? ` (${formatMinutesDuration(dayRecord.late_minutes)})` : ''} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}` : (canEditAttendance ? `Klik untuk input presensi tgl ${d}` : `Tidak ada data tgl ${d}`)}
                                                     >
                                                         {text}
                                                     </td>
