@@ -140,12 +140,28 @@ class PayrollController extends Controller
 
     public function destroy(Request $request, Payroll $payroll)
     {
-        if ($request->user()->role !== 'superadmin') {
-            abort(403, 'Hanya Superuser yang dapat menghapus data penggajian.');
+        if (!in_array($request->user()->role, ['superadmin', 'admin'], true)) {
+            abort(403, 'Hanya Superadmin atau Admin yang dapat menghapus data penggajian.');
         }
 
         $payroll->delete();
 
         return redirect()->back()->with('success', 'Data gaji karyawan berhasil dihapus.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!in_array($request->user()->role, ['superadmin', 'admin'], true)) {
+            abort(403, 'Hanya Superadmin atau Admin yang dapat menghapus data penggajian secara massal.');
+        }
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['required', 'integer', 'exists:payrolls,id'],
+        ]);
+
+        $deleted = Payroll::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->back()->with('success', $deleted . ' data gaji berhasil dihapus secara massal.');
     }
 }

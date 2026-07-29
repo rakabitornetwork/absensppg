@@ -14,9 +14,11 @@ import { Head, useForm, Link, router, usePage } from '@inertiajs/react';
 export default function Payrolls({ payrolls = [], selectedDate }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
+    const canDeletePayroll = userRole === 'superadmin' || userRole === 'admin';
     const [date, setDate] = useState(selectedDate);
     const [editPayroll, setEditPayroll] = useState(null);
     const [isCalculating, setIsCalculating] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const handleDelete = (id) => {
         if (confirm('Apakah Anda yakin ingin menghapus data penggajian karyawan ini?')) {
@@ -24,7 +26,33 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
         }
     };
 
-    const { data, setData, post, reset, errors } = useForm({
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const pageIds = payrolls.map((p) => p.id);
+            setSelectedIds([...new Set([...selectedIds, ...pageIds])]);
+        } else {
+            const pageIds = payrolls.map((p) => p.id);
+            setSelectedIds(selectedIds.filter((id) => !pageIds.includes(id)));
+        }
+    };
+
+    const handleSelectOne = (id) => {
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter((item) => item !== id));
+        } else {
+            setSelectedIds([...selectedIds, id]);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (confirm(`Apakah Anda yakin ingin menghapus secara massal ${selectedIds.length} data gaji terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
+            router.post('/payrolls/bulk-delete', { ids: selectedIds }, {
+                onSuccess: () => setSelectedIds([]),
+            });
+        }
+    };
+
+    const { data, setData, post, reset } = useForm({
         bonuses: 0,
         deductions: 0,
         status: 'Draft',
@@ -53,6 +81,7 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
 
     const handleFilterChange = (newDate) => {
         setDate(newDate);
+        setSelectedIds([]);
         router.get('/payrolls', { date: newDate }, { preserveState: true });
     };
 
@@ -61,6 +90,7 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
         router.post('/payrolls/generate', { date }, {
             onSuccess: () => {
                 setIsCalculating(false);
+                setSelectedIds([]);
             },
             onError: () => {
                 setIsCalculating(false);
@@ -89,6 +119,8 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
 
     const totalNetPayout = payrolls.reduce((acc, p) => acc + p.net_salary, 0);
     const totalDeductions = payrolls.reduce((acc, p) => acc + p.deductions, 0);
+    const allSelected = payrolls.length > 0 && payrolls.every((p) => selectedIds.includes(p.id));
+    const colSpan = canDeletePayroll ? 10 : 9;
 
     return (
         <MainLayout title="Daftar Penggajian">
@@ -143,6 +175,17 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
                     <table className="w-full min-w-[980px] text-left text-xs table-fixed">
                         <thead>
                             <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
+                                {canDeletePayroll && (
+                                    <th className="w-[44px] py-2.5 pl-3 pr-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={allSelected}
+                                            onChange={handleSelectAll}
+                                            className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
+                                            disabled={payrolls.length === 0}
+                                        />
+                                    </th>
+                                )}
                                 <th className="w-[210px] py-2.5 pr-5">Karyawan (NIP)</th>
                                 <th className="w-[92px] py-2.5 px-3 text-center">Status Hadir</th>
                                 <th className="w-[130px] py-2.5 px-3 text-right">Gaji Harian</th>
@@ -157,7 +200,7 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
                         <tbody className="divide-y divide-slate-50 font-semibold text-slate-700">
                             {payrolls.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" className="text-center py-10 text-slate-400">
+                                    <td colSpan={colSpan} className="text-center py-10 text-slate-400">
                                         <AlertCircle className="w-8 h-8 mx-auto text-slate-300 mb-1" />
                                         <p className="font-bold text-[11px] mb-2">Gaji untuk tanggal ini belum dikalkulasi.</p>
                                         <button
@@ -170,7 +213,17 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
                                 </tr>
                             ) : (
                                 payrolls.map((p) => (
-                                    <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <tr key={p.id} className={`hover:bg-slate-50/50 transition-colors ${selectedIds.includes(p.id) ? 'bg-teal-50/20' : ''}`}>
+                                        {canDeletePayroll && (
+                                            <td className="py-3 pl-3 pr-2 align-middle">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(p.id)}
+                                                    onChange={() => handleSelectOne(p.id)}
+                                                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500/20 w-3.5 h-3.5 cursor-pointer"
+                                                />
+                                            </td>
+                                        )}
                                         <td className="py-3 pr-5 font-bold text-slate-950 align-middle">
                                             {p.employee.name}
                                             <span className="block text-[9.5px] text-slate-400 font-medium tabular-nums">{p.employee.nip} • {p.employee.role}</span>
@@ -218,7 +271,7 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
                                                 >
                                                     <Eye className="w-3.5 h-3.5" />
                                                 </Link>
-                                                {userRole === 'superadmin' && (
+                                                {canDeletePayroll && (
                                                     <button
                                                         onClick={() => handleDelete(p.id)}
                                                         className="p-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 transition-colors cursor-pointer"
@@ -301,6 +354,35 @@ export default function Payrolls({ payrolls = [], selectedDate }) {
                                 Perbarui & Simpan
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {canDeletePayroll && selectedIds.length > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border border-teal-200/60 px-4 py-3 rounded-xl shadow-xl flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="flex items-center gap-2">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold border border-teal-100">
+                            {selectedIds.length}
+                        </span>
+                        <span className="text-[11px] text-slate-600 font-bold">
+                            Data gaji terpilih
+                        </span>
+                    </div>
+                    <div className="h-4 w-px bg-slate-200" />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setSelectedIds([])}
+                            className="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            onClick={handleBulkDelete}
+                            className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm shadow-rose-500/10 hover:shadow-rose-500/20 transition-all flex items-center gap-1 active:translate-y-[1px] cursor-pointer"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Hapus Massal
+                        </button>
                     </div>
                 </div>
             )}
