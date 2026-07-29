@@ -112,18 +112,29 @@ class AttendanceController extends Controller
 
         // Determine action based on mode
         if ($mode === 'in') {
-            if ($attendance) {
+            if ($scanContext['isOvernight'] && $scanContext['inGapPeriod']) {
+                $startLabel = Carbon::parse($scanContext['workStartTime'])->format('H:i');
                 return response()->json([
                     'status' => 'warning',
-                    'message' => "Karyawan {$employee->name} sudah melakukan scan masuk hari ini.",
+                    'message' => "Belum waktunya scan masuk untuk {$employee->name}. Shift malam dimulai pukul {$startLabel}.",
+                ], 400);
+            }
+
+            if ($attendance && $attendance->clock_in) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => "Karyawan {$employee->name} sudah melakukan scan masuk untuk shift ini.",
                 ], 400);
             }
             $action = 'in';
         } elseif ($mode === 'out') {
             if (!$attendanceForOut) {
+                $hint = $employee->shift_id
+                    ? 'Pastikan sudah scan masuk pada shift malam yang sama.'
+                    : 'Karyawan belum memiliki shift. Pasang shift malam (lintas hari) di Data Karyawan.';
                 return response()->json([
                     'status' => 'warning',
-                    'message' => "Karyawan {$employee->name} belum melakukan scan masuk hari ini. Silakan scan masuk terlebih dahulu.",
+                    'message' => "Karyawan {$employee->name} belum memiliki absensi masuk yang bisa di-checkout. {$hint}",
                 ], 400);
             }
             $attendance = $attendanceForOut;
@@ -134,7 +145,15 @@ class AttendanceController extends Controller
                 $attendance = $attendanceForOut;
                 $action = 'out';
             } else {
-                $action = !$attendance ? 'in' : 'out';
+                $action = (!$attendance || !$attendance->clock_in) ? 'in' : 'out';
+            }
+
+            if ($action === 'in' && $scanContext['isOvernight'] && $scanContext['inGapPeriod']) {
+                $startLabel = Carbon::parse($scanContext['workStartTime'])->format('H:i');
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => "Belum waktunya scan masuk untuk {$employee->name}. Shift malam dimulai pukul {$startLabel}.",
+                ], 400);
             }
         }
 
@@ -153,13 +172,21 @@ class AttendanceController extends Controller
                 $status = 'Present';
             }
 
-            $attendance = Attendance::create([
-                'employee_id' => $employee->id,
-                'date' => $attendanceDate,
-                'clock_in' => $timeStr,
-                'status' => $status,
-                'late_minutes' => $lateMinutes,
-            ]);
+            if ($attendance) {
+                $attendance->update([
+                    'clock_in' => $timeStr,
+                    'status' => $status,
+                    'late_minutes' => $lateMinutes,
+                ]);
+            } else {
+                $attendance = Attendance::create([
+                    'employee_id' => $employee->id,
+                    'date' => $attendanceDate,
+                    'clock_in' => $timeStr,
+                    'status' => $status,
+                    'late_minutes' => $lateMinutes,
+                ]);
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -179,7 +206,7 @@ class AttendanceController extends Controller
             if ($attendance->clock_out) {
                 return response()->json([
                     'status' => 'warning',
-                    'message' => "Karyawan {$employee->name} sudah melakukan check-out hari ini.",
+                    'message' => "Karyawan {$employee->name} sudah melakukan check-out untuk shift ini.",
                 ], 400);
             }
 
@@ -219,12 +246,19 @@ class AttendanceController extends Controller
 
         $attendanceDate = $now->copy()->startOfDay();
         $isOvernight = $workEndTimeStr && $this->isOvernightShift($workStartTimeStr, $workEndTimeStr);
+        $inGapPeriod = false;
 
         if ($isOvernight) {
             $endToday = $this->timeOnDate($workEndTimeStr, $now);
+            $startToday = $this->timeOnDate($workStartTimeStr, $now);
 
             if ($now->lt($endToday)) {
+                // Still inside previous overnight shift (after midnight, before end)
                 $attendanceDate->subDay();
+            } elseif ($now->lt($startToday)) {
+                // Gap between shift end and next start (e.g. 07:00–23:00)
+                // Check-in should not create tonight's shift yet; checkout uses open-session lookup
+                $inGapPeriod = true;
             }
         }
 
@@ -239,22 +273,54 @@ class AttendanceController extends Controller
             'attendanceDate' => $attendanceDate->toDateString(),
             'lateGrace' => $lateGrace,
             'isOvernight' => $isOvernight,
+            'inGapPeriod' => $inGapPeriod,
+            'workStartTime' => $workStartTimeStr,
+            'workEndTime' => $workEndTimeStr,
         ];
     }
 
     private function findAttendanceForClockOut(Employee $employee, Carbon $now, array $scanContext, ?Attendance $attendance): ?Attendance
     {
-        if ($attendance) {
+        // Prefer an open session that still belongs to the current overnight cycle
+        if ($scanContext['isOvernight']) {
+            $openSession = $this->findOpenOvernightSession($employee, $now, $scanContext);
+            if ($openSession) {
+                return $openSession;
+            }
+        }
+
+        if ($attendance && $attendance->clock_in) {
             return $attendance;
         }
 
-        if (!$scanContext['isOvernight']) {
-            return null;
+        return null;
+    }
+
+    private function findOpenOvernightSession(Employee $employee, Carbon $now, array $scanContext): ?Attendance
+    {
+        $workStartTimeStr = $scanContext['workStartTime'];
+
+        $candidates = Attendance::where('employee_id', $employee->id)
+            ->whereNotNull('clock_in')
+            ->whereNull('clock_out')
+            ->whereDate('date', '>=', $now->copy()->subDays(2)->toDateString())
+            ->whereDate('date', '<=', $now->toDateString())
+            ->orderByDesc('date')
+            ->get();
+
+        foreach ($candidates as $candidate) {
+            $attendanceDate = Carbon::parse($candidate->date)->startOfDay();
+            $shiftStart = $this->timeOnDate($workStartTimeStr, $attendanceDate);
+            $nextShiftStart = $this->timeOnDate($workStartTimeStr, $attendanceDate->copy()->addDay());
+
+            // Open overnight session remains valid until the next day's shift start
+            // e.g. check-in 29 Jul 23:00 stays open for checkout until 30 Jul 23:00
+            if ($now->gte($shiftStart) && $now->lt($nextShiftStart)) {
+                return $candidate;
+            }
         }
 
-        return Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $now->copy()->subDay()->toDateString())
-            ->first();
+        return null;
     }
 
     private function resolveWorkEndForAttendanceDate(Employee $employee, Carbon $attendanceDate): Carbon
@@ -265,7 +331,7 @@ class AttendanceController extends Controller
         $workStart = $this->timeOnDate($workStartTimeStr, $attendanceDate);
         $workEnd = $this->timeOnDate($workEndTimeStr, $attendanceDate);
 
-        if ($this->isOvernightShift($workStartTimeStr, $workEndTimeStr) && $workEnd->lt($workStart)) {
+        if ($this->isOvernightShift($workStartTimeStr, $workEndTimeStr) && $workEnd->lte($workStart)) {
             $workEnd->addDay();
         }
 

@@ -481,4 +481,156 @@ class ShiftAttendanceTest extends TestCase
 
         $this->assertDatabaseCount('attendances', 0);
     }
+
+    public function test_cook_overnight_shift_23_to_07_can_clock_out_after_end_time(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'superadmin',
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Masak Malam',
+            'start_time' => '23:00',
+            'grace_time' => '23:05',
+            'end_time' => '07:00',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-MASAK-01',
+            'name' => 'Juru Masak Malam',
+            'role' => 'Juru Masak',
+            'email' => 'masak.malam@sppg.com',
+            'phone' => '081200000001',
+            'base_salary' => 180000,
+            'weekly_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-MASAK-MALAM',
+            'shift_id' => $shift->id,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 7, 29, 23, 2, 0));
+
+        $inResponse = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MASAK-MALAM',
+            'mode' => 'in',
+        ]);
+        $inResponse->assertStatus(200);
+        $inResponse->assertJsonPath('type', 'in');
+
+        Carbon::setTestNow(Carbon::create(2026, 7, 30, 7, 5, 0));
+
+        $outResponse = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MASAK-MALAM',
+            'mode' => 'out',
+        ]);
+        $outResponse->assertStatus(200);
+        $outResponse->assertJsonPath('type', 'out');
+
+        $attendance = Attendance::where('employee_id', $employee->id)->first();
+        $this->assertTrue($attendance->date->isSameDay('2026-07-29'));
+        $this->assertSame('23:02:00', $attendance->clock_in);
+        $this->assertSame('07:05:00', $attendance->clock_out);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_cook_overnight_shift_can_clock_out_during_daytime_gap(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'superadmin',
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Masak Malam',
+            'start_time' => '23:00',
+            'grace_time' => '23:05',
+            'end_time' => '07:00',
+        ]);
+
+        $employee = Employee::create([
+            'nip' => 'SPPG-MBG-MASAK-02',
+            'name' => 'Juru Masak Telat Pulang',
+            'role' => 'Juru Masak',
+            'email' => 'masak.telat@sppg.com',
+            'phone' => '081200000002',
+            'base_salary' => 180000,
+            'weekly_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-MASAK-TELAT',
+            'shift_id' => $shift->id,
+        ]);
+
+        Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-07-29',
+            'clock_in' => '23:00:00',
+            'status' => 'Present',
+            'late_minutes' => 0,
+        ]);
+
+        // Midday gap (after 07:00, before next 23:00) — previously often failed
+        Carbon::setTestNow(Carbon::create(2026, 7, 30, 10, 30, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MASAK-TELAT',
+            'mode' => 'out',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('type', 'out');
+
+        $attendance = Attendance::where('employee_id', $employee->id)->first();
+        $this->assertSame('10:30:00', $attendance->clock_out);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_overnight_gap_period_blocks_premature_clock_in(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin@sppg.com',
+            'password' => bcrypt('password'),
+            'role' => 'superadmin',
+        ]);
+
+        $shift = Shift::create([
+            'name' => 'Shift Masak Malam',
+            'start_time' => '23:00',
+            'grace_time' => '23:05',
+            'end_time' => '07:00',
+        ]);
+
+        Employee::create([
+            'nip' => 'SPPG-MBG-MASAK-03',
+            'name' => 'Juru Masak Siang Salah',
+            'role' => 'Juru Masak',
+            'email' => 'masak.salah@sppg.com',
+            'phone' => '081200000003',
+            'base_salary' => 180000,
+            'weekly_allowance' => 25000,
+            'status' => 'Active',
+            'qr_token' => 'TOKEN-MASAK-SALAH',
+            'shift_id' => $shift->id,
+        ]);
+
+        Carbon::setTestNow(Carbon::create(2026, 7, 30, 10, 0, 0));
+
+        $response = $this->actingAs($admin)->postJson('/attendance/scan', [
+            'qr_token' => 'TOKEN-MASAK-SALAH',
+            'mode' => 'in',
+        ]);
+
+        $response->assertStatus(400);
+        $this->assertStringContainsString('Belum waktunya scan masuk', $response->json('message'));
+        $this->assertDatabaseCount('attendances', 0);
+
+        Carbon::setTestNow();
+    }
 }
