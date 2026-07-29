@@ -87,9 +87,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/users/{user}/delete', [UserController::class, 'destroy']);
     });
 
-    // Absensi — tambah/ubah rekap (admin & superadmin saja)
+    // Absensi — tambah/ubah rekap + tutup buku (admin & superadmin saja)
     Route::middleware(['role:superadmin,admin'])->group(function () {
         Route::post('/attendances/manual', [AttendanceController::class, 'manualStore']);
+        Route::post('/attendances/close-period', [AttendanceController::class, 'closePeriod']);
+        Route::post('/attendances/closings/{closing}/unlock', [AttendanceController::class, 'unlockPeriod']);
     });
 
     // Superadmin (IT Team) only - Delete / Reset operations

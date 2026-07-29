@@ -16,6 +16,7 @@ class DatabaseMaintenanceController extends Controller
         'shifts',
         'employees',
         'attendances',
+        'attendance_closings',
         'payrolls',
     ];
 
@@ -25,11 +26,13 @@ class DatabaseMaintenanceController extends Controller
         'shifts',
         'employees',
         'attendances',
+        'attendance_closings',
         'payrolls',
     ];
 
     private array $deleteOrder = [
         'payrolls',
+        'attendance_closings',
         'attendances',
         'employees',
         'shifts',
@@ -39,6 +42,7 @@ class DatabaseMaintenanceController extends Controller
 
     private array $operationalResetOrder = [
         'payrolls',
+        'attendance_closings',
         'attendances',
         'employees',
         'shifts',

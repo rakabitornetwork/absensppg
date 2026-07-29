@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\AttendanceClosing;
 use App\Models\SppgSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Carbon\Carbon;
@@ -59,11 +61,35 @@ class AttendanceController extends Controller
 
         $settings = SppgSetting::pluck('value', 'key')->toArray();
 
+        $closings = AttendanceClosing::with('closer:id,name')
+            ->where(function ($q) use ($month, $year) {
+                $monthStart = Carbon::create($year, $month, 1)->startOfDay();
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $q->whereDate('start_date', '<=', $monthEnd->toDateString())
+                    ->whereDate('end_date', '>=', $monthStart->toDateString());
+            })
+            ->orderByDesc('end_date')
+            ->get();
+
+        $lockedDates = [];
+        foreach ($closings as $closing) {
+            $cursor = Carbon::parse($closing->start_date)->startOfDay();
+            $end = Carbon::parse($closing->end_date)->startOfDay();
+            while ($cursor->lte($end)) {
+                if ((int) $cursor->month === $month && (int) $cursor->year === $year) {
+                    $lockedDates[] = $cursor->toDateString();
+                }
+                $cursor->addDay();
+            }
+        }
+
         return Inertia::render('Attendances', [
             'records' => $records,
             'selectedMonth' => $month,
             'selectedYear' => $year,
             'systemSettings' => $settings,
+            'closings' => $closings,
+            'lockedDates' => array_values(array_unique($lockedDates)),
         ]);
     }
 
@@ -420,5 +446,45 @@ class AttendanceController extends Controller
         $attendance->delete();
 
         return redirect()->back()->with('success', 'Rekor presensi berhasil dihapus.');
+    }
+
+    public function closePeriod(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'label' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $start = Carbon::parse($validated['start_date'])->toDateString();
+        $end = Carbon::parse($validated['end_date'])->toDateString();
+
+        if ((new AttendanceClosing())->overlaps($start, $end)) {
+            return redirect()->back()->with('error', 'Rentang tanggal bentrok dengan periode tutup buku yang sudah ada.');
+        }
+
+        AttendanceClosing::create([
+            'start_date' => $start,
+            'end_date' => $end,
+            'label' => $validated['label'] ?: null,
+            'notes' => $validated['notes'] ?: null,
+            'closed_by' => Auth::id(),
+            'closed_at' => Carbon::now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Tutup buku absensi dicatat untuk ' . Carbon::parse($start)->format('d/m/Y') . ' – ' . Carbon::parse($end)->format('d/m/Y') . '. Data tetap dapat dikoreksi bila ada kesalahan.');
+    }
+
+    public function unlockPeriod(Request $request, AttendanceClosing $closing)
+    {
+        if (!in_array($request->user()->role, ['superadmin', 'admin'], true)) {
+            abort(403, 'Hanya Superadmin atau Admin yang dapat menghapus catatan tutup buku.');
+        }
+
+        $label = Carbon::parse($closing->start_date)->format('d/m/Y') . ' – ' . Carbon::parse($closing->end_date)->format('d/m/Y');
+        $closing->delete();
+
+        return redirect()->back()->with('success', 'Catatan tutup buku ' . $label . ' berhasil dihapus.');
     }
 }

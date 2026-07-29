@@ -5,24 +5,32 @@ import {
     Calendar, 
     ChevronLeft, 
     ChevronRight, 
-    UserCheck, 
-    AlertCircle, 
-    Edit, 
     X,
-    Filter,
     Plus,
-    Printer
+    Printer,
+    BookLock
 } from 'lucide-react';
 
-export default function Attendances({ records = [], selectedMonth, selectedYear, systemSettings = {} }) {
+export default function Attendances({
+    records = [],
+    selectedMonth,
+    selectedYear,
+    systemSettings = {},
+    closings = [],
+    lockedDates = [],
+}) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
     const canEditAttendance = userRole === 'superadmin' || userRole === 'admin';
+    const canCloseBooks = canEditAttendance;
+    const canManageClosings = canEditAttendance;
+    const closedDateSet = new Set(lockedDates);
     const [month, setMonth] = useState(selectedMonth);
     const [year, setYear] = useState(selectedYear);
     const [showCorrectionForm, setShowCorrectionForm] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [selectedAttendanceId, setSelectedAttendanceId] = useState(null);
+    const [showCloseForm, setShowCloseForm] = useState(false);
 
     const { data, setData, post, reset, errors } = useForm({
         employee_id: '',
@@ -32,6 +40,25 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
         status: 'Present',
         notes: '',
     });
+
+    const {
+        data: closeData,
+        setData: setCloseData,
+        post: postClose,
+        processing: closeProcessing,
+        reset: resetClose,
+        errors: closeErrors,
+    } = useForm({
+        start_date: '',
+        end_date: '',
+        label: '',
+        notes: '',
+    });
+
+    const isDateClosed = (dayNum) => {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return closedDateSet.has(`${year}-${pad(month)}-${pad(dayNum)}`);
+    };
 
     const monthsList = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -72,6 +99,10 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
     };
 
     const handleOpenCorrection = (employeeId, dayNum) => {
+        if (!canEditAttendance) {
+            return;
+        }
+
         // Find if there is an existing record for this day
         const empRecord = records.find(r => r.employee_id === employeeId);
         const dayRecord = empRecord?.days[dayNum];
@@ -111,6 +142,50 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
         setSelectedRecord(null);
         setSelectedAttendanceId(null);
         setShowCorrectionForm(true);
+    };
+
+    const openCloseForm = () => {
+        const pad = (n) => n.toString().padStart(2, '0');
+        const mid = 15;
+        const lastDay = getDaysInMonth(month, year);
+        // Suggest first half or second half based on existing closings count in month
+        const periodIndex = closings.length % 2;
+        if (periodIndex === 0) {
+            setCloseData({
+                start_date: `${year}-${pad(month)}-01`,
+                end_date: `${year}-${pad(month)}-${pad(Math.min(mid, lastDay))}`,
+                label: `Periode 1 ${monthsList[month - 1]} ${year}`,
+                notes: '',
+            });
+        } else {
+            setCloseData({
+                start_date: `${year}-${pad(month)}-${pad(mid + 1)}`,
+                end_date: `${year}-${pad(month)}-${pad(lastDay)}`,
+                label: `Periode 2 ${monthsList[month - 1]} ${year}`,
+                notes: '',
+            });
+        }
+        setShowCloseForm(true);
+    };
+
+    const handleCloseSubmit = (e) => {
+        e.preventDefault();
+        if (!confirm(`Catat tutup buku absensi ${closeData.start_date} s/d ${closeData.end_date}? Data tetap bisa dikoreksi jika ada kesalahan.`)) {
+            return;
+        }
+        postClose('/attendances/close-period', {
+            onSuccess: () => {
+                setShowCloseForm(false);
+                resetClose();
+            },
+        });
+    };
+
+    const handleUnlockClosing = (closingId, label) => {
+        if (!confirm(`Hapus catatan tutup buku "${label}"?`)) {
+            return;
+        }
+        router.post(`/attendances/closings/${closingId}/unlock`);
     };
 
     const handleCorrectionSubmit = (e) => {
@@ -327,6 +402,15 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                         <Printer className="w-3.5 h-3.5" />
                         Cetak Rekap
                     </button>
+                    {canCloseBooks && (
+                        <button
+                            onClick={openCloseForm}
+                            className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1 active:translate-y-[1px]"
+                        >
+                            <BookLock className="w-3.5 h-3.5" />
+                            Tutup Buku
+                        </button>
+                    )}
                     {canEditAttendance && (
                         <button
                             onClick={handleNewManualClick}
@@ -338,6 +422,54 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                     )}
                 </div>
             </div>
+
+            {/* Tutup Buku summary */}
+            {(closings.length > 0 || canCloseBooks) && (
+                <div className="bg-white border border-slate-100 rounded-xl p-3.5 shadow-sm mb-4">
+                    <div className="flex items-center gap-2 mb-2.5 border-b border-slate-50 pb-2">
+                        <BookLock className="w-3.5 h-3.5 text-teal-600" />
+                        <h3 className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider">Tutup Buku Absensi</h3>
+                        <span className="text-[9px] text-slate-400 font-semibold">Penanda periode (data tetap bisa dikoreksi)</span>
+                    </div>
+                    {closings.length === 0 ? (
+                        <p className="text-[10px] text-slate-400 font-semibold">Belum ada periode tutup buku untuk bulan ini.</p>
+                    ) : (
+                        <div className="space-y-1.5">
+                            {closings.map((c) => {
+                                const startLabel = new Date(c.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                                const endLabel = new Date(c.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                                const closedAt = c.closed_at
+                                    ? new Date(c.closed_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                                    : '-';
+                                return (
+                                    <div key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 rounded-lg bg-teal-50/50 border border-teal-100">
+                                        <div>
+                                            <p className="text-[11px] font-bold text-slate-800">
+                                                {c.label || `${startLabel} – ${endLabel}`}
+                                            </p>
+                                            <p className="text-[9px] text-slate-500 font-semibold">
+                                                {startLabel} – {endLabel}
+                                                {c.closer?.name ? ` · oleh ${c.closer.name}` : ''}
+                                                {` · ${closedAt}`}
+                                            </p>
+                                        </div>
+                                        {canManageClosings && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUnlockClosing(c.id, c.label || `${startLabel} – ${endLabel}`)}
+                                                className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 self-start sm:self-auto"
+                                            >
+                                                <X className="w-3 h-3" />
+                                                Hapus Catatan
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Selector bar */}
             <div className="bg-white border border-slate-100 rounded-xl p-3 shadow-sm mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -398,6 +530,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-500 inline-block" /> I = Izin / Sakit</span>
                         <span className="text-slate-300">|</span>
                         <span className="text-teal-700 underline">Klik sel tanggal untuk koreksi data</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-teal-200 inline-block" /> Header teal = sudah tutup buku</span>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -406,7 +539,7 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                                 <tr className="border-b border-slate-200 text-slate-500 font-extrabold uppercase">
                                     <th className="py-2 pr-4 text-left min-w-[150px] sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Nama Karyawan</th>
                                     {daysArray.map((d) => (
-                                        <th key={d} className="py-2 px-1 min-w-[20px] font-bold select-none">{d}</th>
+                                        <th key={d} className={`py-2 px-1 min-w-[20px] font-bold select-none ${isDateClosed(d) ? 'text-teal-700 bg-teal-50/80' : ''}`}>{d}</th>
                                     ))}
                                     <th className="py-2 px-2 font-bold text-green-700 min-w-[24px]">H</th>
                                     <th className="py-2 px-2 font-bold text-amber-700 min-w-[24px]">T</th>
@@ -433,8 +566,9 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                                             {/* Days cells */}
                                             {daysArray.map((d) => {
                                                 const dayRecord = rec.days[d];
+                                                const closed = isDateClosed(d);
                                                 const editCursor = canEditAttendance ? 'cursor-pointer' : 'cursor-default';
-                                                let cellClass = `text-slate-300 bg-slate-50/30 ${canEditAttendance ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-default'}`;
+                                                let cellClass = `text-slate-300 bg-slate-50/30 ${canEditAttendance ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-default'}${closed ? ' ring-1 ring-inset ring-teal-200/80' : ''}`;
                                                 let text = "-";
 
                                                 if (dayRecord) {
@@ -458,7 +592,11 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                                                         key={d} 
                                                         onClick={() => canEditAttendance && handleOpenCorrection(rec.employee_id, d)}
                                                         className={`p-1 border border-slate-100 ${cellClass}`}
-                                                        title={dayRecord ? `${rec.name} (${d}/${month}): ${dayRecord.status}${dayRecord.status === 'Late' ? ` (${formatMinutesDuration(dayRecord.late_minutes)})` : ''} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}` : (canEditAttendance ? `Klik untuk input presensi tgl ${d}` : `Tidak ada data tgl ${d}`)}
+                                                        title={
+                                                            dayRecord
+                                                                ? `${rec.name} (${d}/${month}): ${dayRecord.status}${dayRecord.status === 'Late' ? ` (${formatMinutesDuration(dayRecord.late_minutes)})` : ''} ${dayRecord.clock_in ? `[${dayRecord.clock_in} - ${dayRecord.clock_out || '?'}]` : ''}${closed ? ' · Tutup buku' : ''}`
+                                                                : (canEditAttendance ? `Klik untuk input presensi tgl ${d}${closed ? ' (sudah tutup buku, tetap bisa dikoreksi)' : ''}` : `Tidak ada data tgl ${d}`)
+                                                        }
                                                     >
                                                         {text}
                                                     </td>
@@ -603,6 +741,90 @@ export default function Attendances({ records = [], selectedMonth, selectedYear,
                     </div>
                 )}
             </div>
+
+            {showCloseForm && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+                        <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/80">
+                            <div className="flex items-center gap-2">
+                                <BookLock className="w-4 h-4 text-slate-700" />
+                                <span className="text-xs font-extrabold text-slate-900 uppercase">Tutup Buku Absensi</span>
+                            </div>
+                            <button
+                                onClick={() => setShowCloseForm(false)}
+                                className="text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-50"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCloseSubmit} className="p-4 space-y-3">
+                            <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                                Catat rentang periode tutup buku (mis. 1–15 dan 16–akhir bulan). Data absensi tetap bisa dikoreksi jika ada kesalahan.
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Tanggal Mulai</label>
+                                    <input
+                                        type="date"
+                                        value={closeData.start_date}
+                                        onChange={(e) => setCloseData('start_date', e.target.value)}
+                                        className="w-full text-xs p-1.5 border border-slate-200 rounded-lg"
+                                        required
+                                    />
+                                    {closeErrors.start_date && <span className="text-[10px] text-rose-500 font-bold">{closeErrors.start_date}</span>}
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Tanggal Selesai</label>
+                                    <input
+                                        type="date"
+                                        value={closeData.end_date}
+                                        onChange={(e) => setCloseData('end_date', e.target.value)}
+                                        className="w-full text-xs p-1.5 border border-slate-200 rounded-lg"
+                                        required
+                                    />
+                                    {closeErrors.end_date && <span className="text-[10px] text-rose-500 font-bold">{closeErrors.end_date}</span>}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Label Periode (opsional)</label>
+                                <input
+                                    type="text"
+                                    value={closeData.label}
+                                    onChange={(e) => setCloseData('label', e.target.value)}
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg"
+                                    placeholder="Contoh: Periode 1 Juli 2026"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-600 mb-1">Catatan (opsional)</label>
+                                <textarea
+                                    value={closeData.notes}
+                                    onChange={(e) => setCloseData('notes', e.target.value)}
+                                    rows="2"
+                                    className="w-full text-xs p-1.5 border border-slate-200 rounded-lg"
+                                    placeholder="Catatan tutup buku..."
+                                />
+                            </div>
+                            <div className="flex gap-2 pt-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCloseForm(false)}
+                                    className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={closeProcessing}
+                                    className="w-1/2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2 rounded-xl disabled:opacity-50"
+                                >
+                                    {closeProcessing ? 'Menyimpan...' : 'Simpan Catatan'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </MainLayout>
     );
 }
