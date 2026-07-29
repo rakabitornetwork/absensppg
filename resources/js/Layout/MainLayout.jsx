@@ -96,7 +96,7 @@ export default function MainLayout({ children, title }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#061A40] flex text-slate-800 antialiased font-sans">
+        <div className="h-screen overflow-hidden bg-[#061A40] flex text-slate-800 antialiased font-sans">
             {/* Mobile Sidebar Backdrop Overlay */}
             {sidebarOpen && (
                 <div 
@@ -105,11 +105,11 @@ export default function MainLayout({ children, title }) {
                 />
             )}
 
-            {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.35),transparent_30%),linear-gradient(180deg,#061A40_0%,#0B2F6B_55%,#075985_100%)] border-r border-white/10 flex flex-col justify-between shrink-0 shadow-2xl shadow-blue-950/30 transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="min-h-0">
+            {/* Sidebar — fixed so it does not move with page scroll */}
+            <aside className={`fixed inset-y-0 left-0 z-40 w-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.35),transparent_30%),linear-gradient(180deg,#061A40_0%,#0B2F6B_55%,#075985_100%)] border-r border-white/10 flex flex-col justify-between shrink-0 shadow-2xl shadow-blue-950/30 transition-transform duration-200 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="min-h-0 flex-1 flex flex-col">
                     {/* Brand/Header */}
-                    <div className="h-16 border-b border-white/10 flex items-center px-4 justify-between">
+                    <div className="h-16 border-b border-white/10 flex items-center px-4 justify-between shrink-0">
                         <div className="flex items-center gap-3">
                             {props.appLogo ? (
                                 <div className="w-10 h-10 rounded-xl bg-transparent flex items-center justify-center overflow-hidden">
@@ -135,7 +135,7 @@ export default function MainLayout({ children, title }) {
                     </div>
 
                     {/* Navigation Links */}
-                    <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-9rem)]">
+                    <nav className="p-2 space-y-1 overflow-y-auto flex-1 min-h-0">
                         {filteredNavigation.map((item) => {
                             const Icon = item.icon;
                             const active = isActive(item.href);
@@ -159,7 +159,7 @@ export default function MainLayout({ children, title }) {
                 </div>
 
                 {/* Sidebar Footer User Info */}
-                <div className="p-2 border-t border-white/10 bg-blue-950/25">
+                <div className="p-2 border-t border-white/10 bg-blue-950/25 shrink-0">
                     <Link href="/profile" className="flex items-center gap-2.5 px-2 py-2 mb-1 rounded-lg hover:bg-white/10 transition-colors">
                         {auth?.user?.avatar_path ? (
                             <img
@@ -187,10 +187,10 @@ export default function MainLayout({ children, title }) {
                 </div>
             </aside>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.18),transparent_28%),linear-gradient(135deg,#eff6ff_0%,#f8fafc_46%,#e0f2fe_100%)]">
+            {/* Main Content Area — offset for fixed sidebar on desktop */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0 h-screen lg:ml-56 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.18),transparent_28%),linear-gradient(135deg,#eff6ff_0%,#f8fafc_46%,#e0f2fe_100%)]">
                 {/* Header */}
-                <header className="h-14 bg-white/86 backdrop-blur-md border-b border-blue-100/70 flex items-center justify-between px-4 lg:px-6 shadow-sm shadow-blue-900/5">
+                <header className="h-14 shrink-0 bg-white/86 backdrop-blur-md border-b border-blue-100/70 flex items-center justify-between px-4 lg:px-6 shadow-sm shadow-blue-900/5">
                     <div className="flex items-center">
                         {/* Hamburger toggle button on mobile */}
                         <button
@@ -230,7 +230,7 @@ export default function MainLayout({ children, title }) {
                 </header>
 
                 {/* Content */}
-                <main className="flex-1 p-5 overflow-y-auto flex flex-col justify-between">
+                <main className="flex-1 min-h-0 p-5 overflow-y-auto flex flex-col justify-between">
                     <div className="flex-1">
                         {children}
                     </div>
