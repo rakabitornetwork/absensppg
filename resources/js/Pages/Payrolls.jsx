@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import MainLayout from '../Layout/MainLayout';
 import { 
-    Banknote, 
     Calendar, 
     RefreshCw, 
     Edit, 
     Eye, 
-    Printer, 
     X, 
-    CheckCircle, 
     AlertCircle,
     Trash2
 } from 'lucide-react';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/react';
 
-export default function Payrolls({ payrolls = [], selectedMonth, selectedYear }) {
+export default function Payrolls({ payrolls = [], selectedDate }) {
     const { props } = usePage();
     const userRole = props.auth?.user?.role || 'admin';
-    const [month, setMonth] = useState(selectedMonth);
-    const [year, setYear] = useState(selectedYear);
+    const [date, setDate] = useState(selectedDate);
     const [editPayroll, setEditPayroll] = useState(null);
     const [isCalculating, setIsCalculating] = useState(false);
 
@@ -34,11 +30,6 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
         status: 'Draft',
     });
 
-    const monthsList = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-
     const formatRupiah = (value) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -47,15 +38,27 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
         }).format(value);
     };
 
-    const handleFilterChange = (newMonth, newYear) => {
-        setMonth(newMonth);
-        setYear(newYear);
-        router.get('/payrolls', { month: newMonth, year: newYear }, { preserveState: true });
+    const formatDateLabel = (dateStr) => {
+        try {
+            return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            });
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
+    const handleFilterChange = (newDate) => {
+        setDate(newDate);
+        router.get('/payrolls', { date: newDate }, { preserveState: true });
     };
 
     const handleRecalculate = () => {
         setIsCalculating(true);
-        router.post('/payrolls/generate', { month, year }, {
+        router.post('/payrolls/generate', { date }, {
             onSuccess: () => {
                 setIsCalculating(false);
             },
@@ -84,19 +87,17 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
         });
     };
 
-    // Calculate total net payroll for the page summary
     const totalNetPayout = payrolls.reduce((acc, p) => acc + p.net_salary, 0);
     const totalDeductions = payrolls.reduce((acc, p) => acc + p.deductions, 0);
 
     return (
         <MainLayout title="Daftar Penggajian">
-            <Head title="Manajemen Penggajian / Payroll" />
+            <Head title="Manajemen Penggajian Harian" />
 
-            {/* Title / Action bar */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                 <div>
-                    <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Rekapitulasi Penggajian</h2>
-                    <p className="text-[10px] text-slate-500 font-medium">Perhitungan gaji berdasarkan tingkat kehadiran & denda absensi SPPG</p>
+                    <h2 className="text-sm font-extrabold text-slate-900 leading-none mb-1">Rekapitulasi Penggajian Harian</h2>
+                    <p className="text-[10px] text-slate-500 font-medium">Perhitungan gaji per hari berdasarkan kehadiran & denda keterlambatan</p>
                 </div>
                 <button
                     onClick={handleRecalculate}
@@ -104,41 +105,27 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                     className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 active:translate-y-[1px] disabled:opacity-50"
                 >
                     <RefreshCw className={`w-3.5 h-3.5 ${isCalculating ? 'animate-spin' : ''}`} />
-                    Kalkulasi Ulang Gaji
+                    Kalkulasi Gaji Hari Ini
                 </button>
             </div>
 
-            {/* Month & Stats Dashboard Row */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-                {/* Period Selector Card (5 columns) */}
-                <div className="md:col-span-5 bg-white border border-slate-100 rounded-xl p-3.5 shadow-sm flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                <div className="md:col-span-5 bg-white border border-slate-100 rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
                         <Calendar className="w-4.5 h-4.5 text-teal-600" />
-                        <span className="text-xs font-extrabold text-slate-800 uppercase">Periode Gaji</span>
+                        <span className="text-xs font-extrabold text-slate-800 uppercase">Tanggal Gaji</span>
                     </div>
-                    <div className="flex gap-2">
-                        <select
-                            value={month}
-                            onChange={(e) => handleFilterChange(parseInt(e.target.value), year)}
-                            className="text-xs border border-slate-200 rounded-lg p-1 px-2 focus:outline-none focus:ring-1 focus:ring-teal-500/20 bg-white font-bold text-slate-800"
-                        >
-                            {monthsList.map((mName, index) => (
-                                <option key={index + 1} value={index + 1}>{mName}</option>
-                            ))}
-                        </select>
-                        <select
-                            value={year}
-                            onChange={(e) => handleFilterChange(month, parseInt(e.target.value))}
-                            className="text-xs border border-slate-200 rounded-lg p-1 px-2 focus:outline-none focus:ring-1 focus:ring-teal-500/20 bg-white font-bold text-slate-800"
-                        >
-                            {Array.from({ length: 5 }, (_, i) => year - 2 + i).map((yNum) => (
-                                <option key={yNum} value={yNum}>{yNum}</option>
-                            ))}
-                        </select>
+                    <div className="flex flex-col items-end gap-1">
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => handleFilterChange(e.target.value)}
+                            className="text-xs border border-slate-200 rounded-lg p-1.5 px-2 focus:outline-none focus:ring-1 focus:ring-teal-500/20 bg-white font-bold text-slate-800"
+                        />
+                        <span className="text-[9px] text-slate-400 font-semibold">{formatDateLabel(date)}</span>
                     </div>
                 </div>
 
-                {/* Total Stats summary Card (7 columns) */}
                 <div className="md:col-span-7 bg-white border border-slate-100 rounded-xl p-3 shadow-sm grid grid-cols-2 gap-4 divide-x divide-slate-100">
                     <div className="flex flex-col justify-center px-2">
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Total Pembayaran Bersih</span>
@@ -151,16 +138,15 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                 </div>
             </div>
 
-            {/* Payroll Data Table */}
             <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
                 <div className="overflow-x-auto pb-1">
                     <table className="w-full min-w-[980px] text-left text-xs table-fixed">
                         <thead>
                             <tr className="border-b border-slate-100 text-slate-400 font-bold text-[10px] uppercase">
                                 <th className="w-[210px] py-2.5 pr-5">Karyawan (NIP)</th>
-                                <th className="w-[92px] py-2.5 px-3 text-center">Kehadiran</th>
-                                <th className="w-[130px] py-2.5 px-3 text-right">Gaji Pokok</th>
-                                <th className="w-[130px] py-2.5 px-3 text-right">Tunj. Mingguan</th>
+                                <th className="w-[92px] py-2.5 px-3 text-center">Status Hadir</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right">Gaji Harian</th>
+                                <th className="w-[130px] py-2.5 px-3 text-right">Tunj. Harian</th>
                                 <th className="w-[110px] py-2.5 px-3 text-right text-teal-700">Bonus</th>
                                 <th className="w-[130px] py-2.5 px-3 text-right text-rose-700">Potongan</th>
                                 <th className="w-[145px] py-2.5 px-3 text-right">Gaji Bersih</th>
@@ -173,7 +159,7 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                 <tr>
                                     <td colSpan="9" className="text-center py-10 text-slate-400">
                                         <AlertCircle className="w-8 h-8 mx-auto text-slate-300 mb-1" />
-                                        <p className="font-bold text-[11px] mb-2">Gaji untuk periode ini belum dikalkulasi.</p>
+                                        <p className="font-bold text-[11px] mb-2">Gaji untuk tanggal ini belum dikalkulasi.</p>
                                         <button
                                             onClick={handleRecalculate}
                                             className="bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg active:translate-y-[1px]"
@@ -190,9 +176,12 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                             <span className="block text-[9.5px] text-slate-400 font-medium tabular-nums">{p.employee.nip} • {p.employee.role}</span>
                                         </td>
                                         <td className="py-3 px-3 text-center tabular-nums font-bold align-middle whitespace-nowrap">
-                                            <span className="text-slate-800" title="Hari Hadir">{p.days_present}H</span>
-                                            {p.days_late > 0 && (
-                                                <span className="text-amber-600 ml-1.5" title="Hari Terlambat">({p.days_late}T)</span>
+                                            {p.days_present > 0 ? (
+                                                <span className={p.days_late > 0 ? 'text-amber-600' : 'text-teal-600'}>
+                                                    {p.days_late > 0 ? 'Terlambat' : 'Hadir'}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400">Tidak Hadir</span>
                                             )}
                                         </td>
                                         <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-600 align-middle whitespace-nowrap">{formatRupiah(p.base_salary)}</td>
@@ -248,7 +237,6 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                 </div>
             </div>
 
-            {/* Adjustments Form Modal */}
             {editPayroll && (
                 <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
                     <div className="bg-white border border-slate-100 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
@@ -290,7 +278,7 @@ export default function Payrolls({ payrolls = [], selectedMonth, selectedYear })
                                     min="0"
                                     required
                                 />
-                                <p className="text-[9px] text-slate-400 mt-0.5 leading-normal">Potongan default dihitung otomatis berdasarkan alpa & denda keterlambatan.</p>
+                                <p className="text-[9px] text-slate-400 mt-0.5 leading-normal">Potongan default = denda keterlambatan hari ini (menit × tarif).</p>
                             </div>
 
                             <div>

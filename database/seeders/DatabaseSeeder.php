@@ -115,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Kepala Satuan',
                 'email' => 'achmad.nurohman@sppg.com',
                 'phone' => '081234567890',
-                'base_salary' => 6500000,
+                'base_salary' => 300000,
                 'weekly_allowance' => 350000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-ACHMAD-001',
@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Tenaga Gizi',
                 'email' => 'siti.rahma@sppg.com',
                 'phone' => '081234567891',
-                'base_salary' => 4800000,
+                'base_salary' => 220000,
                 'weekly_allowance' => 300000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-SITI-002',
@@ -139,7 +139,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Juru Masak',
                 'email' => 'agus.wijaya@sppg.com',
                 'phone' => '081234567892',
-                'base_salary' => 4000000,
+                'base_salary' => 180000,
                 'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-AGUS-003',
@@ -151,7 +151,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Asisten Masak',
                 'email' => 'lina.marlina@sppg.com',
                 'phone' => '081234567893',
-                'base_salary' => 3200000,
+                'base_salary' => 150000,
                 'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-LINA-004',
@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Pengantar/Kurir',
                 'email' => 'eko.prasetyo@sppg.com',
                 'phone' => '081234567894',
-                'base_salary' => 3500000,
+                'base_salary' => 160000,
                 'weekly_allowance' => 350000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-EKO-005',
@@ -175,7 +175,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Administrasi',
                 'email' => 'dewi.lestari@sppg.com',
                 'phone' => '081234567895',
-                'base_salary' => 3800000,
+                'base_salary' => 175000,
                 'weekly_allowance' => 250000,
                 'status' => 'Active',
                 'qr_token' => 'SPPG-TOKEN-DEWI-006',
@@ -298,64 +298,50 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 5. Generate Payroll for May 2026
-        foreach ($employees as $emp) {
-            $daysPresent = $workdaysCount[$emp->id];
-            $daysLate = $lateDaysCount[$emp->id];
+        // 5. Generate daily payroll for each workday in May 2026
+        $latePenalty = 1000;
 
-            $baseSalary = $emp->base_salary;
-            
-            // Calculate weeks present in May 2026
-            $attendances = Attendance::where('employee_id', $emp->id)
-                ->whereMonth('date', 5)
-                ->whereYear('date', 2026)
-                ->get();
-            $allowanceTotal = 0;
-            $attendancesByWeek = $attendances->whereIn('status', ['Present', 'Late'])
-                ->groupBy(fn($att) => \Carbon\Carbon::parse($att->date)->weekOfYear);
-                
-            foreach ($attendancesByWeek as $weekAttendances) {
-                $daysInWeek = $weekAttendances->count();
-                $allowanceTotal += min($daysInWeek, 5) * ($emp->weekly_allowance / 5);
-            }
-            $allowanceTotal = (int) round($allowanceTotal);
-            
-            // Penalty: Rp 1.000 per minute late, or another policy
-            // Let's check from all May attendances
-            $totalLateMinutes = Attendance::where('employee_id', $emp->id)
-                ->whereMonth('date', 5)
-                ->whereYear('date', 2026)
-                ->sum('late_minutes');
-
-            $penaltyRate = 1000;
-            $deductions = $totalLateMinutes * $penaltyRate;
-
-            // Let's add a bonus for cook and server if they meet targets
-            $bonus = 0;
-            if (in_array($emp->role, ['Juru Masak', 'Asisten Masak'])) {
-                $bonus = 150000; // Meal prep compliance bonus
+        // Generate for all active employees on May workdays (including absent)
+        for ($date = Carbon::create(2026, 5, 1); $date->lte(Carbon::create(2026, 5, 31)); $date->addDay()) {
+            if ($date->isWeekend()) {
+                continue;
             }
 
-            $netSalary = $baseSalary + $allowanceTotal + $bonus - $deductions;
+            foreach ($employees as $emp) {
+                $attendance = Attendance::where('employee_id', $emp->id)
+                    ->whereDate('date', $date->toDateString())
+                    ->first();
 
-            Payroll::updateOrCreate(
-                [
-                    'employee_id' => $emp->id,
-                    'month' => 5,
-                    'year' => 2026
-                ],
-                [
-                    'days_present' => $daysPresent,
-                    'days_late' => $daysLate,
-                    'base_salary' => $baseSalary,
-                    'weekly_allowances_total' => $allowanceTotal,
-                    'bonuses' => $bonus,
-                    'deductions' => $deductions,
-                    'net_salary' => $netSalary,
-                    'status' => 'Paid',
-                    'payment_date' => '2026-05-31',
-                ]
-            );
+                $isPresent = $attendance && in_array($attendance->status, ['Present', 'Late'], true);
+                $isLate = $attendance && $attendance->status === 'Late';
+                $lateMinutes = $isLate ? (int) ($attendance->late_minutes ?? 0) : 0;
+
+                $baseEarned = $isPresent ? (int) $emp->base_salary : 0;
+                $dailyAllowance = $isPresent ? (int) round($emp->weekly_allowance / 5) : 0;
+                $deductions = $lateMinutes * $latePenalty;
+                $bonus = 0;
+                $netSalary = max(0, $baseEarned + $dailyAllowance + $bonus - $deductions);
+
+                Payroll::updateOrCreate(
+                    [
+                        'employee_id' => $emp->id,
+                        'date' => $date->toDateString(),
+                    ],
+                    [
+                        'month' => 5,
+                        'year' => 2026,
+                        'days_present' => $isPresent ? 1 : 0,
+                        'days_late' => $isLate ? 1 : 0,
+                        'base_salary' => $baseEarned,
+                        'weekly_allowances_total' => $dailyAllowance,
+                        'bonuses' => $bonus,
+                        'deductions' => $deductions,
+                        'net_salary' => $netSalary,
+                        'status' => 'Paid',
+                        'payment_date' => $date->toDateString(),
+                    ]
+                );
+            }
         }
     }
 }

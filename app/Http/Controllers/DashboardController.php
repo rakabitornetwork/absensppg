@@ -55,8 +55,8 @@ class DashboardController extends Controller
         // SPPG Settings
         $settings = SppgSetting::pluck('value', 'key')->toArray();
 
-        // Total payroll budget of previous month (May 2026)
-        $totalPayrollBudget = Payroll::where('month', 5)->where('year', 2026)->sum('net_salary');
+        // Total payroll for selected stat date (daily payroll)
+        $totalPayrollBudget = Payroll::whereDate('date', $statDate->toDateString())->sum('net_salary');
 
         // Meal prep status calculation
         // Check if Cook and Nutritionist checked in on $statDate

@@ -199,14 +199,14 @@ export default function Dashboard({ stats, recentScans, settings, distributionHi
                 {/* Monthly Payroll Total */}
                 <div className="bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white rounded-xl p-3.5 shadow-md shadow-fuchsia-500/10 hover:shadow-lg hover:shadow-fuchsia-500/20 transition-all flex flex-col justify-between min-h-[105px]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold text-fuchsia-100/90 uppercase tracking-wider">Payroll Mei 2026 (Lalu)</span>
+                        <span className="text-[10px] font-bold text-fuchsia-100/90 uppercase tracking-wider">Payroll Hari Statistik</span>
                         <div className="p-1 rounded-lg bg-white/20 text-white">
                             <DollarSign className="w-3.5 h-3.5" />
                         </div>
                     </div>
                     <div>
                         <h3 className="text-base font-extrabold text-white leading-none mb-1 truncate">{formatRupiah(stats.total_payroll)}</h3>
-                        <p className="text-[9px] text-fuchsia-50/80 font-semibold">Total pengeluaran terbayar</p>
+                        <p className="text-[9px] text-fuchsia-50/80 font-semibold">Total gaji harian tanggal statistik</p>
                     </div>
                 </div>
             </div>

@@ -12,6 +12,7 @@ class Payroll extends Model
 
     protected $fillable = [
         'employee_id',
+        'date',
         'month',
         'year',
         'days_present',
@@ -26,6 +27,7 @@ class Payroll extends Model
     ];
 
     protected $casts = [
+        'date' => 'date',
         'payment_date' => 'date',
     ];
 

@@ -15,82 +15,62 @@ class PayrollController extends Controller
 {
     public function index(Request $request): Response
     {
-        $month = (int) $request->input('month', Carbon::now()->month);
-        $year = (int) $request->input('year', Carbon::now()->year);
+        $date = $request->input('date', Carbon::today()->toDateString());
 
-        // Fetch payroll records for this month
         $payrolls = Payroll::with('employee')
-            ->where('month', $month)
-            ->where('year', $year)
+            ->whereDate('date', $date)
+            ->orderBy('id')
             ->get();
 
         return Inertia::render('Payrolls', [
             'payrolls' => $payrolls,
-            'selectedMonth' => $month,
-            'selectedYear' => $year,
+            'selectedDate' => $date,
         ]);
     }
 
     public function generate(Request $request)
     {
         $request->validate([
-            'month' => ['required', 'integer', 'between:1,12'],
-            'year' => ['required', 'integer', 'min:2020'],
+            'date' => ['required', 'date'],
         ]);
 
-        $month = (int) $request->input('month');
-        $year = (int) $request->input('year');
+        $date = Carbon::parse($request->input('date'))->toDateString();
+        $dateCarbon = Carbon::parse($date);
 
         $employees = Employee::where('status', 'Active')->get();
         $latePenalty = (int) SppgSetting::getValue('late_penalty_per_minute', '1000');
 
         foreach ($employees as $emp) {
-            // Retrieve all attendances for the employee in this month
-            $attendances = Attendance::where('employee_id', $emp->id)
-                ->whereMonth('date', $month)
-                ->whereYear('date', $year)
-                ->get();
-
-            $daysPresent = $attendances->whereIn('status', ['Present', 'Late'])->count();
-            $daysLate = $attendances->where('status', 'Late')->count();
-            $daysAbsent = $attendances->where('status', 'Absent')->count();
-            $totalLateMinutes = $attendances->sum('late_minutes');
-
-            // Calculations
-            $baseSalary = $emp->base_salary;
-            $allowanceTotal = 0;
-            $attendancesByWeek = $attendances->whereIn('status', ['Present', 'Late'])
-                ->groupBy(function ($att) {
-                    return Carbon::parse($att->date)->weekOfYear;
-                });
-            foreach ($attendancesByWeek as $weekAttendances) {
-                $daysInWeek = $weekAttendances->count();
-                $allowanceTotal += min($daysInWeek, 5) * ($emp->weekly_allowance / 5);
-            }
-            $allowanceTotal = (int) round($allowanceTotal);
-
-            // Late Penalty
-            $lateDeduction = $totalLateMinutes * $latePenalty;
-
-            // Unpaid Absence Penalty: base_salary / 22 days per absent day
-            $absenceDeduction = $daysAbsent > 0 ? (int) round(($baseSalary / 22) * $daysAbsent) : 0;
-
-            $totalDeduction = $lateDeduction + $absenceDeduction;
-
-            // Check if there is an existing payroll record to preserve manual edits
-            $existing = Payroll::where('employee_id', $emp->id)
-                ->where('month', $month)
-                ->where('year', $year)
+            $attendance = Attendance::where('employee_id', $emp->id)
+                ->whereDate('date', $date)
                 ->first();
 
-            $bonus = $existing ? $existing->bonuses : 0;
-            
-            // If the record exists and status is Approved or Paid, we do not overwrite it unless forced
-            if ($existing && in_array($existing->status, ['Approved', 'Paid'])) {
+            $isPresent = $attendance && in_array($attendance->status, ['Present', 'Late'], true);
+            $isLate = $attendance && $attendance->status === 'Late';
+            $lateMinutes = $isLate ? (int) ($attendance->late_minutes ?? 0) : 0;
+
+            // Daily base pay only when Present/Late; Absent/Leave/no record = 0
+            $dailyRate = (int) $emp->base_salary;
+            $baseEarned = $isPresent ? $dailyRate : 0;
+
+            // Weekly allowance credited as 1/5 per present day
+            $dailyAllowance = $isPresent
+                ? (int) round(((int) $emp->weekly_allowance) / 5)
+                : 0;
+
+            $lateDeduction = $lateMinutes * $latePenalty;
+
+            $existing = Payroll::where('employee_id', $emp->id)
+                ->whereDate('date', $date)
+                ->first();
+
+            $bonus = $existing ? (int) $existing->bonuses : 0;
+
+            if ($existing && in_array($existing->status, ['Approved', 'Paid'], true)) {
                 continue;
             }
 
-            $netSalary = $baseSalary + $allowanceTotal + $bonus - $totalDeduction;
+            $netSalary = $baseEarned + $dailyAllowance + $bonus - $lateDeduction;
             if ($netSalary < 0) {
                 $netSalary = 0;
             }
@@ -98,23 +78,24 @@ class PayrollController extends Controller
             Payroll::updateOrCreate(
                 [
                     'employee_id' => $emp->id,
-                    'month' => $month,
-                    'year' => $year,
+                    'date' => $date,
                 ],
                 [
-                    'days_present' => $daysPresent,
-                    'days_late' => $daysLate,
-                    'base_salary' => $baseSalary,
-                    'weekly_allowances_total' => $allowanceTotal,
+                    'month' => $dateCarbon->month,
+                    'year' => $dateCarbon->year,
+                    'days_present' => $isPresent ? 1 : 0,
+                    'days_late' => $isLate ? 1 : 0,
+                    'base_salary' => $baseEarned,
+                    'weekly_allowances_total' => $dailyAllowance,
                     'bonuses' => $bonus,
-                    'deductions' => $totalDeduction,
+                    'deductions' => $lateDeduction,
                     'net_salary' => $netSalary,
                     'status' => 'Draft',
                 ]
             );
         }
 
-        return redirect()->back()->with('success', 'Gaji bulan ini berhasil dikalkulasi.');
+        return redirect()->back()->with('success', 'Gaji harian berhasil dikalkulasi untuk tanggal ' . $dateCarbon->format('d/m/Y') . '.');
     }
 
     public function update(Request $request, Payroll $payroll)

@@ -249,7 +249,7 @@ class EmployeeTest extends TestCase
         $this->assertEquals('Juru Masak', $employee->role);
     }
 
-    public function test_weekly_allowance_calculation_caps_at_five_days_per_week(): void
+    public function test_daily_payroll_credits_one_fifth_weekly_allowance_when_present(): void
     {
         $admin = User::create([
             'name' => 'Admin Test',
@@ -264,57 +264,35 @@ class EmployeeTest extends TestCase
             'role' => 'Juru Masak',
             'email' => 'karyawan.g@sppg.com',
             'phone' => '081234567896',
-            'base_salary' => 4000000,
+            'base_salary' => 180000,
             'weekly_allowance' => 250000,
             'status' => 'Active',
             'qr_token' => 'SPPG-TOKEN-G',
         ]);
 
-        // Week 23: 3 days present
-        $datesWeek23 = ['2026-06-01', '2026-06-02', '2026-06-03'];
-        foreach ($datesWeek23 as $date) {
-            \App\Models\Attendance::create([
-                'employee_id' => $employee->id,
-                'date' => $date,
-                'status' => 'Present',
-                'clock_in' => '06:00:00',
-                'clock_out' => '14:00:00',
-                'late_minutes' => 0,
-            ]);
-        }
+        \App\Models\Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => '2026-06-01',
+            'status' => 'Present',
+            'clock_in' => '06:00:00',
+            'clock_out' => '14:00:00',
+            'late_minutes' => 0,
+        ]);
 
-        // Week 24: 6 days present
-        $datesWeek24 = ['2026-06-08', '2026-06-09', '2026-06-10', '2026-06-11', '2026-06-12', '2026-06-13'];
-        foreach ($datesWeek24 as $date) {
-            \App\Models\Attendance::create([
-                'employee_id' => $employee->id,
-                'date' => $date,
-                'status' => 'Present',
-                'clock_in' => '06:00:00',
-                'clock_out' => '14:00:00',
-                'late_minutes' => 0,
-            ]);
-        }
-
-        // Generate payroll for June (month 6), 2026
         $response = $this->actingAs($admin)
             ->post('/payrolls/generate', [
-                'month' => 6,
-                'year' => 2026,
+                'date' => '2026-06-01',
             ]);
 
         $response->assertRedirect();
 
-        // Check if payroll record is created with correct weekly allowances total
-        // Week 23 allowance: 3 * (250,000 / 5) = 150,000
-        // Week 24 allowance: min(6, 5) * (250,000 / 5) = 250,000
-        // Expected total weekly allowance = 400,000
         $payroll = \App\Models\Payroll::where('employee_id', $employee->id)
-            ->where('month', 6)
-            ->where('year', 2026)
+            ->whereDate('date', '2026-06-01')
             ->first();
 
         $this->assertNotNull($payroll);
-        $this->assertEquals(400000, $payroll->weekly_allowances_total);
+        $this->assertEquals(180000, $payroll->base_salary);
+        $this->assertEquals(50000, $payroll->weekly_allowances_total); // 250000 / 5
+        $this->assertEquals(230000, $payroll->net_salary);
     }
 }

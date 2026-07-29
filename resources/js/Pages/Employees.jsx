@@ -355,7 +355,7 @@ export default function Employees({ employees = [], shifts = [] }) {
                                     <th className="w-[180px] py-2.5 px-3">Karyawan (NIP)</th>
                                     <th className="w-[170px] py-2.5 px-3">Posisi / Kontak</th>
                                     <th className="w-[145px] py-2.5 px-3">Shift Kerja</th>
-                                    <th className="w-[125px] py-2.5 px-3 text-right">Gaji Pokok</th>
+                                    <th className="w-[125px] py-2.5 px-3 text-right">Gaji Harian</th>
                                     <th className="w-[125px] py-2.5 px-3 text-right">Uang Mingguan</th>
                                     <th className="w-[78px] py-2.5 px-3 text-center">Status</th>
                                     <th className="w-[110px] py-2.5 pl-3 text-right">Aksi</th>
@@ -601,7 +601,7 @@ export default function Employees({ employees = [], shifts = [] }) {
 
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Gaji Pokok (Bulan)</label>
+                                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Gaji Pokok (Harian)</label>
                                     <input
                                         type="text"
                                         value={formatInputNumber(data.base_salary)}
