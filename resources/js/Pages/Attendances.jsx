@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Head, useForm, router, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
 import { 
@@ -8,8 +8,19 @@ import {
     X,
     Plus,
     Printer,
-    BookLock
+    BookLock,
+    ArrowUpDown,
+    Filter
 } from 'lucide-react';
+
+const DEFAULT_ROLES_ORDER = [
+    'Kepala Satuan',
+    'Tenaga Gizi',
+    'Juru Masak',
+    'Asisten Masak',
+    'Pengantar/Kurir',
+    'Administrasi',
+];
 
 export default function Attendances({
     records = [],
@@ -31,6 +42,43 @@ export default function Attendances({
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [selectedAttendanceId, setSelectedAttendanceId] = useState(null);
     const [showCloseForm, setShowCloseForm] = useState(false);
+    const [sortBy, setSortBy] = useState('role'); // name | role | nip
+    const [filterRole, setFilterRole] = useState('All');
+
+    const availableRoles = useMemo(() => {
+        const fromRecords = [...new Set(records.map((r) => r.role).filter(Boolean))];
+        const extras = fromRecords.filter((role) => !DEFAULT_ROLES_ORDER.includes(role)).sort((a, b) => a.localeCompare(b, 'id'));
+        return [...DEFAULT_ROLES_ORDER.filter((role) => fromRecords.includes(role)), ...extras];
+    }, [records]);
+
+    const displayedRecords = useMemo(() => {
+        const roleRank = (role) => {
+            const idx = DEFAULT_ROLES_ORDER.indexOf(role);
+            return idx === -1 ? 1000 : idx;
+        };
+
+        let list = [...records];
+        if (filterRole !== 'All') {
+            list = list.filter((r) => r.role === filterRole);
+        }
+
+        list.sort((a, b) => {
+            if (sortBy === 'nip') {
+                return (a.nip || '').localeCompare(b.nip || '', 'id', { numeric: true });
+            }
+            if (sortBy === 'name') {
+                return (a.name || '').localeCompare(b.name || '', 'id');
+            }
+            // Default / role: jabatan order, then name
+            const rankDiff = roleRank(a.role) - roleRank(b.role);
+            if (rankDiff !== 0) return rankDiff;
+            const roleNameDiff = (a.role || '').localeCompare(b.role || '', 'id');
+            if (roleNameDiff !== 0) return roleNameDiff;
+            return (a.name || '').localeCompare(b.name || '', 'id');
+        });
+
+        return list;
+    }, [records, sortBy, filterRole]);
 
     const { data, setData, post, reset, errors } = useForm({
         employee_id: '',
@@ -366,7 +414,7 @@ export default function Attendances({
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                ${records.map(rec => {
+                                                ${displayedRecords.map(rec => {
                                                     return `
                                                         <tr>
                                                             <td class="text-left font-bold">${rec.name}</td>
@@ -478,7 +526,7 @@ export default function Attendances({
                     <span className="text-xs font-extrabold text-slate-900 uppercase">Periode Presensi:</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => handleMonthChange(month === 1 ? 12 : month - 1)}
                         className="p-1 rounded hover:bg-slate-50 border border-slate-200"
@@ -512,6 +560,37 @@ export default function Attendances({
                     >
                         <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
                     </button>
+
+                    <span className="hidden sm:inline text-slate-200 px-0.5">|</span>
+
+                    <div className="flex items-center gap-1.5">
+                        <Filter className="w-3.5 h-3.5 text-slate-400" />
+                        <select
+                            value={filterRole}
+                            onChange={(e) => setFilterRole(e.target.value)}
+                            className="text-xs font-bold border border-slate-200 rounded-lg p-1 px-2 focus:outline-none focus:ring-1 focus:ring-teal-500/20 bg-white text-slate-800 min-w-[140px]"
+                            title="Filter jabatan"
+                        >
+                            <option value="All">Semua Jabatan</option>
+                            {availableRoles.map((role) => (
+                                <option key={role} value={role}>{role}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                        <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="text-xs font-bold border border-slate-200 rounded-lg p-1 px-2 focus:outline-none focus:ring-1 focus:ring-teal-500/20 bg-white text-slate-800 min-w-[130px]"
+                            title="Urutkan daftar"
+                        >
+                            <option value="role">Urut Jabatan</option>
+                            <option value="name">Urut Nama</option>
+                            <option value="nip">Urut NIP</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -548,14 +627,16 @@ export default function Attendances({
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                                {records.length === 0 ? (
+                                {displayedRecords.length === 0 ? (
                                     <tr>
                                         <td colSpan={daysCount + 5} className="text-center py-6 text-slate-400 font-bold">
-                                            Tidak ada data karyawan aktif.
+                                            {records.length === 0
+                                                ? 'Tidak ada data karyawan aktif.'
+                                                : 'Tidak ada karyawan untuk filter jabatan ini.'}
                                         </td>
                                     </tr>
                                 ) : (
-                                    records.map((rec) => (
+                                    displayedRecords.map((rec) => (
                                         <tr key={rec.employee_id} className="hover:bg-slate-50/50 transition-colors">
                                             {/* Name sticky column */}
                                             <td className="py-2.5 pr-4 text-left font-bold text-slate-900 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] flex flex-col">
